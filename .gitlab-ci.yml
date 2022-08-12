@@ -144,7 +144,7 @@ docker-build-x86-toolchain:
   variables:
     ARCH_ARG: amd64
     CROSS_COMPILE_ARG: x86_64-linux-gnu
-    IMAGE_NAME: debian-cross-toolchain-x86
+    IMAGE_NAME: debian-cross-toolchain-amd64
     DOCKERFILE_FOLDER: "base/"
     USE_TORADEX_SNAPSHOT: 0
   stage: build-base
@@ -157,8 +157,8 @@ docker-build-x86-toolchain-ssh:
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
   variables:
     ARCH_ARG: amd64
-    BASE_NAME: debian-cross-toolchain-x86
-    IMAGE_NAME: debian-cross-toolchain-ssh-x86
+    BASE_NAME: debian-cross-toolchain-amd64
+    IMAGE_NAME: debian-cross-toolchain-ssh-amd64
     DOCKERFILE_FOLDER: "ssh/"
     USE_TORADEX_SNAPSHOT: 0
   stage: build-ssh
@@ -316,7 +316,7 @@ docker-deploy-x86-toolchain:
     - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
     - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
-    IMAGE_NAME: debian-cross-toolchain-x86
+    IMAGE_NAME: debian-cross-toolchain-amd64
   stage: deploy
 
 docker-deploy-x86-toolchain-ssh:
@@ -329,5 +329,5 @@ docker-deploy-x86-toolchain-ssh:
     - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
     - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
-    IMAGE_NAME: debian-cross-toolchain-ssh-x86
+    IMAGE_NAME: debian-cross-toolchain-ssh-amd64
   stage: deploy
