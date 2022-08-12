@@ -149,19 +149,19 @@ docker-build-x86-toolchain:
     USE_TORADEX_SNAPSHOT: 0
   stage: build-base
 
-docker-build-x86-toolchain-ssh:
-  extends: .docker-build
-  before_script:
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-  variables:
-    ARCH_ARG: amd64
-    BASE_NAME: debian-cross-toolchain-x86
-    IMAGE_NAME: debian-cross-toolchain-ssh-x86
-    DOCKERFILE_FOLDER: "ssh/"
-    USE_TORADEX_SNAPSHOT: 0
-  stage: build-ssh
+# docker-build-x86-toolchain-ssh:
+#   extends: .docker-build
+#   before_script:
+#     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
+#     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
+#     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+#   variables:
+#     ARCH_ARG: amd64
+#     BASE_NAME: debian-cross-toolchain-x86
+#     IMAGE_NAME: debian-cross-toolchain-ssh-x86
+#     DOCKERFILE_FOLDER: "ssh/"
+#     USE_TORADEX_SNAPSHOT: 0
+#   stage: build-ssh
 
 lint_dockerfile:
   stage: lint
@@ -319,15 +319,15 @@ docker-deploy-x86-toolchain:
     IMAGE_NAME: debian-cross-toolchain-x86
   stage: deploy
 
-docker-deploy-x86-toolchain-ssh:
-  extends: .docker-deploy
-  before_script:
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
-  variables:
-    IMAGE_NAME: debian-cross-toolchain-ssh-x86
-  stage: deploy
+# docker-deploy-x86-toolchain-ssh:
+#   extends: .docker-deploy
+#   before_script:
+#     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
+#     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
+#     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+#     - export DATE=$(date +%Y%m%d)
+#     - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
+#     - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
+#   variables:
+#     IMAGE_NAME: debian-cross-toolchain-ssh-x86
+#   stage: deploy
