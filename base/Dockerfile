@@ -53,7 +53,7 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         crossbuild-essential-${ARCH_ARG} \
         && apt-get clean \
         && apt-get autoremove \
-        && rm -rf /var/lib/apt/lists/* \
+        && rm -rf /var/lib/apt/lists/*; \
     else \
         apt-get -q -y update \
         && apt-get -q -y upgrade \
@@ -68,7 +68,7 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         crossbuild-essential-${ARCH_ARG} \
         && apt-get clean \
         && apt-get autoremove \
-        && rm -rf /var/lib/apt/lists/* \
+        && rm -rf /var/lib/apt/lists/*; \
     fi
 
 # Add torizon user to the container
