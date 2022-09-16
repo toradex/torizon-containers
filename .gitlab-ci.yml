@@ -7,11 +7,11 @@ variables:
   # container version
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "2"
   DEBIAN_CROSS_TOOLCHAINS_MINOR: "7"
-  DEBIAN_CROSS_TOOLCHAINS_PATCH: "0"
+  DEBIAN_CROSS_TOOLCHAINS_PATCH: "1"
 
   DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "2"
   DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR: "7"
-  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "0"
+  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "1"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
@@ -162,6 +162,36 @@ docker-build-x86-toolchain-ssh:
     DOCKERFILE_FOLDER: "ssh/"
     USE_TORADEX_SNAPSHOT: 0
   stage: build-ssh
+
+docker-build-rcv-toolchain:
+  extends: .docker-build
+  needs: []
+  before_script:
+    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
+    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
+    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+  variables:
+    ARCH_ARG: riscv64
+    CROSS_COMPILE_ARG: riscv64-linux-gnu
+    IMAGE_NAME: debian-cross-toolchain-riscv64
+    DOCKERFILE_FOLDER: "base/"
+    USE_TORADEX_SNAPSHOT: 0
+  stage: build-base
+
+docker-build-rcv-toolchain-ssh:
+  extends: .docker-build
+  before_script:
+    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
+    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
+    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+  variables:
+    ARCH_ARG: riscv64
+    BASE_NAME: debian-cross-toolchain-riscv64
+    IMAGE_NAME: debian-cross-toolchain-ssh-riscv64
+    DOCKERFILE_FOLDER: "ssh/"
+    USE_TORADEX_SNAPSHOT: 0
+  stage: build-ssh
+
 
 lint_dockerfile:
   stage: lint
@@ -330,4 +360,30 @@ docker-deploy-x86-toolchain-ssh:
     - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
+  stage: deploy
+
+docker-deploy-rcv-toolchain:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
+    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
+    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    - export DATE=$(date +%Y%m%d)
+    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
+    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
+  variables:
+    IMAGE_NAME: debian-cross-toolchain-riscv64
+  stage: deploy
+
+docker-deploy-rcv-toolchain-ssh:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
+    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
+    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+    - export DATE=$(date +%Y%m%d)
+    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
+    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
+  variables:
+    IMAGE_NAME: debian-cross-toolchain-ssh-riscv64
   stage: deploy
