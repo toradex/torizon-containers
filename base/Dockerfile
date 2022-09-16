@@ -65,7 +65,6 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         dpkg-cross \
         gcc-${ARCH_ARG}-linux-gnu \
         g++-${ARCH_ARG}-linux-gnu \
-        crossbuild-essential-${ARCH_ARG} \
         && apt-get clean \
         && apt-get autoremove \
         && rm -rf /var/lib/apt/lists/*; \
