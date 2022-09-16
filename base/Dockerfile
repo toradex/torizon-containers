@@ -33,10 +33,10 @@ RUN apt-get -q -y update \
 ADD ${TORADEX_FEED_BASE_URL}/toradex-debian-repo.gpg /etc/apt/trusted.gpg.d/
 RUN chmod 0644 /etc/apt/trusted.gpg.d/toradex-debian-repo.gpg \
     && if [ "${USE_TORADEX_SNAPSHOT}" = 1 ]; then \
-           TORADEX_FEED_URL="${TORADEX_FEED_BASE_URL}/snapshots/${TORADEX_SNAPSHOT}"; \
-       else \
-           TORADEX_FEED_URL="${TORADEX_FEED_BASE_URL}"; \
-       fi \
+            TORADEX_FEED_URL="${TORADEX_FEED_BASE_URL}/snapshots/${TORADEX_SNAPSHOT}"; \
+        else \
+            TORADEX_FEED_URL="${TORADEX_FEED_BASE_URL}"; \
+        fi \
     && echo "deb ${TORADEX_FEED_URL} testing main non-free" >>/etc/apt/sources.list \
     && echo "Package: *\nPin: origin feeds.toradex.com\nPin-Priority: 900" > /etc/apt/preferences.d/toradex-feeds
 
