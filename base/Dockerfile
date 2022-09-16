@@ -42,17 +42,34 @@ RUN chmod 0644 /etc/apt/trusted.gpg.d/toradex-debian-repo.gpg \
 
 # Upgrade & install required packages
 
-RUN apt-get -q -y update \
-    && apt-get -q -y upgrade \
-    && apt-get -q -y -o Acquire::Http::Dl-limit=1000 install --no-install-recommends \
-    git \
-    openssl \
-    wget \
-    curl \
-    crossbuild-essential-${ARCH_ARG} \
-    && apt-get clean \
-    && apt-get autoremove \
-    && rm -rf /var/lib/apt/lists/*
+RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
+        apt-get -q -y update \
+        && apt-get -q -y upgrade \
+        && apt-get -q -y -o Acquire::Http::Dl-limit=1000 install --no-install-recommends \
+        git \
+        openssl \
+        wget \
+        curl \
+        crossbuild-essential-${ARCH_ARG} \
+        && apt-get clean \
+        && apt-get autoremove \
+        && rm -rf /var/lib/apt/lists/* \
+    else \
+        apt-get -q -y update \
+        && apt-get -q -y upgrade \
+        && apt-get -q -y -o Acquire::Http::Dl-limit=1000 install --no-install-recommends \
+        git \
+        openssl \
+        wget \
+        curl \
+        dpkg-cross \
+        gcc-${ARCH_ARG}-linux-gnu \
+        g++-${ARCH_ARG}-linux-gnu \
+        crossbuild-essential-${ARCH_ARG} \
+        && apt-get clean \
+        && apt-get autoremove \
+        && rm -rf /var/lib/apt/lists/* \
+    fi
 
 # Add torizon user to the container
 RUN mkdir /home/torizon \
