@@ -24,7 +24,8 @@ RUN mkdir /var/run/sshd && mkdir /home/build && mkdir /home/build/sysroot
 
 # configures SSH access to the container and sets environment by default
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd \
-    && useradd -s /bin/bash -d /home/build -g root -G sudo,ssh -p $(echo "build" | openssl passwd -1 -stdin) build \
+    #&& useradd -s /bin/bash -d /home/build -g root -G sudo,ssh -p $(echo "build" | openssl passwd -1 -stdin) build \
+    && useradd -s /bin/bash -d /home/build -g root -G sudo -p $(echo "build" | openssl passwd -1 -stdin) build \
     && chown -R build /home/build
 
 CMD ["/usr/sbin/sshd", "-D"]
