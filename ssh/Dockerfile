@@ -16,7 +16,7 @@ RUN apt-get -q -y update \
     rsync \
     zip \
     && apt-get clean \
-    && apt-get autoremove \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 # create folders needed for the different components

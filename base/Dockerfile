@@ -28,7 +28,7 @@ RUN apt-get -q -y update \
     && apt-get -q -y install --no-install-recommends \
     ca-certificates \
     && apt-get clean \
-    && apt-get autoremove \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 ADD ${TORADEX_FEED_BASE_URL}/toradex-debian-repo.gpg /etc/apt/trusted.gpg.d/
 RUN chmod 0644 /etc/apt/trusted.gpg.d/toradex-debian-repo.gpg \
@@ -52,7 +52,7 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         curl \
         crossbuild-essential-${ARCH_ARG} \
         && apt-get clean \
-        && apt-get autoremove \
+        && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/*; \
     else \
         apt-get -q -y update \
@@ -66,7 +66,7 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         gcc-${ARCH_ARG}-linux-gnu \
         g++-${ARCH_ARG}-linux-gnu \
         && apt-get clean \
-        && apt-get autoremove \
+        && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/*; \
     fi
 
