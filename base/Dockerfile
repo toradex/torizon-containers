@@ -70,7 +70,7 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         # add the key and the riscv64 ports packages
         apt-key add /usr/share/keyrings/debian-ports-archive-keyring.gpg && \
         echo "deb [arch=riscv64] http://deb.debian.org/debian-ports sid main" \
-        >> /etc/apt/sources.list && \
+            >> /etc/apt/sources.list \
         && apt-get clean \
         && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/*; \
