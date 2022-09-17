@@ -7,11 +7,11 @@ variables:
   # container version
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "2"
   DEBIAN_CROSS_TOOLCHAINS_MINOR: "7"
-  DEBIAN_CROSS_TOOLCHAINS_PATCH: "2"
+  DEBIAN_CROSS_TOOLCHAINS_PATCH: "3"
 
   DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "2"
   DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR: "7"
-  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "2"
+  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "3"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
@@ -213,7 +213,7 @@ lint_dockerfile:
     #- DL3020 (use COPY instead of ADD for files and folders)
     #- DL4006 (set the SHELL option -o pipefail before RUN with a pipe in it)
     #- SC2046 (quote this to prevent word splitting)
-    - hadolint */Dockerfile --failure-threshold warning --info DL3008 --info DL3020 --info DL4006 --info SC2046
+    - hadolint */Dockerfile --failure-threshold warning --info DL3008 --info DL3020 --info DL4006 --info SC2046 --info SC1072
 
 # Make sure to create access token in "Settings/Access Tokens" section with "write_repository" scope selected.
 # Then in "Settings/CI/CD/" section add a variable with key "GIT_TOKEN" and a value of the access token. Also mask the variable.

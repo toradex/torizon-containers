@@ -19,6 +19,7 @@ ENV PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib/${CROSS_COMPILE_ARG}/pkgconfig
 ENV DEBIAN_FRONTEND="noninteractive"
 
 # Enable multiarch
+COPY debian-ports-archive-keyring.gpg /usr/share/keyrings
 RUN dpkg --add-architecture ${ARCH_ARG}
 
 # Enable the Toradex package feed
@@ -62,9 +63,14 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         openssl \
         wget \
         curl \
+        gnupg \
         dpkg-cross \
         gcc-${ARCH_ARG}-linux-gnu \
-        g++-${ARCH_ARG}-linux-gnu \
+        g++-${ARCH_ARG}-linux-gnu && \
+        # add the key and the riscv64 ports packages
+        apt-key add /usr/share/keyrings/debian-ports-archive-keyring.gpg && \
+        echo "deb [arch=riscv64] http://deb.debian.org/debian-ports sid main" \
+        >> /etc/apt/sources.list && \
         && apt-get clean \
         && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/*; \
