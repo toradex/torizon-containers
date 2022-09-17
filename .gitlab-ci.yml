@@ -7,11 +7,11 @@ variables:
   # container version
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "2"
   DEBIAN_CROSS_TOOLCHAINS_MINOR: "7"
-  DEBIAN_CROSS_TOOLCHAINS_PATCH: "1"
+  DEBIAN_CROSS_TOOLCHAINS_PATCH: "2"
 
   DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "2"
   DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR: "7"
-  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "1"
+  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "2"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
@@ -78,6 +78,7 @@ docker-build-armhf-toolchain:
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-armhf
     DOCKERFILE_FOLDER: "base/"
+    DEBIAN_BASE_IMAGE: "bullseye-slim"
   stage: build-base
 
 docker-build-arm-toolchain:
@@ -92,6 +93,7 @@ docker-build-arm-toolchain:
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-arm
     DOCKERFILE_FOLDER: "base/"
+    DEBIAN_BASE_IMAGE: "bullseye-slim"
   stage: build-base
 
 docker-build-armhf-toolchain-ssh:
@@ -105,6 +107,7 @@ docker-build-armhf-toolchain-ssh:
     BASE_NAME: debian-cross-toolchain-armhf
     IMAGE_NAME: debian-cross-toolchain-ssh-armhf
     DOCKERFILE_FOLDER: "ssh/"
+    DEBIAN_BASE_IMAGE: "bullseye-slim"
   stage: build-ssh
 
 docker-build-arm64-toolchain:
@@ -119,6 +122,7 @@ docker-build-arm64-toolchain:
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64
     DOCKERFILE_FOLDER: "base/"
+    DEBIAN_BASE_IMAGE: "bullseye-slim"
   stage: build-base
 
 docker-build-arm64-toolchain-ssh:
@@ -132,6 +136,7 @@ docker-build-arm64-toolchain-ssh:
     BASE_NAME: debian-cross-toolchain-arm64
     IMAGE_NAME: debian-cross-toolchain-ssh-arm64
     DOCKERFILE_FOLDER: "ssh/"
+    DEBIAN_BASE_IMAGE: "bullseye-slim"
   stage: build-ssh
 
 docker-build-x86-toolchain:
@@ -147,6 +152,7 @@ docker-build-x86-toolchain:
     IMAGE_NAME: debian-cross-toolchain-amd64
     DOCKERFILE_FOLDER: "base/"
     USE_TORADEX_SNAPSHOT: 0
+    DEBIAN_BASE_IMAGE: "bullseye-slim"
   stage: build-base
 
 docker-build-x86-toolchain-ssh:
@@ -161,6 +167,7 @@ docker-build-x86-toolchain-ssh:
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
     DOCKERFILE_FOLDER: "ssh/"
     USE_TORADEX_SNAPSHOT: 0
+    DEBIAN_BASE_IMAGE: "bullseye-slim"
   stage: build-ssh
 
 docker-build-rcv-toolchain:
@@ -176,6 +183,7 @@ docker-build-rcv-toolchain:
     IMAGE_NAME: debian-cross-toolchain-riscv64
     DOCKERFILE_FOLDER: "base/"
     USE_TORADEX_SNAPSHOT: 0
+    DEBIAN_BASE_IMAGE: "sid-slim"
   stage: build-base
 
 docker-build-rcv-toolchain-ssh:
@@ -190,6 +198,7 @@ docker-build-rcv-toolchain-ssh:
     IMAGE_NAME: debian-cross-toolchain-ssh-riscv64
     DOCKERFILE_FOLDER: "ssh/"
     USE_TORADEX_SNAPSHOT: 0
+    DEBIAN_BASE_IMAGE: "sid-slim"
   stage: build-ssh
 
 
