@@ -1,7 +1,7 @@
 ARG BASE_NAME=
 ARG BASE_TAG=
 
-FROM artifactory-horw.int.toradex.com/dockerhub-proxy-horw/debian:bullseye-slim AS build
+FROM artifactory-horw.int.toradex.com/dockerhub-proxy-horw/debian:bookworm-slim AS build
 
 RUN apt-get update && apt-get install -y \
     --no-install-recommends --no-install-suggests \
