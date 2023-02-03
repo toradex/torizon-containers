@@ -24,12 +24,17 @@ stages:
   - lint
   - repository-tagging
   - build
-  - build-uno
-  - build-debug
-  - build-uno-debug
-  - build-multiarch
   - deploy
+  - build-debug
+  - deploy-debug
+  - build-multiarch
   - deploy-multiarch
+  - build-uno
+  - deploy-uno
+  - build-uno-debug
+  - deploy-uno-debug
+  - build-multiarch-uno
+  - deploy-multiarch-uno
 
 .docker-build:
   before_script:
@@ -315,7 +320,7 @@ docker-build-dotnet-uno-6-multiarch:
     IMAGE_NAME_32: arm32v7-dotnet-uno
     IMAGE_NAME_64: arm64v8-dotnet-uno
     DOTNET_TAG: ${DOTNET_6_TAG}
-  stage: build-multiarch
+  stage: build-multiarch-uno
 
 docker-build-dotnet-uno-6-debug-multiarch:
   extends: .docker-build-multiarch
@@ -324,7 +329,7 @@ docker-build-dotnet-uno-6-debug-multiarch:
     IMAGE_NAME_32: arm32v7-dotnet-uno-debug
     IMAGE_NAME_64: arm64v8-dotnet-uno-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
-  stage: build-multiarch
+  stage: build-multiarch-uno
 
 # Docker deploy jobs
 #
@@ -354,6 +359,7 @@ docker-deploy-6-arm32:
     IMAGE_NAME: arm32v7-dotnet
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy
 
 docker-deploy-6-arm64:
   extends: .docker-deploy
@@ -361,20 +367,7 @@ docker-deploy-6-arm64:
     IMAGE_NAME: arm64v8-dotnet
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
-
-docker-deploy-6-arm32-uno:
-  extends: .docker-deploy
-  variables:
-    IMAGE_NAME: arm32v7-dotnet-uno
-    DOTNET_TAG: ${DOTNET_6_TAG}
-    DOTNET_VERSION: ${DOTNET_6_VERSION}
-
-docker-deploy-6-arm64-uno:
-  extends: .docker-deploy
-  variables:
-    IMAGE_NAME: arm64v8-dotnet-uno
-    DOTNET_TAG: ${DOTNET_6_TAG}
-    DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy
 
 docker-deploy-6-arm32-asp:
   extends: .docker-deploy
@@ -382,6 +375,7 @@ docker-deploy-6-arm32-asp:
     IMAGE_NAME: arm32v7-aspdotnet
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy
 
 docker-deploy-6-arm64-asp:
   extends: .docker-deploy
@@ -389,6 +383,7 @@ docker-deploy-6-arm64-asp:
     IMAGE_NAME: arm64v8-aspdotnet
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy
 
 docker-deploy-6-debug-arm32:
   extends: .docker-deploy
@@ -396,6 +391,7 @@ docker-deploy-6-debug-arm32:
     IMAGE_NAME: arm32v7-dotnet-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-debug
 
 docker-deploy-6-debug-arm64:
   extends: .docker-deploy
@@ -403,6 +399,7 @@ docker-deploy-6-debug-arm64:
     IMAGE_NAME: arm64v8-dotnet-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-debug
 
 docker-deploy-6-debug-arm32-asp:
   extends: .docker-deploy
@@ -410,6 +407,7 @@ docker-deploy-6-debug-arm32-asp:
     IMAGE_NAME: arm32v7-aspdotnet-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-debug
 
 docker-deploy-6-debug-arm64-asp:
   extends: .docker-deploy
@@ -417,6 +415,23 @@ docker-deploy-6-debug-arm64-asp:
     IMAGE_NAME: arm64v8-aspdotnet-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-debug
+
+docker-deploy-6-arm32-uno:
+  extends: .docker-deploy
+  variables:
+    IMAGE_NAME: arm32v7-dotnet-uno
+    DOTNET_TAG: ${DOTNET_6_TAG}
+    DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-uno
+
+docker-deploy-6-arm64-uno:
+  extends: .docker-deploy
+  variables:
+    IMAGE_NAME: arm64v8-dotnet-uno
+    DOTNET_TAG: ${DOTNET_6_TAG}
+    DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-uno
 
 docker-deploy-6-debug-arm32-uno:
   extends: .docker-deploy
@@ -424,6 +439,7 @@ docker-deploy-6-debug-arm32-uno:
     IMAGE_NAME: arm32v7-dotnet-uno-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-uno-debug
 
 docker-deploy-6-debug-arm64-uno:
   extends: .docker-deploy
@@ -431,6 +447,8 @@ docker-deploy-6-debug-arm64-uno:
     IMAGE_NAME: arm64v8-dotnet-uno-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
     DOTNET_VERSION: ${DOTNET_6_VERSION}
+  stage: deploy-uno-debug
+
 
 .docker-deploy-multiarch:
   before_script:
@@ -454,6 +472,7 @@ docker-deploy-dotnet-6.multiarch:
     IMAGE_NAME_32: arm32v7-dotnet
     IMAGE_NAME_64: arm64v8-dotnet
     DOTNET_TAG: ${DOTNET_6_TAG}
+  stage: deploy-multiarch
 
 docker-deploy-aspnet-6.multiarch:
   extends: .docker-deploy-multiarch
@@ -462,14 +481,7 @@ docker-deploy-aspnet-6.multiarch:
     IMAGE_NAME_32: arm32v7-aspdotnet
     IMAGE_NAME_64: arm64v8-aspdotnet
     DOTNET_TAG: ${DOTNET_6_TAG}
-
-docker-deploy-dotnet-uno-6.multiarch:
-  extends: .docker-deploy-multiarch
-  variables:
-    IMAGE_NAME: dotnet-uno
-    IMAGE_NAME_32: arm32v7-dotnet-uno
-    IMAGE_NAME_64: arm64v8-dotnet-uno
-    DOTNET_TAG: ${DOTNET_6_TAG}
+  stage: deploy-multiarch
 
 docker-deploy-dotnet-debug-6.multiarch:
   extends: .docker-deploy-multiarch
@@ -478,6 +490,7 @@ docker-deploy-dotnet-debug-6.multiarch:
     IMAGE_NAME_32: arm32v7-dotnet-debug
     IMAGE_NAME_64: arm64v8-dotnet-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
+  stage: deploy-multiarch
 
 docker-deploy-aspnet-debug-6.multiarch:
   extends: .docker-deploy-multiarch
@@ -486,14 +499,7 @@ docker-deploy-aspnet-debug-6.multiarch:
     IMAGE_NAME_32: arm32v7-aspdotnet-debug
     IMAGE_NAME_64: arm64v8-aspdotnet-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
-
-docker-deploy-dotnet-uno-debug-6.multiarch:
-  extends: .docker-deploy-multiarch
-  variables:
-    IMAGE_NAME: dotnet-uno-debug
-    IMAGE_NAME_32: arm32v7-dotnet-uno-debug
-    IMAGE_NAME_64: arm64v8-dotnet-uno-debug
-    DOTNET_TAG: ${DOTNET_6_TAG}
+  stage: deploy-multiarch
 
 docker-deploy-dotnet-6-version.multiarch:
   extends: .docker-deploy-multiarch
@@ -502,6 +508,7 @@ docker-deploy-dotnet-6-version.multiarch:
     IMAGE_NAME_32: arm32v7-dotnet
     IMAGE_NAME_64: arm64v8-dotnet
     DOTNET_TAG: ${DOTNET_6_VERSION}
+  stage: deploy-multiarch
 
 docker-deploy-aspnet-6-version.multiarch:
   extends: .docker-deploy-multiarch
@@ -510,6 +517,7 @@ docker-deploy-aspnet-6-version.multiarch:
     IMAGE_NAME_32: arm32v7-aspdotnet
     IMAGE_NAME_64: arm64v8-aspdotnet
     DOTNET_TAG: ${DOTNET_6_VERSION}
+  stage: deploy-multiarch
 
 docker-deploy-dotnet-debug-6-version.multiarch:
   extends: .docker-deploy-multiarch
@@ -518,6 +526,7 @@ docker-deploy-dotnet-debug-6-version.multiarch:
     IMAGE_NAME_32: arm32v7-dotnet-debug
     IMAGE_NAME_64: arm64v8-dotnet-debug
     DOTNET_TAG: ${DOTNET_6_VERSION}
+  stage: deploy-multiarch
 
 docker-deploy-aspnet-debug-6-version.multiarch:
   extends: .docker-deploy-multiarch
@@ -526,3 +535,22 @@ docker-deploy-aspnet-debug-6-version.multiarch:
     IMAGE_NAME_32: arm32v7-aspdotnet-debug
     IMAGE_NAME_64: arm64v8-aspdotnet-debug
     DOTNET_TAG: ${DOTNET_6_VERSION}
+  stage: deploy-multiarch
+
+docker-deploy-dotnet-uno-6.multiarch:
+  extends: .docker-deploy-multiarch
+  variables:
+    IMAGE_NAME: dotnet-uno
+    IMAGE_NAME_32: arm32v7-dotnet-uno
+    IMAGE_NAME_64: arm64v8-dotnet-uno
+    DOTNET_TAG: ${DOTNET_6_TAG}
+  stage: deploy-multiarch-uno
+
+docker-deploy-dotnet-uno-debug-6.multiarch:
+  extends: .docker-deploy-multiarch
+  variables:
+    IMAGE_NAME: dotnet-uno-debug
+    IMAGE_NAME_32: arm32v7-dotnet-uno-debug
+    IMAGE_NAME_64: arm64v8-dotnet-uno-debug
+    DOTNET_TAG: ${DOTNET_6_TAG}
+  stage: deploy-multiarch-uno
