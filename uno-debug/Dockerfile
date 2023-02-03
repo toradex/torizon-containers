@@ -31,17 +31,17 @@ RUN HOLD_PKGS='libdrm-common libdrm-amdgpu1 libdrm2' \
 
 # install .net uno platform dependencies
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
-	libicu67 \
+    libicu71 \
     curl \
     gettext \
     apt-transport-https \
     libx11-6 \
-	libunwind8 icu-devtools \
+	libunwind-13 icu-devtools \
 	libfontconfig1 \
 	libgtk-3-0 libgtk-3-bin libgtk-3-common \
 	libdrm2 \
 	libinput10 \
-    libssl1.1 \
+    libssl3 \
 	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # fix mime types
