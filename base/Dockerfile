@@ -1,6 +1,6 @@
 ARG IMAGE_ARCH=
 
-FROM artifactory-horw.int.toradex.com/dockerhub-proxy-horw/debian:bullseye-slim AS build
+FROM --platform=$IMAGE_ARCH artifactory-horw.int.toradex.com/dockerhub-proxy-horw/debian:bookworm-slim AS build
 
 # define specific .NET version you want to use or "latest"
 ARG DOTNET_VERSION=latest
@@ -27,15 +27,15 @@ WORKDIR /dotnet
 
 RUN /dotnet-install.sh --install-dir /dotnet --runtime ${DOTNET_RUNTIME} --version ${DOTNET_VERSION} --os linux --architecture ${DOTNET_ARCHITECTURE} --no-path
 
-FROM --platform=$IMAGE_ARCH artifactory-horw.int.toradex.com/dockerhub-proxy-horw/torizon/debian:2-bullseye
+FROM --platform=$IMAGE_ARCH artifactory-horw.int.toradex.com/dockerhub-proxy-horw/torizon/debian:3-bookworm
 
 ENV DOTNET_ROOT=/dotnet
 ENV PATH=$PATH:/dotnet
 
 RUN apt-get update && apt-get install -y \
     --no-install-recommends --no-install-suggests \
-    libicu67 \
-    libssl1.1 \
+    libicu71 \
+    libssl3 \
     && apt-get clean && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
 
