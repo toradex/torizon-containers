@@ -9,10 +9,12 @@ variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   GITLAB_DOCKERREGISTRY_SUFFIX: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
   GITLAB_DOCKERREGISTRY_SUFFIX_LATEST: ${CI_COMMIT_REF_SLUG}-latest
-  DEBIAN_TAG: "2"
+  DEBIAN_TAG: "3"
   DOTNET_6_TAG: "6.0"
-  DOTNET_6_VERSION: "6.0.8"
-  DEBUGGER_RELEASE: "17-2-10512-2"
+  DOTNET_6_VERSION: "6.0.13"
+  #curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
+  # The command above com be used to obtain the latest version number of vsdbg
+  DEBUGGER_RELEASE: "17.4.11209.2"
 
 services:
   - name: artifactory-horw.int.toradex.com/dockerhub-proxy-horw/docker:dind
