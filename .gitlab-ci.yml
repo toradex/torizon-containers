@@ -46,6 +46,7 @@ stages:
     - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${DEBIAN_TAG}-${DOTNET_TAG}-${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST} || true
     - docker build --build-arg IMAGE_ARCH=${IMAGE_ARCH}
       --build-arg BASE_NAME=${BASE_NAME}
+      --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
       --build-arg BASE_TAG=${DEBIAN_TAG}-${DOTNET_TAG}
       --build-arg DOTNET_RUNTIME=${DOTNET_RUNTIME}
       --build-arg DOTNET_VERSION=${DOTNET_VERSION}
@@ -197,8 +198,8 @@ docker-build-6-debug-arm32-uno:
   extends: .docker-build
   variables:
     IMAGE_ARCH: linux/arm
-    BASE_NAME: arm32v7-dotnet-debug
-    BASE_NAME_WAYLAND: wayland-base
+    BASE_NAME_DEBUG: arm32v7-dotnet-debug
+    BASE_NAME: arm32v7-dotnet-uno
     IMAGE_NAME: arm32v7-dotnet-uno-debug
     DEBUGGER_ARCH: linux-arm
     DOCKERFILE_FOLDER: uno-debug
@@ -210,8 +211,8 @@ docker-build-6-debug-arm64-uno:
   extends: .docker-build
   variables:
     IMAGE_ARCH: linux/arm64
-    BASE_NAME: arm64v8-dotnet-debug
-    BASE_NAME_WAYLAND: wayland-base-vivante
+    BASE_NAME_DEBUG: arm64v8-dotnet-debug
+    BASE_NAME: arm64v8-dotnet-uno
     IMAGE_NAME: arm64v8-dotnet-uno-debug
     DEBUGGER_ARCH: linux-arm64
     DOCKERFILE_FOLDER: uno-debug
