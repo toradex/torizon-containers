@@ -554,3 +554,21 @@ docker-deploy-dotnet-uno-debug-6.multiarch:
     IMAGE_NAME_64: arm64v8-dotnet-uno-debug
     DOTNET_TAG: ${DOTNET_6_TAG}
   stage: deploy-multiarch-uno
+
+docker-deploy-dotnet-uno-6-version.multiarch:
+  extends: .docker-deploy-multiarch
+  variables:
+    IMAGE_NAME: dotnet-uno
+    IMAGE_NAME_32: arm32v7-dotnet-uno
+    IMAGE_NAME_64: arm64v8-dotnet-uno
+    DOTNET_TAG: ${DOTNET_6_VERSION}
+  stage: deploy-multiarch-uno
+
+docker-deploy-dotnet-uno-debug-6-version.multiarch:
+  extends: .docker-deploy-multiarch
+  variables:
+    IMAGE_NAME: dotnet-uno-debug
+    IMAGE_NAME_32: arm32v7-dotnet-uno-debug
+    IMAGE_NAME_64: arm64v8-dotnet-uno-debug
+    DOTNET_TAG: ${DOTNET_6_VERSION}
+  stage: deploy-multiarch-uno
