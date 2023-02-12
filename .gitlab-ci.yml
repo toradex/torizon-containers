@@ -1,14 +1,14 @@
 image: docker:latest
 
 variables:
-  IMAGE_TAG_DEBIAN: "2-bullseye"
+  IMAGE_TAG_DEBIAN: "3-bookworm"
 
-  RT_TESTS_MAJOR: "2"
-  RT_TESTS_MINOR: "5"
+  RT_TESTS_MAJOR: "3"
+  RT_TESTS_MINOR: "0"
   RT_TESTS_PATCH: "0"
 
-  STRESS_TESTS_MAJOR: "2"
-  STRESS_TESTS_MINOR: "5"
+  STRESS_TESTS_MAJOR: "3"
+  STRESS_TESTS_MINOR: "0"
   STRESS_TESTS_PATCH: "0"
 
   # This should be set by docker image already, just to be sure...
