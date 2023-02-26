@@ -2,16 +2,16 @@ image: docker:latest
 
 variables:
   DEBIAN_RELEASE: "bookworm"
-  DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+  DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
 
   # container version
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "3"
   DEBIAN_CROSS_TOOLCHAINS_MINOR: "0"
-  DEBIAN_CROSS_TOOLCHAINS_PATCH: "0"
+  DEBIAN_CROSS_TOOLCHAINS_PATCH: "1"
 
   DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "3"
   DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR: "0"
-  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "0"
+  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "1"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
@@ -50,7 +50,7 @@ stages:
       --build-arg IMAGE_TAG=${MAJOR}
       --build-arg CROSS_COMPILE_ARG=${CROSS_COMPILE_ARG}
       --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
-      --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT:-20230102T123919Z}
+      --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT:-20230224T051016Z}
       --build-arg USE_TORADEX_SNAPSHOT=${USE_TORADEX_SNAPSHOT:-1}
       --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
       ${DOCKER_NO_CACHE:+--no-cache}
@@ -78,7 +78,7 @@ docker-build-armhf-toolchain:
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-armhf
     DOCKERFILE_FOLDER: "base/"
-    DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-arm-toolchain:
@@ -93,7 +93,7 @@ docker-build-arm-toolchain:
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-arm
     DOCKERFILE_FOLDER: "base/"
-    DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-armhf-toolchain-ssh:
@@ -107,7 +107,7 @@ docker-build-armhf-toolchain-ssh:
     BASE_NAME: debian-cross-toolchain-armhf
     IMAGE_NAME: debian-cross-toolchain-ssh-armhf
     DOCKERFILE_FOLDER: "ssh/"
-    DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-ssh
 
 docker-build-arm64-toolchain:
@@ -122,7 +122,7 @@ docker-build-arm64-toolchain:
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64
     DOCKERFILE_FOLDER: "base/"
-    DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-arm64-toolchain-ssh:
@@ -136,7 +136,7 @@ docker-build-arm64-toolchain-ssh:
     BASE_NAME: debian-cross-toolchain-arm64
     IMAGE_NAME: debian-cross-toolchain-ssh-arm64
     DOCKERFILE_FOLDER: "ssh/"
-    DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-ssh
 
 docker-build-x86-toolchain:
@@ -152,7 +152,7 @@ docker-build-x86-toolchain:
     IMAGE_NAME: debian-cross-toolchain-amd64
     DOCKERFILE_FOLDER: "base/"
     USE_TORADEX_SNAPSHOT: 0
-    DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-x86-toolchain-ssh:
@@ -167,7 +167,7 @@ docker-build-x86-toolchain-ssh:
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
     DOCKERFILE_FOLDER: "ssh/"
     USE_TORADEX_SNAPSHOT: 0
-    DEBIAN_BASE_IMAGE: "bookworm-20220822-slim"
+    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-ssh
 
 docker-build-rcv-toolchain:
