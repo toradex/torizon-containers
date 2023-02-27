@@ -24,14 +24,13 @@ ENV DEBIAN_FRONTEND="noninteractive"
 # In the bookworm-slim images, the snapshot is commented out and the main feed
 # is used as the URI. With the following sed command, we reverse this and use
 # the snapshot as the URI.
-RUN sed -i \
+RUN grep -q sid /etc/apt/sources.list.d/debian.sources || sed -i \
     -e 's/^#/URIs:/g' \
     -e '/deb.debian.org/d' \
     -e '/^Signed-By/a check-valid-until: no' \
     /etc/apt/sources.list.d/debian.sources
 
 # Enable multiarch
-COPY debian-ports-archive-keyring.gpg /usr/share/keyrings
 RUN dpkg --add-architecture ${ARCH_ARG}
 
 # Enable the Toradex package feed
@@ -81,11 +80,15 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         gnupg \
         dpkg-cross \
         gcc-${ARCH_ARG}-linux-gnu \
-        g++-${ARCH_ARG}-linux-gnu && \
-        # add the key and the riscv64 ports packages
-        apt-key add /usr/share/keyrings/debian-ports-archive-keyring.gpg && \
-        echo "deb [arch=riscv64] http://deb.debian.org/debian-ports sid main" \
-            >> /etc/apt/sources.list \
+        g++-${ARCH_ARG}-linux-gnu \
+        debian-ports-archive-keyring && \
+        # add the riscv64 ports packages
+        echo "Types: deb\n\
+URIs: http://deb.debian.org/debian-ports\n\
+Suites: sid\n\
+Components: main\n\
+Architectures: riscv64" > /etc/apt/sources.list.d/debian-ports.sources \
+        && cat /etc/apt/sources.list.d/debian-ports.sources \
         && apt-get clean \
         && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/*; \
