@@ -93,6 +93,6 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
 
 # Add torizon user to the container
 RUN mkdir /home/torizon \
-    && addgroup torizon \
+    && groupadd torizon \
     && useradd -s /bin/bash -d /home/torizon -g torizon -G sudo -p $(echo "torizon" | openssl passwd -1 -stdin) torizon \
     && chown -R torizon /home/torizon
