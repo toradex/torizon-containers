@@ -55,6 +55,19 @@ Suites: testing\n\
 Components: main non-free" > /etc/apt/sources.list.d/toradex.sources \
     && echo "Package: *\nPin: origin feeds.toradex.com\nPin-Priority: 900" > /etc/apt/preferences.d/toradex-feeds
 
+
+# Debian Bookworm has higher versions of some same packages than the Toradex feed.
+# Force install Bookworm versions of these packages in order to keep the container equivalent for 32 and 64 bits architectures.
+# This packages are necessary for the Qt6 C++ templates of the IDE Extension V2 (ApolloX)
+RUN HOLD_PKGS='libdrm-common libdrm-amdgpu1 libdrm2' \
+    && apt-get -y update \
+    && for P in $HOLD_PKGS ; do \
+        echo ${P}=$(apt-cache show $P | sed -r -e '/^Version:/!d' -e 's/.* //' -e '/toradex/d' -e 'q') ; \
+    done | xargs -r apt-get install -y --no-install-recommends \
+    && apt-mark hold $HOLD_PKGS \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+
 # Upgrade & install required packages
 
 RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
