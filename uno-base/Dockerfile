@@ -30,7 +30,7 @@ RUN HOLD_PKGS='libdrm-common libdrm-amdgpu1 libdrm2' \
 
 # install .net uno platform dependencies
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    libicu71 \
+    libicu72 \
     curl \
     gettext \
     apt-transport-https \
