@@ -18,18 +18,6 @@ ENV PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib/${CROSS_COMPILE_ARG}/pkgconfig
 # Make sure we don't get notifications we can't answer during building.
 ENV DEBIAN_FRONTEND="noninteractive"
 
-# Debian Bookworm is not yet a stable distribution at the moment of this writing;
-# therefore its package list may change in incompatible ways with Torizon software.
-# Let's lock Torizon containers to a known snapshot of the Bookworm package list as a workaround.
-# In the bookworm-slim images, the snapshot is commented out and the main feed
-# is used as the URI. With the following sed command, we reverse this and use
-# the snapshot as the URI.
-RUN grep -q sid /etc/apt/sources.list.d/debian.sources || sed -i \
-    -e 's/^#/URIs:/g' \
-    -e '/deb.debian.org/d' \
-    -e '/^Signed-By/a check-valid-until: no' \
-    /etc/apt/sources.list.d/debian.sources
-
 # Enable multiarch
 RUN dpkg --add-architecture ${ARCH_ARG}
 
