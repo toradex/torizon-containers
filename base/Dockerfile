@@ -1,4 +1,4 @@
-ARG DEBIAN_BASE_IMAGE=bookworm-20230208-slim
+ARG DEBIAN_BASE_IMAGE=bookworm-slim
 
 FROM debian:$DEBIAN_BASE_IMAGE
 
@@ -8,7 +8,7 @@ ARG ARCH_ARG=armhf
 ARG CROSS_COMPILE_ARG="arm-linux-gnueabihf"
 # For arm64 use:
 # ARG CROSS_COMPILE_ARG="aarch64-linux-gnu"
-ARG TORADEX_SNAPSHOT=20230224T051016Z
+ARG TORADEX_SNAPSHOT=20230328T092716Z
 ARG USE_TORADEX_SNAPSHOT=1
 ARG TORADEX_FEED_BASE_URL="https://feeds.toradex.com/debian"
 
@@ -73,7 +73,7 @@ RUN HOLD_PKGS='libdrm-common libdrm-amdgpu1 libdrm2' \
 RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         apt-get -q -y update \
         && apt-get -q -y upgrade \
-        && apt-get -q -y -o Acquire::Http::Dl-limit=1000 install --no-install-recommends \
+        && apt-get -q -y install --no-install-recommends \
         git \
         openssl \
         wget \
@@ -85,7 +85,7 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
     else \
         apt-get -q -y update \
         && apt-get -q -y upgrade \
-        && apt-get -q -y -o Acquire::Http::Dl-limit=1000 install --no-install-recommends \
+        && apt-get -q -y install --no-install-recommends \
         git \
         openssl \
         wget \
@@ -107,8 +107,7 @@ Architectures: riscv64" > /etc/apt/sources.list.d/debian-ports.sources \
         && rm -rf /var/lib/apt/lists/*; \
     fi
 
-# Add torizon user to the container
-RUN mkdir /home/torizon \
-    && groupadd torizon \
-    && useradd -s /bin/bash -d /home/torizon -g torizon -G sudo -p $(echo "torizon" | openssl passwd -1 -stdin) torizon \
-    && chown -R torizon /home/torizon
+COPY users-groups.sh /users-groups.sh
+RUN ./users-groups.sh \
+    && rm users-groups.sh
+
