@@ -2,16 +2,16 @@ image: docker:latest
 
 variables:
   DEBIAN_RELEASE: "bookworm"
-  DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
+  DEBIAN_BASE_IMAGE: "bookworm-slim"
 
   # container version
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "3"
   DEBIAN_CROSS_TOOLCHAINS_MINOR: "0"
-  DEBIAN_CROSS_TOOLCHAINS_PATCH: "2"
+  DEBIAN_CROSS_TOOLCHAINS_PATCH: "3"
 
   DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "3"
   DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR: "0"
-  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "2"
+  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "3"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
