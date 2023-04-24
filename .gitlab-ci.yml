@@ -3,15 +3,15 @@ image: docker:latest
 variables:
   DEBIAN_RELEASE: "bookworm"
   DEBIAN_BASE_IMAGE: "bookworm-slim"
-
+  TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw/"
   # container version
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "3"
   DEBIAN_CROSS_TOOLCHAINS_MINOR: "0"
-  DEBIAN_CROSS_TOOLCHAINS_PATCH: "3"
+  DEBIAN_CROSS_TOOLCHAINS_PATCH: "4"
 
   DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "3"
   DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR: "0"
-  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "3"
+  DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "4"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
@@ -39,6 +39,7 @@ stages:
 # it to Gitlab's internal Docker registry
 .docker-build:
   script:
+    - echo "[DEBUG] Enviroment variables:" && env
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker info
     - if test -n "${BASE_NAME}"; then docker pull ${CI_REGISTRY_IMAGE}/${BASE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} && docker tag ${CI_REGISTRY_IMAGE}/${BASE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} torizon/${BASE_NAME}:${MAJOR} ; fi || exit 1
@@ -47,15 +48,15 @@ stages:
     - docker pull ${CI_REGISTRY}/rd/torizon-core-containers/debian-cross-toolchains/${IMAGE_NAME}:${DEBIAN_RELEASE}-latest || true
     - export DATE=$(date +%Y%m%d)
     - docker build --build-arg ARCH_ARG=${ARCH_ARG}
+      --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY}
       --build-arg IMAGE_TAG=${MAJOR}
       --build-arg CROSS_COMPILE_ARG=${CROSS_COMPILE_ARG}
       --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
-      --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT:-20230224T051016Z}
       --build-arg USE_TORADEX_SNAPSHOT=${USE_TORADEX_SNAPSHOT:-1}
       --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX_LATEST}
       ${DOCKER_NO_CACHE:+--no-cache}
       --label container.name=${IMAGE_NAME}
-      --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE}
+      --label container.version="${MAJOR}.${MINOR}.${PATCH}-${DATE}"
       --label git.branch=${CI_COMMIT_BRANCH}
       --label git.hash=${CI_COMMIT_SHA}
       --label pipeline.id=${CI_PIPELINE_ID}
@@ -70,30 +71,32 @@ docker-build-armhf-toolchain:
   extends: .docker-build
   needs: []
   before_script:
+    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    - export DEBIAN_BASE_IMAGE="${DEBIAN_BASE_IMAGE}"
   variables:
     ARCH_ARG: armhf
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-armhf
     DOCKERFILE_FOLDER: "base/"
-    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-arm-toolchain:
   extends: .docker-build
   needs: []
   before_script:
+    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    - export DEBIAN_BASE_IMAGE="${DEBIAN_BASE_IMAGE}"
   variables:
     ARCH_ARG: armhf
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-arm
     DOCKERFILE_FOLDER: "base/"
-    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-armhf-toolchain-ssh:
@@ -102,27 +105,28 @@ docker-build-armhf-toolchain-ssh:
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+    - export DEBIAN_BASE_IMAGE="${DEBIAN_BASE_IMAGE}"
   variables:
     ARCH_ARG: armhf
     BASE_NAME: debian-cross-toolchain-armhf
     IMAGE_NAME: debian-cross-toolchain-ssh-armhf
     DOCKERFILE_FOLDER: "ssh/"
-    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-ssh
 
 docker-build-arm64-toolchain:
   extends: .docker-build
   needs: []
   before_script:
+    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    - export DEBIAN_BASE_IMAGE="${DEBIAN_BASE_IMAGE}"
   variables:
     ARCH_ARG: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64
     DOCKERFILE_FOLDER: "base/"
-    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-arm64-toolchain-ssh:
@@ -131,28 +135,29 @@ docker-build-arm64-toolchain-ssh:
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+    - export DEBIAN_BASE_IMAGE="${DEBIAN_BASE_IMAGE}"
   variables:
     ARCH_ARG: arm64
     BASE_NAME: debian-cross-toolchain-arm64
     IMAGE_NAME: debian-cross-toolchain-ssh-arm64
     DOCKERFILE_FOLDER: "ssh/"
-    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-ssh
 
 docker-build-x86-toolchain:
   extends: .docker-build
   needs: []
   before_script:
+    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    - export DEBIAN_BASE_IMAGE="${DEBIAN_BASE_IMAGE}"
   variables:
     ARCH_ARG: amd64
     CROSS_COMPILE_ARG: x86_64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-amd64
     DOCKERFILE_FOLDER: "base/"
     USE_TORADEX_SNAPSHOT: 0
-    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-base
 
 docker-build-x86-toolchain-ssh:
@@ -161,19 +166,20 @@ docker-build-x86-toolchain-ssh:
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+    - export DEBIAN_BASE_IMAGE="${DEBIAN_BASE_IMAGE}"
   variables:
     ARCH_ARG: amd64
     BASE_NAME: debian-cross-toolchain-amd64
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
     DOCKERFILE_FOLDER: "ssh/"
     USE_TORADEX_SNAPSHOT: 0
-    DEBIAN_BASE_IMAGE: "bookworm-20230208-slim"
   stage: build-ssh
 
 docker-build-rcv-toolchain:
   extends: .docker-build
   needs: []
   before_script:
+    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
