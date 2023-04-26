@@ -293,16 +293,20 @@ build-torizon-samples:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
-    - for tag in ${DOCKER_TAGS_CHECK};
-        do
-          docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag}-${DEBIAN_RELEASE} > /dev/null && true; RESULT=$?;
-          (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 1 ; fi);
-        done
-    - for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK};
-        do
-          docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag}-${DEBIAN_RELEASE};
-          docker push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag}-${DEBIAN_RELEASE};
-        done
+    - for tag in ${DOCKER_TAGS_CHECK}; do
+        set -e;
+        EXIT_CODE=0;
+        docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag}-${DEBIAN_RELEASE} > /dev/null || EXIT_CODE=$?;
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "Image with ${tag} tag already exists in ${DOCKER_HUB_REPOSITORY}." && exit 1;
+        else  
+          echo "Pushing new ${tag} for ${IMAGE_NAME} to ${DOCKER_HUB_REPOSITORY}.";
+          for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK}; do
+            docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag}-${DEBIAN_RELEASE};
+            docker push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag}-${DEBIAN_RELEASE};
+          done
+        fi
+      done
 
 docker-deploy-armhf-toolchain:
   extends: .docker-deploy
