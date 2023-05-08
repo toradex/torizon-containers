@@ -22,7 +22,6 @@ ENV DEBIAN_FRONTEND="noninteractive"
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     apt-utils \
     ca-certificates \
-    curl \
     gpg \
     html2text \
     wget \
@@ -32,7 +31,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 ARG LIC_URL=https://www.nxp.com/docs/en/disclaimer/LA_OPT_NXP_SW.html
 ARG LIC_FILE_HTML=LA_OPT_NXP_SW.html
 ARG LIC_FILE_TXT=LA_OPT_NXP_SW.txt
-RUN curl -sSf ${LIC_URL} --output /etc/${LIC_FILE_HTML} \
+RUN wget ${LIC_URL} -O /etc/${LIC_FILE_HTML} \
     && html2text -o /etc/${LIC_FILE_TXT} /etc/${LIC_FILE_HTML} \
     && grep -q "NXP Software License Agreement" /etc/${LIC_FILE_TXT}
 ARG ACCEPT_FSL_EULA=0
