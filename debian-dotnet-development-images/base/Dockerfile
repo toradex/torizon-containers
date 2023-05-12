@@ -1,6 +1,8 @@
 ARG IMAGE_ARCH=
+ARG DOCKER_REGISTRY=torizon
+ARG IMAGE_TAG=bookworm-slim
 
-FROM --platform=$IMAGE_ARCH artifactory-horw.int.toradex.com/dockerhub-proxy-horw/debian:bookworm-slim AS build
+FROM --platform=$IMAGE_ARCH ${DOCKER_REGISTRY}/debian:${IMAGE_TAG} AS build
 
 # define specific .NET version you want to use or "latest"
 ARG DOTNET_VERSION=latest

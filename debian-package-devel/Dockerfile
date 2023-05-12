@@ -1,8 +1,8 @@
 ARG IMAGE_ARCH=arm64v8
-
 ARG IMAGE_TAG=bookworm-slim
+ARG DOCKER_REGISTRY
 
-FROM $IMAGE_ARCH/debian:$IMAGE_TAG
+FROM --platform=$IMAGE_ARCH ${DOCKER_REGISTRY}/debian:$IMAGE_TAG AS base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
