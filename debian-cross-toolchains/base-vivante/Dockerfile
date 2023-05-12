@@ -1,11 +1,11 @@
 ARG DEBIAN_BASE_IMAGE=bookworm-slim
 ARG DOCKER_REGISTRY
 
-FROM ${DOCKER_REGISTRY}debian:$DEBIAN_BASE_IMAGE
+FROM ${DOCKER_REGISTRY}/debian:$DEBIAN_BASE_IMAGE
 
-ARG ARCH_ARG=armhf
+ARG IMAGE_ARCH=armhf
 # For arm64 use:
-# ARG ARCH_ARG=arm64
+# ARG IMAGE_ARCH=arm64
 ARG CROSS_COMPILE_ARG="arm-linux-gnueabihf"
 # For arm64 use:
 # ARG CROSS_COMPILE_ARG="aarch64-linux-gnu"
@@ -44,7 +44,7 @@ RUN if [ "${ACCEPT_FSL_EULA}" != "1" ];then \
     fi
 
 # Enable multiarch
-RUN dpkg --add-architecture ${ARCH_ARG}
+RUN dpkg --add-architecture ${IMAGE_ARCH}
 
 # Add toradex key and package feed
 RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo.gpg \
@@ -65,7 +65,7 @@ Signed-By: /usr/share/keyrings/toradex-debian-repo.gpg" > /etc/apt/sources.list.
 
 # Upgrade & install required packages
 
-RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
+RUN if [ "${IMAGE_ARCH}" != "riscv64" ];then \
         apt-get -q -y update \
         && apt-get -q -y upgrade \
         && apt-get -q -y install --no-install-recommends \
@@ -73,7 +73,7 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         openssl \
         wget \
         curl \
-        crossbuild-essential-${ARCH_ARG} \
+        crossbuild-essential-${IMAGE_ARCH} \
         && apt-get clean \
         && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/*; \
@@ -87,8 +87,8 @@ RUN if [ "${ARCH_ARG}" != "riscv64" ];then \
         curl \
         gnupg \
         dpkg-cross \
-        gcc-${ARCH_ARG}-linux-gnu \
-        g++-${ARCH_ARG}-linux-gnu \
+        gcc-${IMAGE_ARCH}-linux-gnu \
+        g++-${IMAGE_ARCH}-linux-gnu \
         debian-ports-archive-keyring && \
         # add the riscv64 ports packages
         echo "Types: deb\n\
