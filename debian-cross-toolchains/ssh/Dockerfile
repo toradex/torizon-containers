@@ -1,9 +1,10 @@
-ARG ARCH_ARG=armhf
+ARG IMAGE_ARCH=armhf
 # For arm64 use:
-# ARG ARCH_ARG=arm64
+# ARG IMAGE_ARCH=arm64
 ARG IMAGE_TAG=3-bookworm
+ARG DOCKER_REGISTRY=torizon
 
-FROM torizon/debian-cross-toolchain-$ARCH_ARG:$IMAGE_TAG
+FROM ${DOCKER_REGISTRY}/debian-cross-toolchain-$IMAGE_ARCH:$IMAGE_TAG
 
 # SSH
 EXPOSE 22
