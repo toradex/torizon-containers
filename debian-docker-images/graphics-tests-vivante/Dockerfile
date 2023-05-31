@@ -5,6 +5,7 @@ ARG DOCKER_REGISTRY=torizon
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS base
 
 RUN apt-get -y update && apt-get upgrade &&  apt-get install -y --no-install-recommends \
+       clinfo \
        kmscube \
        libdrm-tests \
        imx-gpu-viv-demos \

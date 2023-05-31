@@ -5,8 +5,9 @@ ARG DOCKER_REGISTRY=torizon
 
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS base
 
-# Install the libdrm-tests, kmscube and glmark2
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
+    clinfo \
+    openimageio-tools \
     libdrm-tests \
     kmscube \
     glmark2-es2-wayland \
