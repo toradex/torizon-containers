@@ -118,6 +118,10 @@ variables:
 services:
   - name: docker:dind
 
+.do_print_environment_variables: &do_print_environment_variables
+  - echo "GitLab CI/CD environment variables:"
+  - env
+
 # images have dependencies between them with the `needs` keyword so we
 # have faster builds and the nice graph showing the relation between
 # containers that gitlab plots in the ci/cd runs view. So these stages
@@ -144,6 +148,7 @@ stages:
 pull-tag-and-push-debian-image:
   stage: chores before building
   script:
+  - *do_print_environment_variables
   # pull, retag and push debian:bookworm-slim or bullseye-slim or sid-slim to cache it ${CI_REGISTRY_IMAGE} 
   # for docker-build-dotnet-debug*, which needs to pull from two different registers (dockerhub and gitlab).
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -161,6 +166,7 @@ pull-tag-and-push-debian-image:
     IMAGE_ARCH: linux/arm
     ADD_TORADEX_REPOSITORY: 1
   script:
+  - *do_print_environment_variables
   - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${RELEASE_APPEND}"
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   - docker info
@@ -1074,6 +1080,7 @@ tag:
 
 .docker-build-multiarch:
   before_script:
+    - *do_print_environment_variables
     - *do_docker_experimental
     - rm -rf ~/.docker/manifests/*
   script:
@@ -1255,6 +1262,7 @@ build-torizon-samples:
     - *do_docker_experimental
     - export DATE=$(date +%Y%m%d)
     - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${RELEASE_APPEND}"
+    - *do_print_environment_variables
     - >
       if [ -z "$DOTNET_VERSION" ]; then
         export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
@@ -1775,6 +1783,7 @@ docker-deploy-dotnet-debug-arm64-uno:
     else
       export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION}"
     fi
+  - *do_print_environment_variables
   - rm -rf ~/.docker/manifests/*
   - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
   - for tag in ${DOCKER_TAGS_CHECK};
