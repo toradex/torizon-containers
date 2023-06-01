@@ -1250,9 +1250,8 @@ build-torizon-samples:
 .docker-deploy:
   when: manual
   allow_failure: false
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - *do_docker_experimental
     - export DATE=$(date +%Y%m%d)
     - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${RELEASE_APPEND}"
