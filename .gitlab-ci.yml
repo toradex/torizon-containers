@@ -1471,6 +1471,7 @@ docker-deploy-qt5-wayland-examples-vivante:
 docker-deploy-armhf-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -1482,6 +1483,7 @@ docker-deploy-armhf-toolchain:
 docker-deploy-arm-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -1504,6 +1506,7 @@ docker-deploy-armhf-toolchain-ssh:
 docker-deploy-arm64-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -1515,6 +1518,7 @@ docker-deploy-arm64-toolchain:
 docker-deploy-arm64-toolchain-vivante:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -1537,6 +1541,7 @@ docker-deploy-arm64-toolchain-ssh:
 docker-deploy-x86-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -1559,6 +1564,7 @@ docker-deploy-x86-toolchain-ssh:
 docker-deploy-rcv-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
