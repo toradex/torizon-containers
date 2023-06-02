@@ -1266,7 +1266,7 @@ build-torizon-samples:
         export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
         export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND} ${MAJOR}.${MINOR}${RELEASE_APPEND}"
       else
-        export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION}"
+        export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE}"
       fi
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN;
     - for tag in ${DOCKER_TAGS_CHECK};
@@ -1778,7 +1778,7 @@ docker-deploy-dotnet-debug-arm64-uno:
       export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
       export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND} ${MAJOR}.${MINOR}${RELEASE_APPEND}"
     else
-      export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION}"
+      export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE}"
     fi
   - *do_print_environment_variables
   - rm -rf ~/.docker/manifests/*
