@@ -1272,7 +1272,7 @@ build-torizon-samples:
     - for tag in ${DOCKER_TAGS_CHECK};
         do
           docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag} > /dev/null && true; RESULT=$?;
-          (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 1 ; fi);
+          (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 0 ; fi);
         done
     - for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK};
         do
@@ -1786,7 +1786,7 @@ docker-deploy-dotnet-debug-arm64-uno:
   - for tag in ${DOCKER_TAGS_CHECK};
       do
         docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag} > /dev/null && true; RESULT=$?;
-        (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 1 ; fi);
+        (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 0 ; fi);
       done
   - for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK};
       do
