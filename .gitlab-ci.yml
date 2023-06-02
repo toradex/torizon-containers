@@ -78,7 +78,6 @@ variables:
   # Use overlayfs driver for better performance
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
   ## rt-validation
 
@@ -162,12 +161,11 @@ pull-tag-and-push-debian-image:
 # it to Gitlab's internal Docker registry
 .docker-build:
   variables:
-    IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
     IMAGE_ARCH: linux/arm
     ADD_TORADEX_REPOSITORY: 1
   script:
   - *do_print_environment_variables
-  - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${RELEASE_APPEND}"
+  - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}"
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   - docker info
   - export DATE=$(date +%Y%m%d)
@@ -191,7 +189,7 @@ pull-tag-and-push-debian-image:
                   --build-arg DEBUGGER_ARCH=${DEBUGGER_ARCH}
                   --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}
                   --build-arg BASE_NAME_WAYLAND=${BASE_NAME_WAYLAND}
-                  --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+                  --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
                   ${DOCKER_NO_CACHE:+--no-cache}
                   --label container.name=${IMAGE_NAME}
                   --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE}
@@ -199,9 +197,9 @@ pull-tag-and-push-debian-image:
                   --label git.hash=${CI_COMMIT_SHA}
                   --label pipeline.id=${CI_PIPELINE_ID}
                   -f ${DOCKERFILE_FOLDER}Dockerfile
-                  -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+                  -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
                   ${DOCKERFILE_FOLDER}
-  - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
 
 ## debian-docker-images
 
@@ -1085,13 +1083,13 @@ tag:
     - rm -rf ~/.docker/manifests/*
   script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest create ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX} --os linux --arch arm
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX} --os linux --arch arm64
-  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${IMAGE_TAG}
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${IMAGE_TAG}
+  - docker manifest create ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${IMAGE_TAG}
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${IMAGE_TAG} --os linux --arch arm
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${IMAGE_TAG} --os linux --arch arm64
+  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
+  - docker manifest push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
 
 ## debian-docker-images
 
@@ -1099,7 +1097,7 @@ docker-build-base-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     IMAGE_NAME: debian
     IMAGE_NAME_32: arm32v7-debian
     IMAGE_NAME_64: arm64v8-debian
@@ -1110,7 +1108,7 @@ docker-build-wayland-base-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${WAYLAND_BASE_MAJOR}
+    IMAGE_TAG: ${WAYLAND_BASE_MAJOR}
     IMAGE_NAME: wayland-base
     IMAGE_NAME_32: arm32v7-debian-wayland-base
     IMAGE_NAME_64: arm64v8-debian-wayland-base
@@ -1121,7 +1119,7 @@ docker-build-qt5-wayland-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${QT5_WAYLAND_MAJOR}
+    IMAGE_TAG: ${QT5_WAYLAND_MAJOR}
     IMAGE_NAME: qt5-wayland
     IMAGE_NAME_32: arm32v7-debian-qt5-wayland
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland
@@ -1132,7 +1130,7 @@ docker-build-qt5-wayland-examples-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${QT5_WAYLAND_EXAMPLES_MAJOR}
+    IMAGE_TAG: ${QT5_WAYLAND_EXAMPLES_MAJOR}
     IMAGE_NAME: qt5-wayland-examples
     IMAGE_NAME_32: arm32v7-debian-qt5-wayland-examples
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland-examples
@@ -1143,7 +1141,7 @@ docker-build-weston-touch-calibrator-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${WESTON_TOUCH_CALIBRATOR_MAJOR}
+    IMAGE_TAG: ${WESTON_TOUCH_CALIBRATOR_MAJOR}
     IMAGE_NAME: weston-touch-calibrator
     IMAGE_NAME_32: arm32v7-debian-weston-touch-calibrator
     IMAGE_NAME_64: arm64v8-debian-weston-touch-calibrator
@@ -1156,7 +1154,7 @@ docker-build-rt-tests-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}
+    IMAGE_TAG: ${DEBIAN_MAJOR}
     IMAGE_NAME: rt-tests
     IMAGE_NAME_32: arm32v7-rt-tests
     IMAGE_NAME_64: arm64v8-rt-tests
@@ -1167,7 +1165,7 @@ docker-build-stress-tests-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}
+    IMAGE_TAG: ${DEBIAN_MAJOR}
     IMAGE_NAME: stress-tests
     IMAGE_NAME_32: arm32v7-stress-tests
     IMAGE_NAME_64: arm64v8-stress-tests
@@ -1179,7 +1177,7 @@ docker-build-stress-tests-multiarch:
 docker-build-dotnet-multiarch:
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
     IMAGE_NAME: dotnet
     IMAGE_NAME_32: arm32v7-dotnet
     IMAGE_NAME_64: arm64v8-dotnet
@@ -1189,7 +1187,7 @@ docker-build-dotnet-multiarch:
 docker-build-aspnet-multiarch:
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
     IMAGE_NAME: aspdotnet
     IMAGE_NAME_32: arm32v7-aspdotnet
     IMAGE_NAME_64: arm64v8-aspdotnet
@@ -1199,7 +1197,7 @@ docker-build-aspnet-multiarch:
 docker-build-dotnet-debug-multiarch:
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
     IMAGE_NAME: dotnet-debug
     IMAGE_NAME_32: arm32v7-dotnet-debug
     IMAGE_NAME_64: arm64v8-dotnet-debug
@@ -1209,7 +1207,7 @@ docker-build-dotnet-debug-multiarch:
 docker-build-aspnet-debug-multiarch:
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
     IMAGE_NAME: aspdotnet-debug
     IMAGE_NAME_32: arm32v7-aspdotnet-debug
     IMAGE_NAME_64: arm64v8-aspdotnet-debug
@@ -1219,7 +1217,7 @@ docker-build-aspnet-debug-multiarch:
 docker-build-dotnet-uno-multiarch:
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
     IMAGE_NAME: dotnet-uno
     IMAGE_NAME_32: arm32v7-dotnet-uno
     IMAGE_NAME_64: arm64v8-dotnet-uno
@@ -1229,7 +1227,7 @@ docker-build-dotnet-uno-multiarch:
 docker-build-dotnet-uno-debug-multiarch:
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
     IMAGE_NAME: dotnet-uno-debug
     IMAGE_NAME_32: arm32v7-dotnet-uno-debug
     IMAGE_NAME_64: arm64v8-dotnet-uno-debug
@@ -1261,8 +1259,8 @@ build-torizon-samples:
     - *do_docker_experimental
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - export DATE=$(date +%Y%m%d)
-    - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${RELEASE_APPEND}"
-    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+    - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}"
+    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
     - >
       if [ -z "$DOTNET_VERSION" ]; then
         export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
@@ -1278,7 +1276,7 @@ build-torizon-samples:
         done
     - for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK};
         do
-          docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag};
+          docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag};
           docker push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag};
         done
 
