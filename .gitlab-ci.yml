@@ -1390,7 +1390,7 @@ docker-deploy-wayland-base-vivante:
     - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
     - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
   variables:
-    IMAGE_NAME: arm64v8-debian-wayland-base-vivante
+    IMAGE_NAME: wayland-base-vivante
   stage: deploy
   needs: ["docker-build-wayland-base-vivante"]
 
