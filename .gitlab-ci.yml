@@ -1075,7 +1075,7 @@ tag:
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
-    - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
+    - "echo -e '{\n  \"experimental\": \"true\"\n}' | tee $HOME/.docker/config.json"
     - docker version
 
 .docker-build-multiarch:
@@ -1258,11 +1258,11 @@ build-torizon-samples:
   when: manual
   allow_failure: false
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - *do_docker_experimental
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - export DATE=$(date +%Y%m%d)
     - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${RELEASE_APPEND}"
-    - *do_print_environment_variables
+    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
     - >
       if [ -z "$DOTNET_VERSION" ]; then
         export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
@@ -1270,7 +1270,6 @@ build-torizon-samples:
       else
         export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION}"
       fi
-    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN;
     - for tag in ${DOCKER_TAGS_CHECK};
         do
