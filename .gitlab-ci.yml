@@ -1499,6 +1499,7 @@ docker-deploy-arm-toolchain:
 docker-deploy-armhf-toolchain-ssh:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
@@ -1534,6 +1535,7 @@ docker-deploy-arm64-toolchain-vivante:
 docker-deploy-arm64-toolchain-ssh:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
@@ -1557,6 +1559,7 @@ docker-deploy-x86-toolchain:
 docker-deploy-x86-toolchain-ssh:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
@@ -1580,6 +1583,7 @@ docker-deploy-rcv-toolchain:
 docker-deploy-rcv-toolchain-ssh:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
