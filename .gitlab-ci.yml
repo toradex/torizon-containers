@@ -524,6 +524,7 @@ docker-build-armhf-toolchain-ssh:
   retry: 2
   extends: .docker-build
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
@@ -575,6 +576,7 @@ docker-build-arm64-toolchain-ssh:
   retry: 2
   extends: .docker-build
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
@@ -609,6 +611,7 @@ docker-build-x86-toolchain-ssh:
   retry: 2
   extends: .docker-build
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
@@ -645,6 +648,7 @@ docker-build-rcv-toolchain-ssh:
   retry: 2
   extends: .docker-build
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
