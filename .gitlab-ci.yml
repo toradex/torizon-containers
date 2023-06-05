@@ -1,8 +1,8 @@
 image: docker:latest
 
 variables:
-  DEBIAN_RELEASE: "bookworm"
-  DEBIAN_BASE_IMAGE: "bookworm-slim"
+  DEBIAN_RELEASE: "sid"
+  DEBIAN_BASE_IMAGE: "sid-slim"
   TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw"
 
   # Container versions, used as final tags for the image.
