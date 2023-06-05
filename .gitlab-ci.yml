@@ -17,7 +17,7 @@ variables:
 
   WESTON_MAJOR: "3"
   WESTON_MINOR: "0"
-  WESTON_PATCH: "7"
+  WESTON_PATCH: "8"
 
   QT5_WAYLAND_MAJOR: "3"
   QT5_WAYLAND_MINOR: "0"
@@ -33,7 +33,7 @@ variables:
 
   WESTON_VIVANTE_MAJOR: "3"
   WESTON_VIVANTE_MINOR: "0"
-  WESTON_VIVANTE_PATCH: "8"
+  WESTON_VIVANTE_PATCH: "9"
 
   QT5_WAYLAND_VIVANTE_MAJOR: "3"
   QT5_WAYLAND_VIVANTE_MINOR: "0"
@@ -45,7 +45,7 @@ variables:
 
   WESTON_TOUCH_CALIBRATOR_MAJOR: "3"
   WESTON_TOUCH_CALIBRATOR_MINOR: "0"
-  WESTON_TOUCH_CALIBRATOR_PATCH: "6"
+  WESTON_TOUCH_CALIBRATOR_PATCH: "7"
 
   GRAPHICS_TESTS_MAJOR: "3"
   GRAPHICS_TESTS_MINOR: "0"
@@ -67,8 +67,8 @@ variables:
 
   ## debian-dotnet-development-images
 
-  DOTNET_TAG: "6.0"
-  DOTNET_VERSION: "6.0.16"
+  DOTNET_RELEASE: "6.0"
+  DOTNET_SEMANTIC_VERSION: "6.0.16"
   # The latest version of vsdbg can be obtained by running the follow command:
   #curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
   DOTNET_DEBUGGER_RELEASE: "17.6.10208.1"
@@ -78,7 +78,6 @@ variables:
   # Use overlayfs driver for better performance
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
   ## rt-validation
 
@@ -90,8 +89,37 @@ variables:
   STRESS_TESTS_MINOR: "0"
   STRESS_TESTS_PATCH: "3"
 
+# extract the folder names as variables so we can easily change/introduce
+# jobs and as to not replicate the folder names in `changes:` tags as well
+
+  DEBIAN_DOCKER_IMAGES_FOLDER: "debian-docker-images"
+  DEBIAN_CROSS_TOOLCHAINS_FOLDER: "debian-cross-toolchains"
+  DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER: "debian-dotnet-development-images"
+  SSH_FOLDER: "ssh"
+  BASE_FOLDER: "base"
+  BASE_VIVANTE_FOLDER: "base-vivante"
+  WAYLAND_BASE_FOLDER: "wayland-base"
+  WAYLAND_BASE_VIVANTE_FOLDER: "wayland-base-vivante"
+  WESTON_FOLDER: "weston"
+  GRAPHICS_TESTS_FOLDER: "graphics-tests"
+  GRAPHICS_TESTS_VIVANTE_FOLDER: "graphics-tests-vivante"
+  WESTON_TOUCH_CALIBRATOR_FOLDER: "weston-touch-calibrator"
+  QT5_WAYLAND_FOLDER: "qt5-wayland"
+  QT5_WAYLAND_EXAMPLES_FOLDER: "qt5-wayland-examples"
+  DEBUG_FOLDER: "debug"
+  UNO_BASE_FOLDER: "uno-base"
+  UNO_DEBUG_FOLDER: "uno-debug"
+  DEBIAN_PACKAGE_DEVEL_FOLDER: "debian-package-devel"
+  RT_VALIDATION_FOLDER: "rt-validation"
+  RT_TESTS_FOLDER: "rt-tests"
+  STRESS_TESTS_FOLDER: "stress-tests"
+
 services:
   - name: docker:dind
+
+.do_print_environment_variables: &do_print_environment_variables
+  - echo "GitLab CI/CD environment variables:"
+  - env
 
 # images have dependencies between them with the `needs` keyword so we
 # have faster builds and the nice graph showing the relation between
@@ -111,6 +139,7 @@ stages:
   - build-stage3
   - build-stage3-multiarch
   - build-stage4
+  - build-stage4-multiarch
   - build-samples-bridge
   - deploy
   - deploy-multiarch
@@ -118,6 +147,7 @@ stages:
 pull-tag-and-push-debian-image:
   stage: chores before building
   script:
+  - *do_print_environment_variables
   # pull, retag and push debian:bookworm-slim or bullseye-slim or sid-slim to cache it ${CI_REGISTRY_IMAGE} 
   # for docker-build-dotnet-debug*, which needs to pull from two different registers (dockerhub and gitlab).
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -131,12 +161,11 @@ pull-tag-and-push-debian-image:
 # it to Gitlab's internal Docker registry
 .docker-build:
   variables:
-    IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}
     IMAGE_ARCH: linux/arm
     ADD_TORADEX_REPOSITORY: 1
   script:
-  - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${DEBIAN_RELEASE_APPEND}"
-  - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}"
+  - *do_print_environment_variables
+  - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}"
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   - docker info
   - export DATE=$(date +%Y%m%d)
@@ -160,7 +189,7 @@ pull-tag-and-push-debian-image:
                   --build-arg DEBUGGER_ARCH=${DEBUGGER_ARCH}
                   --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}
                   --build-arg BASE_NAME_WAYLAND=${BASE_NAME_WAYLAND}
-                  --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+                  --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
                   ${DOCKER_NO_CACHE:+--no-cache}
                   --label container.name=${IMAGE_NAME}
                   --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE}
@@ -168,9 +197,9 @@ pull-tag-and-push-debian-image:
                   --label git.hash=${CI_COMMIT_SHA}
                   --label pipeline.id=${CI_PIPELINE_ID}
                   -f ${DOCKERFILE_FOLDER}Dockerfile
-                  -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+                  -t ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
                   ${DOCKERFILE_FOLDER}
-  - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
 
 ## debian-docker-images
 
@@ -179,7 +208,7 @@ docker-build-base:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export MINOR="${DEBIAN_MINOR}"
@@ -187,7 +216,7 @@ docker-build-base:
   variables:
     IMAGE_ARCH: linux/arm/v7
     IMAGE_NAME: arm32v7-debian
-    DOCKERFILE_FOLDER: "debian-docker-images/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
 
@@ -202,7 +231,7 @@ docker-build-wayland-base:
   variables:
     BASE_NAME: arm32v7-debian
     IMAGE_NAME: arm32v7-debian-wayland-base
-    DOCKERFILE_FOLDER: "debian-docker-images/wayland-base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WAYLAND_BASE_FOLDER}/"
   stage: build-stage1
   needs: ["docker-build-base"]
 
@@ -214,11 +243,11 @@ docker-build-weston:
     - export MAJOR="${WESTON_MAJOR}"
     - export MINOR="${WESTON_MINOR}"
     - export PATCH="${WESTON_PATCH}"
-    - ./debian-docker-images/weston/make_feature_map.sh
+    - ./${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/make_feature_map.sh
   variables:
     BASE_NAME: arm32v7-debian-wayland-base
     IMAGE_NAME: weston
-    DOCKERFILE_FOLDER: "debian-docker-images/weston/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base"]
 
@@ -233,7 +262,7 @@ docker-build-graphics-tests:
   variables:
     BASE_NAME: arm32v7-debian-wayland-base
     IMAGE_NAME: graphics-tests
-    DOCKERFILE_FOLDER: "debian-docker-images/graphics-tests/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${GRAPHICS_TESTS_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base"]
 
@@ -248,7 +277,7 @@ docker-build-weston-touch-calibrator:
   variables:
     BASE_NAME: weston
     IMAGE_NAME: arm32v7-debian-weston-touch-calibrator
-    DOCKERFILE_FOLDER: "debian-docker-images/weston-touch-calibrator/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-weston"]
 
@@ -263,7 +292,7 @@ docker-build-qt5-wayland:
   variables:
     BASE_NAME: arm32v7-debian-wayland-base
     IMAGE_NAME: arm32v7-debian-qt5-wayland
-    DOCKERFILE_FOLDER: "debian-docker-images/qt5-wayland/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base"]
 
@@ -279,7 +308,7 @@ docker-build-qt5-wayland-examples:
     BASE_NAME: arm32v7-debian-qt5-wayland
     IMAGE_NAME: arm32v7-debian-qt5-wayland-examples
     QT5_EXAMPLES_DEBIAN: 1
-    DOCKERFILE_FOLDER: "debian-docker-images/qt5-wayland-examples/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland"]
 
@@ -288,7 +317,7 @@ docker-build-base-arm64v8:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export MINOR="${DEBIAN_MINOR}"
@@ -296,7 +325,7 @@ docker-build-base-arm64v8:
   variables:
     IMAGE_ARCH: linux/arm64/v8
     IMAGE_NAME: arm64v8-debian
-    DOCKERFILE_FOLDER: "debian-docker-images/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
 
@@ -312,7 +341,7 @@ docker-build-wayland-base-arm64v8:
     IMAGE_ARCH: linux/arm64
     BASE_NAME: arm64v8-debian
     IMAGE_NAME: arm64v8-debian-wayland-base
-    DOCKERFILE_FOLDER: "debian-docker-images/wayland-base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WAYLAND_BASE_FOLDER}/"
   stage: build-stage1
   needs: ["docker-build-base-arm64v8"]
 
@@ -330,7 +359,7 @@ docker-build-wayland-base-vivante:
     BASE_NAME: arm64v8-debian
     IMAGE_NAME: wayland-base-vivante
     ACCEPT_FSL_EULA: 1
-    DOCKERFILE_FOLDER: "debian-docker-images/wayland-base-vivante/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WAYLAND_BASE_VIVANTE_FOLDER}/"
   stage: build-stage1
   needs: ["docker-build-base-arm64v8"]
 
@@ -342,14 +371,14 @@ docker-build-weston-vivante:
     - export MAJOR="${WESTON_VIVANTE_MAJOR}"
     - export MINOR="${WESTON_VIVANTE_MINOR}"
     - export PATCH="${WESTON_VIVANTE_PATCH}"
-    - ./debian-docker-images/weston/make_feature_map.sh
+    - ./${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/make_feature_map.sh
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: weston-vivante
     ACCEPT_FSL_EULA: 1
-    DOCKERFILE_FOLDER: "debian-docker-images/weston/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-vivante"]
 
@@ -366,7 +395,7 @@ docker-build-graphics-tests-vivante:
     IMAGE_ARCH: linux/arm64
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: graphics-tests-vivante
-    DOCKERFILE_FOLDER: "debian-docker-images/graphics-tests-vivante/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${GRAPHICS_TESTS_VIVANTE_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-vivante"]
 
@@ -383,7 +412,7 @@ docker-build-weston-touch-calibrator-arm64v8:
     IMAGE_ARCH: linux/arm64
     BASE_NAME: weston-vivante
     IMAGE_NAME: arm64v8-debian-weston-touch-calibrator
-    DOCKERFILE_FOLDER: "debian-docker-images/weston-touch-calibrator/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-weston-vivante"]
 
@@ -399,7 +428,7 @@ docker-build-qt5-wayland-arm64v8:
     IMAGE_ARCH: linux/arm64
     BASE_NAME: arm64v8-debian-wayland-base
     IMAGE_NAME: arm64v8-debian-qt5-wayland
-    DOCKERFILE_FOLDER: "debian-docker-images/qt5-wayland/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-arm64v8"]
 
@@ -416,7 +445,7 @@ docker-build-qt5-wayland-examples-arm64v8:
     BASE_NAME: arm64v8-debian-qt5-wayland
     IMAGE_NAME: arm64v8-debian-qt5-wayland-examples
     QT5_EXAMPLES_DEBIAN: 1
-    DOCKERFILE_FOLDER: "debian-docker-images/qt5-wayland-examples/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-arm64v8"]
 
@@ -433,7 +462,7 @@ docker-build-qt5-wayland-vivante:
     IMAGE_ARCH: linux/arm64
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: qt5-wayland-vivante
-    DOCKERFILE_FOLDER: "debian-docker-images/qt5-wayland/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-vivante"]
 
@@ -451,18 +480,18 @@ docker-build-qt5-wayland-vivante-examples:
     BASE_NAME: qt5-wayland-vivante
     IMAGE_NAME: qt5-wayland-examples-vivante
     QT5_EXAMPLES_DEBIAN: 1
-    DOCKERFILE_FOLDER: "debian-docker-images/qt5-wayland-examples/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-vivante"]
 
-## debian-cross-toolchains
+## ${DEBIAN_CROSS_TOOLCHAINS_FOLDER}
 
 docker-build-armhf-toolchain:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -470,7 +499,7 @@ docker-build-armhf-toolchain:
     IMAGE_ARCH: armhf
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-armhf
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
   needs: []
   
@@ -479,7 +508,7 @@ docker-build-arm-toolchain:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -487,7 +516,7 @@ docker-build-arm-toolchain:
     IMAGE_ARCH: armhf
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-arm
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
   needs: []
 
@@ -503,7 +532,7 @@ docker-build-armhf-toolchain-ssh:
     IMAGE_ARCH: armhf
     BASE_NAME: debian-cross-toolchain-armhf
     IMAGE_NAME: debian-cross-toolchain-ssh-armhf
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/ssh/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
   stage: build-stage1
   needs: ["docker-build-armhf-toolchain"]
 
@@ -512,7 +541,7 @@ docker-build-arm64-toolchain:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -520,7 +549,7 @@ docker-build-arm64-toolchain:
     IMAGE_ARCH: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
   needs: []
 
@@ -529,7 +558,7 @@ docker-build-arm64-toolchain-vivante:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -537,7 +566,7 @@ docker-build-arm64-toolchain-vivante:
     IMAGE_ARCH: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64-vivante
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/base-vivante/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_VIVANTE_FOLDER}/"
     ACCEPT_FSL_EULA: 1
   stage: build-base
   needs: []
@@ -554,7 +583,7 @@ docker-build-arm64-toolchain-ssh:
     IMAGE_ARCH: arm64
     BASE_NAME: debian-cross-toolchain-arm64
     IMAGE_NAME: debian-cross-toolchain-ssh-arm64
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/ssh/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
   stage: build-stage1
   needs: [docker-build-arm64-toolchain]
 
@@ -563,7 +592,7 @@ docker-build-x86-toolchain:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -571,7 +600,7 @@ docker-build-x86-toolchain:
     IMAGE_ARCH: amd64
     CROSS_COMPILE_ARG: x86_64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-amd64
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
     USE_TORADEX_SNAPSHOT: 0
   stage: build-base
   needs: []
@@ -588,7 +617,7 @@ docker-build-x86-toolchain-ssh:
     IMAGE_ARCH: amd64
     BASE_NAME: debian-cross-toolchain-amd64
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/ssh/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
     USE_TORADEX_SNAPSHOT: 0
   stage: build-stage1
   needs: ["docker-build-x86-toolchain"]
@@ -598,7 +627,7 @@ docker-build-rcv-toolchain:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
@@ -606,7 +635,7 @@ docker-build-rcv-toolchain:
     IMAGE_ARCH: riscv64
     CROSS_COMPILE_ARG: riscv64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-riscv64
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
     USE_TORADEX_SNAPSHOT: 0
     DEBIAN_BASE_IMAGE: "sid-slim"
   stage: build-base
@@ -624,7 +653,7 @@ docker-build-rcv-toolchain-ssh:
     IMAGE_ARCH: riscv64
     BASE_NAME: debian-cross-toolchain-riscv64
     IMAGE_NAME: debian-cross-toolchain-ssh-riscv64
-    DOCKERFILE_FOLDER: "debian-cross-toolchains/ssh/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
     USE_TORADEX_SNAPSHOT: 0
     DEBIAN_BASE_IMAGE: "sid-slim"
   stage: build-stage1
@@ -638,16 +667,15 @@ docker-build-dotnet-arm32:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
-
   variables:
     IMAGE_ARCH: linux/arm
     IMAGE_NAME: arm32v7-dotnet
     DOTNET_RUNTIME: dotnet
     DOTNET_ARCHITECTURE: arm
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
   needs: []
 
@@ -657,17 +685,15 @@ docker-build-dotnet-arm32-asp:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
-
   variables:
     IMAGE_ARCH: linux/arm
     IMAGE_NAME: arm32v7-aspdotnet
     DOTNET_RUNTIME: aspnetcore
     DOTNET_ARCHITECTURE: arm
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
   needs: []
 
@@ -677,16 +703,15 @@ docker-build-dotnet-arm64:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
-
   variables:
     IMAGE_ARCH: linux/arm64
     IMAGE_NAME: arm64v8-dotnet
     DOTNET_RUNTIME: dotnet
     DOTNET_ARCHITECTURE: arm64
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
   needs: []
 
@@ -696,15 +721,15 @@ docker-build-dotnet-arm64-asp:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64
     IMAGE_NAME: arm64v8-aspdotnet
     DOTNET_RUNTIME: aspnetcore
     DOTNET_ARCHITECTURE: arm64
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
   needs: []
 
@@ -714,8 +739,8 @@ docker-build-dotnet-arm32-uno:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
@@ -723,7 +748,7 @@ docker-build-dotnet-arm32-uno:
     BASE_NAME: arm32v7-dotnet
     BASE_NAME_WAYLAND: wayland-base
     IMAGE_NAME: arm32v7-dotnet-uno
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/uno-base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_BASE_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm32", "docker-build-wayland-base-multiarch"]
 
@@ -733,8 +758,8 @@ docker-build-dotnet-arm64-uno:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
@@ -742,7 +767,7 @@ docker-build-dotnet-arm64-uno:
     BASE_NAME: arm64v8-dotnet
     BASE_NAME_WAYLAND: wayland-base-vivante
     IMAGE_NAME: arm64v8-dotnet-uno
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/uno-base/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_BASE_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm64", "docker-build-wayland-base-vivante"]
 
@@ -751,8 +776,8 @@ docker-build-dotnet-debug-arm32:
   extends: .docker-build
   before_script:
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
@@ -760,7 +785,7 @@ docker-build-dotnet-debug-arm32:
     BASE_NAME: arm32v7-dotnet
     IMAGE_NAME: arm32v7-dotnet-debug
     DEBUGGER_ARCH: linux-arm
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/debug/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm32"]
 
@@ -769,8 +794,8 @@ docker-build-dotnet-debug-arm32-asp:
   extends: .docker-build
   before_script:
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
@@ -778,7 +803,7 @@ docker-build-dotnet-debug-arm32-asp:
     BASE_NAME: arm32v7-aspdotnet
     IMAGE_NAME: arm32v7-aspdotnet-debug
     DEBUGGER_ARCH: linux-arm
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/debug/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm32-asp"]
 
@@ -787,8 +812,8 @@ docker-build-dotnet-debug-arm64:
   extends: .docker-build
   before_script:
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
@@ -796,7 +821,7 @@ docker-build-dotnet-debug-arm64:
     BASE_NAME: arm64v8-dotnet
     IMAGE_NAME: arm64v8-dotnet-debug
     DEBUGGER_ARCH: linux-arm64
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/debug/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm64"]
 
@@ -805,9 +830,8 @@ docker-build-dotnet-debug-arm64-asp:
   extends: .docker-build
   before_script:
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
@@ -815,7 +839,7 @@ docker-build-dotnet-debug-arm64-asp:
     BASE_NAME: arm64v8-aspdotnet
     IMAGE_NAME: arm64v8-aspdotnet-debug
     DEBUGGER_ARCH: linux-arm64
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/debug/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm64-asp"]
 
@@ -825,8 +849,8 @@ docker-build-dotnet-debug-arm32-uno:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm
@@ -834,7 +858,7 @@ docker-build-dotnet-debug-arm32-uno:
     BASE_NAME: arm32v7-dotnet-uno
     IMAGE_NAME: arm32v7-dotnet-uno-debug
     DEBUGGER_ARCH: linux-arm
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/uno-debug/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
   needs: ["docker-build-dotnet-arm32-uno"]
 
@@ -844,8 +868,8 @@ docker-build-dotnet-debug-arm64-uno:
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DOTNET_TAG}"
-    - export DOTNET_VERSION="${DOTNET_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64
@@ -853,7 +877,7 @@ docker-build-dotnet-debug-arm64-uno:
     BASE_NAME: arm64v8-dotnet-uno
     IMAGE_NAME: arm64v8-dotnet-uno-debug
     DEBUGGER_ARCH: linux-arm64
-    DOCKERFILE_FOLDER: "debian-dotnet-development-images/uno-debug/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
   needs: ["docker-build-dotnet-arm64-uno"]
 
@@ -864,7 +888,7 @@ docker-build-debian-package-devel-arm64v8:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="${DEBIAN_RELEASE}"
     - export DOCKER_BASE_TAG="${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_PACKAGE_DEVEL_MAJOR}"
     - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
@@ -872,7 +896,7 @@ docker-build-debian-package-devel-arm64v8:
   variables:
     IMAGE_ARCH: linux/arm64
     IMAGE_NAME: arm64v8-debian-package-devel
-    DOCKERFILE_FOLDER: "debian-package-devel/"
+    DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
 
@@ -881,15 +905,15 @@ docker-build-debian-package-devel-arm32v7:
   extends: .docker-build
   before_script:
     - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export DEBIAN_RELEASE_APPEND="${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="${DEBIAN_RELEASE}"
     - export DOCKER_BASE_TAG="${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_PACKAGE_DEVEL_MAJOR}"
     - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
     - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
   variables:
     IMAGE_ARCH: linux/arm
-    IMAGE_NAME: arm32v7-debian-package-devel
-    DOCKERFILE_FOLDER: "debian-package-devel/"
+    IMAGE_NAME: arm32v7-${DEBIAN_PACKAGE_DEVEL_FOLDER}
+    DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
 
@@ -905,7 +929,7 @@ docker-build-rt-tests:
     - export PATCH="${RT_TESTS_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-rt-tests
-    DOCKERFILE_FOLDER: "rt-validation/rt-tests/"
+    DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
@@ -920,7 +944,7 @@ docker-build-stress-tests:
     - export PATCH="${STRESS_TESTS_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-stress-tests
-    DOCKERFILE_FOLDER: "rt-validation/stress-tests/"
+    DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
@@ -936,7 +960,7 @@ docker-build-rt-tests-arm64:
   variables:
     IMAGE_ARCH: linux/arm64
     IMAGE_NAME: arm64v8-rt-tests
-    DOCKERFILE_FOLDER: "rt-validation/rt-tests/"
+    DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
@@ -952,7 +976,7 @@ docker-build-stress-tests-arm64:
   variables:
     IMAGE_ARCH: linux/arm64
     IMAGE_NAME: arm64v8-stress-tests
-    DOCKERFILE_FOLDER: "rt-validation/stress-tests/"
+    DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
@@ -1049,22 +1073,23 @@ tag:
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
-    - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
+    - "echo -e '{\n  \"experimental\": \"true\"\n}' | tee $HOME/.docker/config.json"
     - docker version
 
 .docker-build-multiarch:
   before_script:
+    - *do_print_environment_variables
     - *do_docker_experimental
     - rm -rf ~/.docker/manifests/*
   script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest create ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${GITLAB_DOCKERREGISTRY_SUFFIX} --os linux --arch arm
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${GITLAB_DOCKERREGISTRY_SUFFIX} --os linux --arch arm64
-  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
-  - docker manifest push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${IMAGE_TAG}
+  - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${IMAGE_TAG}
+  - docker manifest create ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${IMAGE_TAG}
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_32}:${IMAGE_TAG} --os linux --arch arm
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${CI_REGISTRY_IMAGE}/${IMAGE_NAME_64}:${IMAGE_TAG} --os linux --arch arm64
+  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
+  - docker manifest push ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
 
 ## debian-docker-images
 
@@ -1072,7 +1097,7 @@ docker-build-base-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DEBIAN_RELEASE}
     IMAGE_NAME: debian
     IMAGE_NAME_32: arm32v7-debian
     IMAGE_NAME_64: arm64v8-debian
@@ -1083,7 +1108,7 @@ docker-build-wayland-base-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${WAYLAND_BASE_MAJOR}
+    IMAGE_TAG: ${WAYLAND_BASE_MAJOR}
     IMAGE_NAME: wayland-base
     IMAGE_NAME_32: arm32v7-debian-wayland-base
     IMAGE_NAME_64: arm64v8-debian-wayland-base
@@ -1094,7 +1119,7 @@ docker-build-qt5-wayland-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${QT5_WAYLAND_MAJOR}
+    IMAGE_TAG: ${QT5_WAYLAND_MAJOR}
     IMAGE_NAME: qt5-wayland
     IMAGE_NAME_32: arm32v7-debian-qt5-wayland
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland
@@ -1105,7 +1130,7 @@ docker-build-qt5-wayland-examples-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${QT5_WAYLAND_EXAMPLES_MAJOR}
+    IMAGE_TAG: ${QT5_WAYLAND_EXAMPLES_MAJOR}
     IMAGE_NAME: qt5-wayland-examples
     IMAGE_NAME_32: arm32v7-debian-qt5-wayland-examples
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland-examples
@@ -1116,7 +1141,7 @@ docker-build-weston-touch-calibrator-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${WESTON_TOUCH_CALIBRATOR_MAJOR}
+    IMAGE_TAG: ${WESTON_TOUCH_CALIBRATOR_MAJOR}
     IMAGE_NAME: weston-touch-calibrator
     IMAGE_NAME_32: arm32v7-debian-weston-touch-calibrator
     IMAGE_NAME_64: arm64v8-debian-weston-touch-calibrator
@@ -1129,7 +1154,7 @@ docker-build-rt-tests-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}
+    IMAGE_TAG: ${DEBIAN_MAJOR}
     IMAGE_NAME: rt-tests
     IMAGE_NAME_32: arm32v7-rt-tests
     IMAGE_NAME_64: arm64v8-rt-tests
@@ -1140,12 +1165,74 @@ docker-build-stress-tests-multiarch:
   retry: 2
   extends: .docker-build-multiarch
   variables:
-    GITLAB_DOCKERREGISTRY_SUFFIX: ${DEBIAN_MAJOR}
+    IMAGE_TAG: ${DEBIAN_MAJOR}
     IMAGE_NAME: stress-tests
     IMAGE_NAME_32: arm32v7-stress-tests
     IMAGE_NAME_64: arm64v8-stress-tests
   stage: build-base-multiarch
   needs: ["docker-build-stress-tests", "docker-build-stress-tests-arm64"]
+
+## debian-dotnet-development-images
+
+docker-build-dotnet-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_NAME: dotnet
+    IMAGE_NAME_32: arm32v7-dotnet
+    IMAGE_NAME_64: arm64v8-dotnet
+  stage: build-stage2-multiarch
+  needs: ["docker-build-dotnet-arm32", "docker-build-dotnet-arm64"]
+
+docker-build-aspnet-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_NAME: aspdotnet
+    IMAGE_NAME_32: arm32v7-aspdotnet
+    IMAGE_NAME_64: arm64v8-aspdotnet
+  stage: build-stage2-multiarch
+  needs: ["docker-build-dotnet-arm32-asp", "docker-build-dotnet-arm64-asp"]
+
+docker-build-dotnet-debug-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_NAME: dotnet-debug
+    IMAGE_NAME_32: arm32v7-dotnet-debug
+    IMAGE_NAME_64: arm64v8-dotnet-debug
+  stage: build-stage3-multiarch
+  needs: ["docker-build-dotnet-debug-arm32", "docker-build-dotnet-debug-arm64"]
+
+docker-build-aspnet-debug-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_NAME: aspdotnet-debug
+    IMAGE_NAME_32: arm32v7-aspdotnet-debug
+    IMAGE_NAME_64: arm64v8-aspdotnet-debug
+  stage: build-stage3-multiarch
+  needs: ["docker-build-dotnet-debug-arm32-asp", "docker-build-dotnet-debug-arm64-asp"]
+
+docker-build-dotnet-uno-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_NAME: dotnet-uno
+    IMAGE_NAME_32: arm32v7-dotnet-uno
+    IMAGE_NAME_64: arm64v8-dotnet-uno
+  stage: build-stage3-multiarch
+  needs: ["docker-build-dotnet-arm32-uno", "docker-build-dotnet-arm64-uno"]
+
+docker-build-dotnet-uno-debug-multiarch:
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${DEBIAN_MAJOR}-${DOTNET_RELEASE}
+    IMAGE_NAME: dotnet-uno-debug
+    IMAGE_NAME_32: arm32v7-dotnet-uno-debug
+    IMAGE_NAME_64: arm64v8-dotnet-uno-debug
+  stage: build-stage4-multiarch
+  needs: ["docker-build-dotnet-debug-arm32-uno", "docker-build-dotnet-debug-arm64-uno"]
 
 # Bridge
 #
@@ -1168,37 +1255,42 @@ build-torizon-samples:
 .docker-deploy:
   when: manual
   allow_failure: false
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - *do_docker_experimental
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - export DATE=$(date +%Y%m%d)
-    - export GITLAB_DOCKERREGISTRY_SUFFIX="${MAJOR}${DEBIAN_RELEASE_APPEND}"
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}"
-    - export DOCKER_TAGS="${MAJOR}${DEBIAN_RELEASE_APPEND} ${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}"
-    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX}
+    - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}"
+    - docker pull ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
+    - >
+      if [ -z "$DOTNET_VERSION" ]; then
+        export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
+        export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND} ${MAJOR}.${MINOR}${RELEASE_APPEND}"
+      else
+        export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE}"
+      fi
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN;
     - for tag in ${DOCKER_TAGS_CHECK};
         do
           docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag} > /dev/null && true; RESULT=$?;
-          (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 1 ; fi);
+          (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 0 ; fi);
         done
     - for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK};
         do
-          docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${GITLAB_DOCKERREGISTRY_SUFFIX} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag};
+          docker tag ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag};
           docker push ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag};
         done
 
 docker-deploy-base:
   extends: .docker-deploy
   before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-debian
   stage: deploy
+  needs: ["docker-build-base"]
 
 docker-deploy-wayland-base:
   extends: .docker-deploy
@@ -1209,6 +1301,7 @@ docker-deploy-wayland-base:
   variables:
     IMAGE_NAME: arm32v7-debian-wayland-base
   stage: deploy
+  needs: ["docker-build-wayland-base"]
 
 docker-deploy-weston:
   extends: .docker-deploy
@@ -1219,6 +1312,7 @@ docker-deploy-weston:
   variables:
     IMAGE_NAME: weston
   stage: deploy
+  needs: ["docker-build-weston"]
 
 docker-deploy-graphics-tests:
   extends: .docker-deploy
@@ -1229,6 +1323,7 @@ docker-deploy-graphics-tests:
   variables:
     IMAGE_NAME: graphics-tests
   stage: deploy
+  needs: ["docker-build-graphics-tests"]
 
 docker-deploy-weston-touch-calibrator:
   extends: .docker-deploy
@@ -1239,6 +1334,7 @@ docker-deploy-weston-touch-calibrator:
   variables:
     IMAGE_NAME: arm32v7-debian-weston-touch-calibrator
   stage: deploy
+  needs: ["docker-build-weston-touch-calibrator"]
 
 docker-deploy-qt5-wayland:
   extends: .docker-deploy
@@ -1249,6 +1345,7 @@ docker-deploy-qt5-wayland:
   variables:
     IMAGE_NAME: arm32v7-debian-qt5-wayland
   stage: deploy
+  needs: ["docker-build-qt5-wayland"]
 
 docker-deploy-qt5-wayland-examples:
   extends: .docker-deploy
@@ -1259,17 +1356,19 @@ docker-deploy-qt5-wayland-examples:
   variables:
     IMAGE_NAME: arm32v7-debian-qt5-wayland-examples
   stage: deploy
+  needs: ["docker-build-qt5-wayland-examples"]
 
 docker-deploy-base-arm64v8:
   extends: .docker-deploy
   before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-debian
   stage: deploy
+  needs: ["docker-build-base-arm64v8"]
 
 docker-deploy-wayland-base-arm64v8:
   extends: .docker-deploy
@@ -1280,6 +1379,7 @@ docker-deploy-wayland-base-arm64v8:
   variables:
     IMAGE_NAME: arm64v8-debian-wayland-base
   stage: deploy
+  needs: ["docker-build-wayland-base-arm64v8"]
 
 docker-deploy-wayland-base-vivante:
   extends: .docker-deploy
@@ -1288,8 +1388,9 @@ docker-deploy-wayland-base-vivante:
     - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
     - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
   variables:
-    IMAGE_NAME: arm64v8-debian-wayland-base-vivante
+    IMAGE_NAME: wayland-base-vivante
   stage: deploy
+  needs: ["docker-build-wayland-base-vivante"]
 
 docker-deploy-weston-vivante:
   extends: .docker-deploy
@@ -1300,6 +1401,7 @@ docker-deploy-weston-vivante:
   variables:
     IMAGE_NAME: weston-vivante
   stage: deploy
+  needs: ["docker-build-weston-vivante"]
 
 docker-deploy-graphics-tests-vivante:
   extends: .docker-deploy
@@ -1310,6 +1412,7 @@ docker-deploy-graphics-tests-vivante:
   variables:
     IMAGE_NAME: graphics-tests-vivante
   stage: deploy
+  needs: ["docker-build-graphics-tests-vivante"]
 
 docker-deploy-weston-touch-calibrator-arm64v8:
   extends: .docker-deploy
@@ -1320,6 +1423,7 @@ docker-deploy-weston-touch-calibrator-arm64v8:
   variables:
     IMAGE_NAME: arm64v8-debian-weston-touch-calibrator
   stage: deploy
+  needs: ["docker-build-wayland-base"]
 
 docker-deploy-qt5-wayland-arm64v8:
   extends: .docker-deploy
@@ -1330,6 +1434,7 @@ docker-deploy-qt5-wayland-arm64v8:
   variables:
     IMAGE_NAME: arm64v8-debian-qt5-wayland
   stage: deploy
+  needs: ["docker-build-weston-touch-calibrator-arm64v8"]
 
 docker-deploy-qt5-wayland-vivante:
   extends: .docker-deploy
@@ -1340,6 +1445,7 @@ docker-deploy-qt5-wayland-vivante:
   variables:
     IMAGE_NAME: qt5-wayland-vivante
   stage: deploy
+  needs: ["docker-build-qt5-wayland-arm64v8"]
 
 docker-deploy-qt5-wayland-examples-arm64v8:
   extends: .docker-deploy
@@ -1350,6 +1456,7 @@ docker-deploy-qt5-wayland-examples-arm64v8:
   variables:
     IMAGE_NAME: arm64v8-debian-qt5-wayland-examples
   stage: deploy
+  needs: ["docker-build-qt5-wayland-arm64v8"]
 
 docker-deploy-qt5-wayland-examples-vivante:
   extends: .docker-deploy
@@ -1360,6 +1467,7 @@ docker-deploy-qt5-wayland-examples-vivante:
   variables:
     IMAGE_NAME: qt5-wayland-examples-vivante
   stage: deploy
+  needs: ["docker-build-qt5-wayland-vivante"]
 
 
 ## debian-cross-toolchains
@@ -1367,28 +1475,26 @@ docker-deploy-qt5-wayland-examples-vivante:
 docker-deploy-armhf-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-armhf
   stage: deploy
+  needs: ["docker-build-armhf-toolchain"]
 
 docker-deploy-arm-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-arm
   stage: deploy
+  needs: ["docker-build-arm-toolchain"]
 
 docker-deploy-armhf-toolchain-ssh:
   extends: .docker-deploy
@@ -1396,38 +1502,34 @@ docker-deploy-armhf-toolchain-ssh:
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-ssh-armhf
   stage: deploy
+  needs: ["docker-build-armhf-toolchain-ssh"]
 
 docker-deploy-arm64-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-arm64
   stage: deploy
+  needs: ["docker-build-arm64-toolchain"]
 
 docker-deploy-arm64-toolchain-vivante:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-arm64-vivante
   stage: deploy
+  needs: ["docker-build-arm64-toolchain-vivante"]
 
 docker-deploy-arm64-toolchain-ssh:
   extends: .docker-deploy
@@ -1435,25 +1537,22 @@ docker-deploy-arm64-toolchain-ssh:
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-ssh-arm64
   stage: deploy
+  needs: ["docker-build-arm64-toolchain-ssh"]
 
 docker-deploy-x86-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-amd64
   stage: deploy
+  needs: ["docker-build-x86-toolchain"]
 
 docker-deploy-x86-toolchain-ssh:
   extends: .docker-deploy
@@ -1461,25 +1560,22 @@ docker-deploy-x86-toolchain-ssh:
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
   stage: deploy
+  needs: ["docker-build-x86-toolchain-ssh"]
 
 docker-deploy-rcv-toolchain:
   extends: .docker-deploy
   before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-riscv64
   stage: deploy
+  needs: ["docker-build-rcv-toolchain"]
 
 docker-deploy-rcv-toolchain-ssh:
   extends: .docker-deploy
@@ -1487,12 +1583,10 @@ docker-deploy-rcv-toolchain-ssh:
     - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-    - export DATE=$(date +%Y%m%d)
-    - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH} ${MAJOR}.${MINOR}.${PATCH}-${DATE}"
-    - export DOCKER_TAGS="${MAJOR} ${MAJOR}.${MINOR}"
   variables:
     IMAGE_NAME: debian-cross-toolchain-ssh-riscv64
   stage: deploy
+  needs: ["docker-build-rcv-toolchain-ssh"]
 
 ## rt-validation
 
@@ -1505,6 +1599,7 @@ docker-deploy-rt-tests:
   variables:
     IMAGE_NAME: arm32v7-rt-tests
   stage: deploy
+  needs: ["docker-build-rt-tests"]
 
 docker-deploy-stress-tests:
   extends: .docker-deploy
@@ -1515,6 +1610,7 @@ docker-deploy-stress-tests:
   variables:
     IMAGE_NAME: arm32v7-stress-tests
   stage: deploy
+  needs: ["docker-build-stress-tests"]
 
 docker-deploy-rt-tests-arm64:
   extends: .docker-deploy
@@ -1525,6 +1621,7 @@ docker-deploy-rt-tests-arm64:
   variables:
     IMAGE_NAME: arm64v8-rt-tests
   stage: deploy
+  needs: ["docker-build-rt-tests-arm64"]
 
 docker-deploy-stress-tests-arm64:
   extends: .docker-deploy
@@ -1535,19 +1632,161 @@ docker-deploy-stress-tests-arm64:
   variables:
     IMAGE_NAME: arm64v8-stress-tests
   stage: deploy
+  needs: ["docker-build-stress-tests-arm64"]
+
+## debian-dotnet-development
+
+docker-deploy-dotnet-arm32:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-dotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-arm32"]
+
+docker-deploy-dotnet-arm64:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-dotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-arm64"]
+
+docker-deploy-dotnet-arm32-asp:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-aspdotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-arm32-asp"]
+
+docker-deploy-dotnet-arm64-asp:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-aspdotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-arm64-asp"]
+
+docker-deploy-dotnet-debug-arm32:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-dotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-debug-arm32"]
+
+docker-deploy-dotnet-debug-arm64:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-dotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-debug-arm64"]
+
+docker-deploy-dotnet-debug-arm32-asp:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-aspdotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-debug-arm32-asp"]
+
+docker-deploy-dotnet-debug-arm64-asp:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-aspdotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-debug-arm64-asp"]
+
+docker-deploy-dotnet-arm32-uno:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-dotnet-uno
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-arm32-uno"]
+
+docker-deploy-dotnet-arm64-uno:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-dotnet-uno
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-arm64-uno"]
+
+docker-deploy-dotnet-debug-arm32-uno:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm32v7-dotnet-uno-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-debug-arm32-uno"]
+
+docker-deploy-dotnet-debug-arm64-uno:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+  variables:
+    IMAGE_NAME: arm64v8-dotnet-uno-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+    DOTNET_VERSION: ${DOTNET_SEMANTIC_VERSION}
+  stage: deploy
+  needs: ["docker-build-dotnet-debug-arm64-uno"]
 
 .docker-deploy-multiarch:
+  when: manual
   script:
   - *do_docker_experimental
   - export DATE=$(date +%Y%m%d)
-  - export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${DEBIAN_RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${DEBIAN_RELEASE_APPEND}"
-  - export DOCKER_TAGS="${MAJOR}${DEBIAN_RELEASE_APPEND} ${MAJOR}.${MINOR}${DEBIAN_RELEASE_APPEND}"
+  - >
+    if [ -z "$DOTNET_VERSION" ]; then
+      export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
+      export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND} ${MAJOR}.${MINOR}${RELEASE_APPEND}"
+    else
+      export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE}"
+    fi
+  - *do_print_environment_variables
   - rm -rf ~/.docker/manifests/*
   - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
   - for tag in ${DOCKER_TAGS_CHECK};
       do
         docker manifest inspect ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag} > /dev/null && true; RESULT=$?;
-        (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 1 ; fi);
+        (if [ $RESULT == 0 ] ; then echo "Image with ${tag} tag already exists." && exit 0 ; fi);
       done
   - for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK};
       do
@@ -1563,7 +1802,7 @@ docker-deploy-stress-tests-arm64:
 docker-deploy-base-multiarch:
   extends: .docker-deploy-multiarch
   before_script:
-    - export DEBIAN_RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
@@ -1572,6 +1811,7 @@ docker-deploy-base-multiarch:
     IMAGE_NAME_32: arm32v7-debian
     IMAGE_NAME_64: arm64v8-debian
   stage: deploy-multiarch
+  needs: ["docker-build-base-multiarch"]
 
 docker-deploy-wayland-base-multiarch:
   extends: .docker-deploy-multiarch
@@ -1584,6 +1824,7 @@ docker-deploy-wayland-base-multiarch:
     IMAGE_NAME_32: arm32v7-debian-wayland-base
     IMAGE_NAME_64: arm64v8-debian-wayland-base
   stage: deploy-multiarch
+  needs: ["docker-build-wayland-base-multiarch"]
 
 docker-deploy-qt5-wayland-multiarch:
   extends: .docker-deploy-multiarch
@@ -1596,6 +1837,7 @@ docker-deploy-qt5-wayland-multiarch:
     IMAGE_NAME_32: arm32v7-debian-qt5-wayland
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland
   stage: deploy-multiarch
+  needs: ["docker-build-qt5-wayland-multiarch"]
 
 docker-deploy-qt5-wayland-examples-multiarch:
   extends: .docker-deploy-multiarch
@@ -1608,6 +1850,7 @@ docker-deploy-qt5-wayland-examples-multiarch:
     IMAGE_NAME_32: arm32v7-debian-qt5-wayland-examples
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland-examples
   stage: deploy-multiarch
+  needs: ["docker-build-qt5-wayland-examples-multiarch"]
 
 docker-deploy-weston-touch-calibrator-multiarch:
   extends: .docker-deploy-multiarch
@@ -1620,6 +1863,7 @@ docker-deploy-weston-touch-calibrator-multiarch:
     IMAGE_NAME_32: arm32v7-debian-weston-touch-calibrator
     IMAGE_NAME_64: arm64v8-debian-weston-touch-calibrator
   stage: deploy-multiarch
+  needs: ["docker-build-weston-touch-calibrator-multiarch"]
 
 ## rt-validation
 
@@ -1634,6 +1878,7 @@ docker-deploy-rt-tests-multiarch:
     IMAGE_NAME_32: arm32v7-rt-tests
     IMAGE_NAME_64: arm64v8-rt-tests
   stage: deploy-multiarch
+  needs: ["docker-build-rt-tests-multiarch"]
 
 docker-deploy-stress-tests-multiarch:
   extends: .docker-deploy-multiarch
@@ -1646,3 +1891,85 @@ docker-deploy-stress-tests-multiarch:
     IMAGE_NAME_32: arm32v7-stress-tests
     IMAGE_NAME_64: arm64v8-stress-tests
   stage: deploy-multiarch
+  needs: ["docker-build-stress-tests-multiarch"]
+
+# dotnet-development-images
+
+docker-deploy-dotnet-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+  variables:
+    IMAGE_NAME: dotnet
+    IMAGE_NAME_32: arm32v7-dotnet
+    IMAGE_NAME_64: arm64v8-dotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy-multiarch
+  needs: ["docker-build-dotnet-multiarch"]
+
+docker-deploy-aspnet-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+  variables:
+    IMAGE_NAME: aspdotnet
+    IMAGE_NAME_32: arm32v7-aspdotnet
+    IMAGE_NAME_64: arm64v8-aspdotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy-multiarch
+  needs: ["docker-build-aspnet-multiarch"]
+
+docker-deploy-dotnet-debug-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+  variables:
+    IMAGE_NAME: dotnet-debug
+    IMAGE_NAME_32: arm32v7-dotnet-debug
+    IMAGE_NAME_64: arm64v8-dotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy-multiarch
+  needs: ["docker-build-dotnet-debug-multiarch"]
+
+docker-deploy-aspnet-debug-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+  variables:
+    IMAGE_NAME: aspdotnet-debug
+    IMAGE_NAME_32: arm32v7-aspdotnet-debug
+    IMAGE_NAME_64: arm64v8-aspdotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy-multiarch
+  needs: ["docker-build-aspnet-debug-multiarch"]
+
+docker-deploy-dotnet-uno-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+  variables:
+    IMAGE_NAME: dotnet-uno
+    IMAGE_NAME_32: arm32v7-dotnet-uno
+    IMAGE_NAME_64: arm64v8-dotnet-uno
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy-multiarch
+  needs: ["docker-build-dotnet-uno-multiarch"]
+
+docker-deploy-dotnet-uno-debug-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+  variables:
+    IMAGE_NAME: dotnet-uno-debug
+    IMAGE_NAME_32: arm32v7-dotnet-uno-debug
+    IMAGE_NAME_64: arm64v8-dotnet-uno-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy-multiarch
+  needs: ["docker-build-dotnet-uno-debug-multiarch"]
+
