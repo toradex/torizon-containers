@@ -1988,6 +1988,9 @@ on-custom-test-error:
     # Following condition is needed to avoid the execution of merge-request pipelines.
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
+    # This should not run on forks
+    - if: '$CI_PROJECT_ROOT_NAMESPACE != "rd"'
+      when: never
   variables:
     ERROR_TEXT: |
       ☢️☢️ ** Uh-oh, Sid broke something! ** ☢️☢️
