@@ -221,6 +221,7 @@ function cleanup() {
 		echo "Switching back to vt ${OLD_VT:3}"
 		chvt "${OLD_VT:3}"
 	fi
+        rm -rf /run/seatd.sock
 }
 
 trap cleanup EXIT
@@ -233,4 +234,4 @@ for i in "${!WESTON_EXTRA_ARGS[@]}"; do
 	WESTON_ARGS+=" "${WESTON_EXTRA_ARGS[$i]}
 done
 
-init seatd-launch -- weston "${WESTON_ARGS}"
+rm -rf /run/seatd.sock || true && init seatd-launch -- weston "${WESTON_ARGS}"
