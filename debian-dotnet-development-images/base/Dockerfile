@@ -29,7 +29,7 @@ WORKDIR /dotnet
 
 RUN /dotnet-install.sh --install-dir /dotnet --runtime ${DOTNET_RUNTIME} --version ${DOTNET_VERSION} --os linux --architecture ${DOTNET_ARCHITECTURE} --no-path
 
-FROM --platform=$IMAGE_ARCH artifactory-horw.int.toradex.com/dockerhub-proxy-horw/torizon/debian:3-bookworm
+FROM --platform=$IMAGE_ARCH ${DOCKER_REGISTRY}/debian:${IMAGE_TAG}
 
 ENV DOTNET_ROOT=/dotnet
 ENV PATH=$PATH:/dotnet
