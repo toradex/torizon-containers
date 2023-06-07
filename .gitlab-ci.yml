@@ -697,7 +697,7 @@ docker-build-dotnet-arm32:
     DOTNET_ARCHITECTURE: arm
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
-  needs: []
+  needs: ["pull-tag-and-push-debian-image"]
 
 docker-build-dotnet-arm32-asp:
   retry: 2
@@ -715,7 +715,7 @@ docker-build-dotnet-arm32-asp:
     DOTNET_ARCHITECTURE: arm
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
-  needs: []
+  needs: ["pull-tag-and-push-debian-image"]
 
 docker-build-dotnet-arm64:
   retry: 2
@@ -733,7 +733,7 @@ docker-build-dotnet-arm64:
     DOTNET_ARCHITECTURE: arm64
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
-  needs: []
+  needs: ["pull-tag-and-push-debian-image"]
 
 docker-build-dotnet-arm64-asp:
   retry: 2
@@ -751,7 +751,7 @@ docker-build-dotnet-arm64-asp:
     DOTNET_ARCHITECTURE: arm64
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
-  needs: []
+  needs: ["pull-tag-and-push-debian-image"]
 
 docker-build-dotnet-arm32-uno:
   retry: 2
