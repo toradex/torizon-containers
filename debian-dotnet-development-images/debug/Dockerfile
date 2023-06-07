@@ -17,6 +17,6 @@ ARG DOTNET_DEBUGGER_RELEASE=
 
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v ${DOTNET_DEBUGGER_RELEASE} -l /vsdbg
 
-FROM ${DOCKER_REGISTRY}/$BASE_NAME:$DOTNET_BASE_IMAGE_TAG
+FROM --platform=$IMAGE_ARCH ${DOCKER_REGISTRY}/$BASE_NAME:$DOTNET_BASE_IMAGE_TAG
 
 COPY --from=build /vsdbg /vsdbg
