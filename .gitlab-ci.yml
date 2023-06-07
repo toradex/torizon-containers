@@ -152,12 +152,24 @@ pull-tag-and-push-debian-image:
   stage: chores before building
   script:
   - *do_print_environment_variables
-  # pull, retag and push debian:bookworm-slim or bullseye-slim or sid-slim to cache it ${CI_REGISTRY_IMAGE} 
+  # Pull, retag and push debian:bookworm-slim or bullseye-slim or sid-slim to cache it in ${CI_REGISTRY_IMAGE} 
   # for docker-build-dotnet-debug*, which needs to pull from two different registers (dockerhub and gitlab).
+  # This way we can re-use the "DOCKER_REGISTRY" build-arg, otherwise we need another one.
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker pull ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE}
-  - docker tag ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE}
-  - docker push ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE}
+  - export ARCHITECTURES="arm arm64"
+
+  - for ARCH in ${ARCHITECTURES};
+      do
+        docker pull --platform linux/${ARCH} ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE};
+        docker tag ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-${ARCH}:${DEBIAN_BASE_IMAGE};
+        docker push ${CI_REGISTRY_IMAGE}/debian-${ARCH}:${DEBIAN_BASE_IMAGE};
+      done
+
+  - docker manifest create ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm64:${DEBIAN_BASE_IMAGE};
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm:${DEBIAN_BASE_IMAGE} --os linux --arch arm --variant v7;
+  - docker manifest annotate ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm64:${DEBIAN_BASE_IMAGE} --os linux --arch arm --variant v8;
+  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE};
+  - docker manifest push ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE};
 
 # Docker image builds
 #
