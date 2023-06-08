@@ -177,7 +177,6 @@ pull-tag-and-push-debian-image:
 # it to Gitlab's internal Docker registry
 .docker-build:
   variables:
-    IMAGE_ARCH: linux/arm
     ADD_TORADEX_REPOSITORY: 1
   script:
   - *do_print_environment_variables
@@ -196,13 +195,12 @@ pull-tag-and-push-debian-image:
                   --build-arg QT5_EXAMPLES_DEBIAN=${QT5_EXAMPLES_DEBIAN}
                   --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT:-20230602T160948Z}
                   --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
-                  --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}
+                  --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}
                   --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}
                   --build-arg DOTNET_RUNTIME=${DOTNET_RUNTIME}
                   --build-arg DOTNET_VERSION=${DOTNET_VERSION}
                   --build-arg DOTNET_ARCHITECTURE=${DOTNET_ARCHITECTURE}
                   --build-arg DOTNET_DEBUGGER_RELEASE=${DOTNET_DEBUGGER_RELEASE}
-                  --build-arg DEBUGGER_ARCH=${DEBUGGER_ARCH}
                   --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}
                   --build-arg BASE_NAME_WAYLAND=${BASE_NAME_WAYLAND}
                   --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
@@ -245,6 +243,7 @@ docker-build-wayland-base:
     - export MINOR="${WAYLAND_BASE_MINOR}"
     - export PATCH="${WAYLAND_BASE_PATCH}"
   variables:
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-debian
     IMAGE_NAME: arm32v7-debian-wayland-base
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WAYLAND_BASE_FOLDER}/"
@@ -261,6 +260,7 @@ docker-build-weston:
     - export PATCH="${WESTON_PATCH}"
     - ./${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/make_feature_map.sh
   variables:
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-debian-wayland-base
     IMAGE_NAME: weston
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/"
@@ -276,6 +276,7 @@ docker-build-graphics-tests:
     - export MINOR="${GRAPHICS_TESTS_MINOR}"
     - export PATCH="${GRAPHICS_TESTS_PATCH}"
   variables:
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-debian-wayland-base
     IMAGE_NAME: graphics-tests
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${GRAPHICS_TESTS_FOLDER}/"
@@ -291,6 +292,7 @@ docker-build-weston-touch-calibrator:
     - export MINOR="${WESTON_TOUCH_CALIBRATOR_MINOR}"
     - export PATCH="${WESTON_TOUCH_CALIBRATOR_PATCH}"
   variables:
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: weston
     IMAGE_NAME: arm32v7-debian-weston-touch-calibrator
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
@@ -306,6 +308,7 @@ docker-build-qt5-wayland:
     - export MINOR="${QT5_WAYLAND_MINOR}"
     - export PATCH="${QT5_WAYLAND_PATCH}"
   variables:
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-debian-wayland-base
     IMAGE_NAME: arm32v7-debian-qt5-wayland
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
@@ -321,6 +324,7 @@ docker-build-qt5-wayland-examples:
     - export MINOR="${QT5_WAYLAND_EXAMPLES_MINOR}"
     - export PATCH="${QT5_WAYLAND_EXAMPLES_PATCH}"
   variables:
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-debian-qt5-wayland
     IMAGE_NAME: arm32v7-debian-qt5-wayland-examples
     QT5_EXAMPLES_DEBIAN: 1
@@ -354,7 +358,7 @@ docker-build-wayland-base-arm64v8:
     - export MINOR="${WAYLAND_BASE_MINOR}"
     - export PATCH="${WAYLAND_BASE_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-debian
     IMAGE_NAME: arm64v8-debian-wayland-base
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WAYLAND_BASE_FOLDER}/"
@@ -371,7 +375,7 @@ docker-build-wayland-base-vivante:
     - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-debian
     IMAGE_NAME: wayland-base-vivante
     ACCEPT_FSL_EULA: 1
@@ -390,7 +394,7 @@ docker-build-weston-vivante:
     - ./${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/make_feature_map.sh
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: weston-vivante
     ACCEPT_FSL_EULA: 1
@@ -408,7 +412,7 @@ docker-build-graphics-tests-vivante:
     - export PATCH="${GRAPHICS_TESTS_VIVANTE_PATCH}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: graphics-tests-vivante
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${GRAPHICS_TESTS_VIVANTE_FOLDER}/"
@@ -425,7 +429,7 @@ docker-build-weston-touch-calibrator-arm64v8:
     - export PATCH="${WESTON_TOUCH_CALIBRATOR_PATCH}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: weston-vivante
     IMAGE_NAME: arm64v8-debian-weston-touch-calibrator
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
@@ -441,7 +445,7 @@ docker-build-qt5-wayland-arm64v8:
     - export MINOR="${QT5_WAYLAND_MINOR}"
     - export PATCH="${QT5_WAYLAND_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-debian-wayland-base
     IMAGE_NAME: arm64v8-debian-qt5-wayland
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
@@ -457,7 +461,7 @@ docker-build-qt5-wayland-examples-arm64v8:
     - export MINOR="${QT5_WAYLAND_EXAMPLES_MINOR}"
     - export PATCH="${QT5_WAYLAND_EXAMPLES_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-debian-qt5-wayland
     IMAGE_NAME: arm64v8-debian-qt5-wayland-examples
     QT5_EXAMPLES_DEBIAN: 1
@@ -475,7 +479,7 @@ docker-build-qt5-wayland-vivante:
     - export PATCH="${QT5_WAYLAND_VIVANTE_PATCH}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: wayland-base-vivante
     IMAGE_NAME: qt5-wayland-vivante
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
@@ -492,7 +496,7 @@ docker-build-qt5-wayland-vivante-examples:
     - export PATCH="${QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: qt5-wayland-vivante
     IMAGE_NAME: qt5-wayland-examples-vivante
     QT5_EXAMPLES_DEBIAN: 1
@@ -691,7 +695,7 @@ docker-build-dotnet-arm32:
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm
+    IMAGE_ARCH: linux/arm/v7
     IMAGE_NAME: arm32v7-dotnet
     DOTNET_RUNTIME: dotnet
     DOTNET_ARCHITECTURE: arm
@@ -709,7 +713,7 @@ docker-build-dotnet-arm32-asp:
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm
+    IMAGE_ARCH: linux/arm/v7
     IMAGE_NAME: arm32v7-aspdotnet
     DOTNET_RUNTIME: aspnetcore
     DOTNET_ARCHITECTURE: arm
@@ -727,7 +731,7 @@ docker-build-dotnet-arm64:
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     IMAGE_NAME: arm64v8-dotnet
     DOTNET_RUNTIME: dotnet
     DOTNET_ARCHITECTURE: arm64
@@ -745,7 +749,7 @@ docker-build-dotnet-arm64-asp:
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     IMAGE_NAME: arm64v8-aspdotnet
     DOTNET_RUNTIME: aspnetcore
     DOTNET_ARCHITECTURE: arm64
@@ -764,7 +768,7 @@ docker-build-dotnet-arm32-uno:
     - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-dotnet
     BASE_NAME_WAYLAND: wayland-base
     IMAGE_NAME: arm32v7-dotnet-uno
@@ -783,7 +787,7 @@ docker-build-dotnet-arm64-uno:
     - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-dotnet
     BASE_NAME_WAYLAND: wayland-base-vivante
     IMAGE_NAME: arm64v8-dotnet-uno
@@ -801,10 +805,9 @@ docker-build-dotnet-debug-arm32:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
-    IMAGE_ARCH: linux/arm
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-dotnet
     IMAGE_NAME: arm32v7-dotnet-debug
-    DEBUGGER_ARCH: linux-arm
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm32"]
@@ -819,10 +822,9 @@ docker-build-dotnet-debug-arm32-asp:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
-    IMAGE_ARCH: linux/arm
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-aspdotnet
     IMAGE_NAME: arm32v7-aspdotnet-debug
-    DEBUGGER_ARCH: linux-arm
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm32-asp"]
@@ -837,10 +839,9 @@ docker-build-dotnet-debug-arm64:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-dotnet
     IMAGE_NAME: arm64v8-dotnet-debug
-    DEBUGGER_ARCH: linux-arm64
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm64"]
@@ -855,10 +856,9 @@ docker-build-dotnet-debug-arm64-asp:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-aspdotnet
     IMAGE_NAME: arm64v8-aspdotnet-debug
-    DEBUGGER_ARCH: linux-arm64
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-dotnet-arm64-asp"]
@@ -873,11 +873,10 @@ docker-build-dotnet-debug-arm32-uno:
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm
+    IMAGE_ARCH: linux/arm/v7
     BASE_NAME_DEBUG: arm32v7-dotnet-debug
     BASE_NAME: arm32v7-dotnet-uno
     IMAGE_NAME: arm32v7-dotnet-uno-debug
-    DEBUGGER_ARCH: linux-arm
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
   needs: ["docker-build-dotnet-arm32-uno"]
@@ -892,11 +891,10 @@ docker-build-dotnet-debug-arm64-uno:
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     BASE_NAME_DEBUG: arm64v8-dotnet-debug
     BASE_NAME: arm64v8-dotnet-uno
     IMAGE_NAME: arm64v8-dotnet-uno-debug
-    DEBUGGER_ARCH: linux-arm64
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
   needs: ["docker-build-dotnet-arm64-uno"]
@@ -914,7 +912,7 @@ docker-build-debian-package-devel-arm64v8:
     - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
     - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     IMAGE_NAME: arm64v8-debian-package-devel
     DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
   stage: build-base
@@ -931,7 +929,7 @@ docker-build-debian-package-devel-arm32v7:
     - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
     - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm
+    IMAGE_ARCH: linux/arm/v7
     IMAGE_NAME: arm32v7-${DEBIAN_PACKAGE_DEVEL_FOLDER}
     DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
   stage: build-base
@@ -948,6 +946,7 @@ docker-build-rt-tests:
     - export MINOR="${RT_TESTS_MINOR}"
     - export PATCH="${RT_TESTS_PATCH}"
   variables:
+    IMAGE_ARCH: linux/arm/v7
     IMAGE_NAME: arm32v7-rt-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
@@ -963,6 +962,7 @@ docker-build-stress-tests:
     - export MINOR="${STRESS_TESTS_MINOR}"
     - export PATCH="${STRESS_TESTS_PATCH}"
   variables:
+    IMAGE_ARCH: linux/arm/v7
     IMAGE_NAME: arm32v7-stress-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
@@ -978,7 +978,7 @@ docker-build-rt-tests-arm64:
     - export MINOR="${RT_TESTS_MINOR}"
     - export PATCH="${RT_TESTS_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     IMAGE_NAME: arm64v8-rt-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
@@ -994,7 +994,7 @@ docker-build-stress-tests-arm64:
     - export MINOR="${STRESS_TESTS_MINOR}"
     - export PATCH="${STRESS_TESTS_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm64
+    IMAGE_ARCH: linux/arm64/v8
     IMAGE_NAME: arm64v8-stress-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}

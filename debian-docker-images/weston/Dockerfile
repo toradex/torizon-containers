@@ -1,6 +1,6 @@
-ARG IMAGE_ARCH=linux/arm
+ARG IMAGE_ARCH=linux/arm/v7
 # For arm64 use:
-# ARG IMAGE_ARCH=linux/arm64
+# ARG IMAGE_ARCH=linux/arm64/v8
 ARG BASE_NAME=wayland-base
 # For arm64v8 use: 
 # ARG BASE_NAME=wayland-base-vivante

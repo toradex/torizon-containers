@@ -1,13 +1,13 @@
-ARG IMAGE_ARCH=
+ARG IMAGE_ARCH
 ARG DOCKER_REGISTRY=torizon
 ARG IMAGE_TAG=bookworm-slim
 
-FROM --platform=$IMAGE_ARCH ${DOCKER_REGISTRY}/debian:${IMAGE_TAG} AS build
+FROM --platform=${IMAGE_ARCH} ${DOCKER_REGISTRY}/debian:${IMAGE_TAG} AS build
 
 # define specific .NET version you want to use or "latest"
 ARG DOTNET_VERSION=latest
 # can be arm or arm64
-ARG DOTNET_ARCHITECTURE=
+ARG DOTNET_ARCHITECTURE
 # can be dotnet or aspnetcore
 ARG DOTNET_RUNTIME=dotnet
 

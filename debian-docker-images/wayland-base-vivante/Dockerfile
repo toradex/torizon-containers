@@ -1,4 +1,4 @@
-ARG IMAGE_ARCH=linux/arm64
+ARG IMAGE_ARCH=linux/arm64/v8
 ARG BASE_NAME=debian
 ARG IMAGE_TAG=3-bookworm
 ARG DOCKER_REGISTRY=torizon

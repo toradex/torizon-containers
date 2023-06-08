@@ -1,4 +1,4 @@
-ARG IMAGE_ARCH=linux/arm
+ARG IMAGE_ARCH=linux/arm/v7
 ARG BASE_NAME=wayland-base
 ARG IMAGE_TAG=3
 ARG DOCKER_REGISTRY=torizon

@@ -1,5 +1,5 @@
-ARG IMAGE_ARCH=linux/arm
-# For IMX8 use IMAGE_ARCH=linux/arm64
+ARG IMAGE_ARCH=linux/arm/v7
+# For IMX8 use IMAGE_ARCH=linux/arm64/v8
 ARG IMAGE_TAG=3-bookworm
 ARG DOCKER_REGISTRY
 
