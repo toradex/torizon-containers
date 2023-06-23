@@ -1228,8 +1228,6 @@ build-torizon-samples:
     project: rd/torizon-core/samples
     branch: ${DEBIAN_RELEASE}
     strategy: depend
-  # Don't fail a pipeline on the current project if the samples pipeline fail
-  allow_failure: true
 
 # Docker deploy jobs
 #
