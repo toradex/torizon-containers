@@ -1224,6 +1224,8 @@ docker-build-dotnet-uno-debug-multiarch:
 build-torizon-samples:
   when: manual
   stage: build-samples-bridge
+  variables:
+    TORIZON_CONTAINERS_CI_REGISTRY: "$CI_REGISTRY_IMAGE"
   trigger:
     project: rd/torizon-core/samples
     branch: ${DEBIAN_RELEASE}
