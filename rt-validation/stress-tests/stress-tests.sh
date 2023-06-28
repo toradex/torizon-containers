@@ -3,11 +3,14 @@
 echo "Setting up stress tests..."
 
 # CPU load
-while true; do hackbench >/dev/null 2>&1; done &
+for i in $(seq $(nproc)); do dd if=/dev/zero of=/dev/null bs=4M & done
 
-# I/O load (eMMC read)
-while true; do du /usr >/dev/null 2>&1; done &
-while true; do find / -name a* >/dev/null 2>&1; done &
+# I/O read load
+for dev in /dev/mmcblk? /dev/sd?; do
+    test -b "$dev" || continue
+
+    while true; do dd if="$dev" of=/dev/null bs=4M; done &
+done
 
 # I/O load (USB read/write)
 if mount | grep /mnt/pendrive >/dev/null; then
@@ -36,6 +39,9 @@ while true; do
         iperf3 -c $s -P 10 >/dev/null 2>&1
     done
 done &
+
+ping -A -f -t 3 -q -s 49152 \
+    ${STRESS_SERVER:-$(ip route get 1.1.1.1 |sed '/.* via \([^ ]*\) .*/ s//\1/; q')}
 
 echo "RT stress tests started successfully!"
 
