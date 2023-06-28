@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run cyclictest
-if ! cyclictest -S -p99 -i1000 -m -D12h -h400 -q >output; then
+if ! cyclictest -S -p99 -i1000 -m -D${DURATION:-12h} -h400 -q >output; then
   echo "ERROR: cyclictest failed" >&2
   exit 1
 fi

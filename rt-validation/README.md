@@ -47,7 +47,7 @@ $ docker run --rm -d --name stress-tests --privileged -v /dev:/dev -v /tmp:/tmp 
 Check if the stress tests started successfully:
 
 ```
-$ docker logs stress-tests 
+$ docker logs stress-tests
 Setting up stress tests...
 RT stress tests started successfully!
 ```
@@ -61,7 +61,11 @@ Run the following command to execute the `rt-tests` container and start measurin
 $ docker run --rm -it --name rt-tests --cap-add=sys_nice --cap-add=ipc_lock --cap-add=sys_rawio --ulimit rtprio=99 --device-cgroup-rule='c 10:* rmw' -v /dev:/dev -v /tmp:/tmp torizon/rt-tests:$CT_TAG_RT_TESTS
 ```
 
-The tests will run for at most 12 hours, but can be interrupted at any time by pressing CTRL-C.
+The tests will run for at most 12 hours, but can be interrupted at any time by
+pressing CTRL-C. You can specify a different length of the test run in seconds
+by passing the environment variable *DURATION* to the container (with
+`-e DURATION=…`); for other units append `m` for minutes, `h` for hours and `d`
+for days.
 
 After the tests are finished, stop the `stress-tests` container:
 
