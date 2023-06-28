@@ -646,44 +646,6 @@ docker-build-x86-toolchain-ssh:
   stage: build-stage1
   needs: ["docker-build-x86-toolchain"]
 
-docker-build-rcv-toolchain:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-  variables:
-    IMAGE_ARCH: riscv64
-    CROSS_COMPILE_ARG: riscv64-linux-gnu
-    IMAGE_NAME: debian-cross-toolchain-riscv64
-    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
-    USE_TORADEX_SNAPSHOT: 0
-    DEBIAN_BASE_IMAGE: "sid-slim"
-  stage: build-base
-  needs: []
-
-docker-build-rcv-toolchain-ssh:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-  variables:
-    IMAGE_ARCH: riscv64
-    BASE_NAME: debian-cross-toolchain-riscv64
-    IMAGE_NAME: debian-cross-toolchain-ssh-riscv64
-    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
-    USE_TORADEX_SNAPSHOT: 0
-    DEBIAN_BASE_IMAGE: "sid-slim"
-  stage: build-stage1
-  needs: ["docker-build-rcv-toolchain"]
-
 ## debian-dotnet-development-images
 
 docker-build-dotnet-arm32:
@@ -1588,30 +1550,6 @@ docker-deploy-x86-toolchain-ssh:
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
   stage: deploy
   needs: ["docker-build-x86-toolchain-ssh"]
-
-docker-deploy-rcv-toolchain:
-  extends: .docker-deploy
-  before_script:
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-  variables:
-    IMAGE_NAME: debian-cross-toolchain-riscv64
-  stage: deploy
-  needs: ["docker-build-rcv-toolchain"]
-
-docker-deploy-rcv-toolchain-ssh:
-  extends: .docker-deploy
-  before_script:
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-  variables:
-    IMAGE_NAME: debian-cross-toolchain-ssh-riscv64
-  stage: deploy
-  needs: ["docker-build-rcv-toolchain-ssh"]
 
 ## rt-validation
 

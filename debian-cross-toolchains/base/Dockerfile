@@ -64,42 +64,17 @@ RUN HOLD_PKGS='libdrm-common libdrm-amdgpu1 libdrm2' \
 
 # Upgrade & install required packages
 
-RUN if [ "${IMAGE_ARCH}" != "riscv64" ];then \
-        apt-get -q -y update \
-        && apt-get -q -y upgrade \
-        && apt-get -q -y install --no-install-recommends \
+RUN apt-get -q -y update \
+    && apt-get -q -y upgrade \
+    && apt-get -q -y install --no-install-recommends \
         git \
         openssl \
         wget \
         curl \
         crossbuild-essential-${IMAGE_ARCH} \
-        && apt-get clean \
-        && apt-get autoremove -y \
-        && rm -rf /var/lib/apt/lists/*; \
-    else \
-        apt-get -q -y update \
-        && apt-get -q -y upgrade \
-        && apt-get -q -y install --no-install-recommends \
-        git \
-        openssl \
-        wget \
-        curl \
-        gnupg \
-        dpkg-cross \
-        gcc-${IMAGE_ARCH}-linux-gnu \
-        g++-${IMAGE_ARCH}-linux-gnu \
-        debian-ports-archive-keyring && \
-        # add the riscv64 ports packages
-        echo "Types: deb\n\
-URIs: http://deb.debian.org/debian-ports\n\
-Suites: sid\n\
-Components: main\n\
-Architectures: riscv64" > /etc/apt/sources.list.d/debian-ports.sources \
-        && cat /etc/apt/sources.list.d/debian-ports.sources \
-        && apt-get clean \
-        && apt-get autoremove -y \
-        && rm -rf /var/lib/apt/lists/*; \
-    fi
+    && apt-get clean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY users-groups.sh /users-groups.sh
 RUN ./users-groups.sh \
