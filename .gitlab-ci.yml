@@ -724,7 +724,7 @@ docker-build-dotnet-arm32-uno:
   retry: 2
   extends: .docker-build
   before_script:
-    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DOTNET_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export RELEASE_APPEND="-${DOTNET_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
@@ -743,7 +743,7 @@ docker-build-dotnet-arm64-uno:
   retry: 2
   extends: .docker-build
   before_script:
-    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DOTNET_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export RELEASE_APPEND="-${DOTNET_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
