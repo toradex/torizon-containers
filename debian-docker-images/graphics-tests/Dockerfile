@@ -1,3 +1,6 @@
+# Copyright (c) 2019-2023 Toradex AG
+# SPDX-License-Identifier: MIT
+
 ARG IMAGE_ARCH=linux/arm/v7
 ARG BASE_NAME=wayland-base
 ARG IMAGE_TAG=3

@@ -1,3 +1,6 @@
+# Copyright (c) 2019-2023 Toradex AG
+# SPDX-License-Identifier: MIT
+
 ARG IMAGE_ARCH=armhf
 # For arm64 use:
 # ARG IMAGE_ARCH=arm64

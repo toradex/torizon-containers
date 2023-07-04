@@ -1,3 +1,6 @@
+# Copyright (c) 2019-2023 Toradex AG
+# SPDX-License-Identifier: MIT
+
 ARG DEBIAN_BASE_IMAGE=bookworm-slim
 ARG DOCKER_REGISTRY
 

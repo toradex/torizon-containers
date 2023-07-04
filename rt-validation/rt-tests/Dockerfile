@@ -1,3 +1,6 @@
+# Copyright (c) 2019-2023 Toradex AG
+# SPDX-License-Identifier: MIT
+
 ARG IMAGE_ARCH=linux/arm/v7
 # For IMX8 use IMAGE_ARCH=linux/arm64/v8
 ARG IMAGE_TAG=3-bookworm

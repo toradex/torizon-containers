@@ -1,3 +1,6 @@
+# Copyright (c) 2019-2023 Toradex AG
+# SPDX-License-Identifier: MIT
+
 ARG IMAGE_ARCH=arm64v8
 ARG IMAGE_TAG=bookworm-slim
 ARG DOCKER_REGISTRY

@@ -1,3 +1,6 @@
+# Copyright (c) 2019-2023 Toradex AG
+# SPDX-License-Identifier: MIT
+
 ARG BASE_NAME
 ARG IMAGE_ARCH
 ARG DOCKER_REGISTRY
