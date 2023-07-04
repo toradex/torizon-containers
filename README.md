@@ -23,3 +23,6 @@ registry, you need to setup a `GIT_TOKEN` variable by
 11. The token generated copied in step 6 as "Value"
 12. Check "Mask variable"
 13. Add
+
+## License
+This project is licensed under the terms of MIT license - see `LICENSE`.
