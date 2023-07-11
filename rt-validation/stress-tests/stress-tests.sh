@@ -35,7 +35,7 @@ fi
 while true; do
     SERVERS="bouygues.iperf.fr speedtest.wtnet.de speedtest.iveloz.net.br iperf.scottlinux.com"
     for s in $SERVERS; do
-        iperf3 -c $s -P 10 >/dev/null 2>&1
+        iperf3 -c "$s" -P 10 >/dev/null 2>&1
     done
 done &
 
