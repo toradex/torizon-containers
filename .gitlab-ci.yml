@@ -87,11 +87,11 @@ variables:
 
   RT_TESTS_MAJOR: "3"
   RT_TESTS_MINOR: "0"
-  RT_TESTS_PATCH: "5"
+  RT_TESTS_PATCH: "6"
 
   STRESS_TESTS_MAJOR: "3"
   STRESS_TESTS_MINOR: "0"
-  STRESS_TESTS_PATCH: "5"
+  STRESS_TESTS_PATCH: "6"
 
 # extract the folder names as variables so we can easily change/introduce
 # jobs and as to not replicate the folder names in `changes:` tags as well
