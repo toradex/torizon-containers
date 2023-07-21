@@ -44,6 +44,10 @@ Run the following command to execute the `stress-tests` container:
 $ docker run --rm -d --name stress-tests --privileged -v /dev:/dev -v /tmp:/tmp -v /mnt/pendrive/:/mnt/pendrive torizon/stress-tests:$CT_TAG_STRESS_TESTS
 ```
 
+You can set the environment variable *STRESS_SERVER* to select which host to
+send ping floods to. By default if you are using docker, it will ping the board
+itself which is the default gateway for docker containers.
+
 Check if the stress tests started successfully:
 
 ```
