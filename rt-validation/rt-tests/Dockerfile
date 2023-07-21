@@ -9,8 +9,10 @@ ARG DOCKER_REGISTRY=torizon
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/debian:$IMAGE_TAG
 
 RUN apt update \
-    && apt install -y --no-install-recommends gnuplot rt-tests \
-    && apt clean
+    && apt install -y --no-install-recommends \
+        gnuplot \
+        rt-tests \
+    && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
 COPY rt-tests.sh /rt-tests.sh

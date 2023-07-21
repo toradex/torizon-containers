@@ -9,7 +9,11 @@ ARG DOCKER_REGISTRY
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/debian:$IMAGE_TAG
 
 RUN apt update \
-    && apt install -y --no-install-recommends iperf3 rt-tests iputils-ping iproute2 \
+    && apt install -y --no-install-recommends \
+        iperf3 \
+        iproute2 \
+        iputils-ping \
+        rt-tests \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
