@@ -64,7 +64,7 @@ $ docker run --rm -it --name rt-tests --cap-add=sys_nice --cap-add=ipc_lock --ca
 The tests will run for at most 12 hours, but can be interrupted at any time by
 pressing CTRL-C. You can specify a different length of the test run in seconds
 by passing the environment variable *DURATION* to the container (with
-`-e DURATION=…`); for other units append `m` for minutes, `h` for hours and `d`
+`-e DURATION=30s`); for other units append `m` for minutes, `h` for hours and `d`
 for days.
 
 After the tests are finished, stop the `stress-tests` container:
