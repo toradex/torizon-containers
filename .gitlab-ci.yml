@@ -1,6 +1,7 @@
 image: docker:latest
 
 variables:
+  # DEBIAN_* variables are overwritten for jobs outside the branch of the current Debian stable
   DEBIAN_RELEASE: "bookworm"
   DEBIAN_BASE_IMAGE: "bookworm-slim"
   TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw"
