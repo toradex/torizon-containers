@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends --no-install-suggests \
     curl \
     ca-certificates \
-    && apt-get clean && apt-get autoremove \
+    && apt-get clean && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -L -o /dotnet-install.sh https://dot.net/v1/dotnet-install.sh \
@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends --no-install-suggests \
     libicu72 \
     libssl3 \
-    && apt-get clean && apt-get autoremove \
+    && apt-get clean && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /dotnet /dotnet

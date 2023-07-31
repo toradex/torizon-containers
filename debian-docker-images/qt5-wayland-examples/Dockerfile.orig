@@ -13,5 +13,10 @@ ARG DOCKER_REGISTRY=torizon
 FROM --platform=$IMAGE_ARCH $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS base
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
+<<<<<<< HEAD
+    qtbase5-examples qtdeclarative5-examples \
+    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+=======
     ${QT5_EXAMPLES_DEBIAN_INSTALL} \
     && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+>>>>>>> 7a8b2ed (Always accept apt autoremoves)

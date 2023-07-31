@@ -24,7 +24,7 @@ RUN apt-get update \
         gpg \
         wget \
     && apt-get clean \
-    && apt-get autoremove \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LC_ALL C.UTF-8
@@ -71,7 +71,7 @@ FROM add_toradex-repository-${ADD_TORADEX_REPOSITORY}
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     neofetch \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 COPY neofetch.conf /root/.config/neofetch/config.conf
 

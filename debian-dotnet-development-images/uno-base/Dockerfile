@@ -20,7 +20,7 @@ COPY --from=dotnet /dotnet /dotnet
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     apt-utils \
     && apt-get -y upgrade \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # install .net uno platform dependencies
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
@@ -38,12 +38,12 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 	libdrm2 \
 	libinput10 \
     libssl3 \
-	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+	&& apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # fix mime types
 RUN apt-get -y update && apt-get --reinstall install -y --no-install-recommends \
     shared-mime-info \
-	&& apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+	&& apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 RUN printf "{\n  \"device\": \"/dev/dri/card1\",\n  \"outputs\": [ { \"name\": \"HDMI1\" } ],\n  \"hwcursor\": false\n}" > /etc/kms-imx6.conf \
     && printf "{\n  \"hwcursor\": false\n}" > /etc/kms-imx8.conf \
