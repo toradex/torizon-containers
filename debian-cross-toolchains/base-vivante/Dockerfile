@@ -29,7 +29,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
     html2text \
     wget \
     && apt-get -y upgrade \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 ARG LIC_URL=https://www.nxp.com/docs/en/disclaimer/LA_OPT_NXP_SW.html
 ARG LIC_FILE_HTML=LA_OPT_NXP_SW.html

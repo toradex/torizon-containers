@@ -62,7 +62,7 @@ RUN HOLD_PKGS='libdrm-common libdrm-amdgpu1 libdrm2' \
         echo ${P}=$(apt-cache show $P | sed -r -e '/^Version:/!d' -e 's/.* //' -e '/toradex/d' -e 'q') ; \
     done | xargs -r apt-get install -y --no-install-recommends \
     && apt-mark hold $HOLD_PKGS \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 
 # Upgrade & install required packages

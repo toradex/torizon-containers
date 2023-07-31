@@ -16,11 +16,11 @@ COPY kms-setup.sh /usr/bin/kms-setup.sh
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     apt-utils \
     && apt-get -y upgrade \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Install libqt5gui5-gles before libqt5opengl5 which also has an alternate dependency on libqt5gui5(non-gles)
 RUN apt-get -y update  && apt-get install -y --no-install-recommends libqt5gui5-gles \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Install libqt5opengl5.
 # Under Bullesyse, libqt5opengl5:arm64 is currently at version 5.14.2+dfsg-6 and contains a redundant dependency for libqt5gui5 (>= 5.1.0):
@@ -50,7 +50,7 @@ RUN apt-get -y update \
         && apt-get -y remove binutils xz-utils \
         && apt-mark hold libqt5opengl5 ; \
     fi \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Install remaining dependencies required to run qtbase and qtdeclarative examples
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
@@ -75,12 +75,12 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
         qml-module-qtquick-particles2 \
         qml-module-qtquick-shapes \
         qml-module-qttest \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Install Wayland Qt module
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     qtwayland5 \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 ENV QT_QPA_PLATFORM="wayland"
 

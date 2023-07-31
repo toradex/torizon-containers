@@ -12,7 +12,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
     curl \
     html2text \
     && apt-get -y upgrade \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 ARG LIC_URL=https://www.nxp.com/docs/en/disclaimer/LA_OPT_NXP_SW.html
 ARG LIC_FILE_HTML=LA_OPT_NXP_SW.html
@@ -35,7 +35,7 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
     imx-gpu-viv-wayland \
     libg2d-dpu \
     libg2d-viv \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Make sure the user can access DRM and video devices
 RUN usermod -a -G video,render torizon

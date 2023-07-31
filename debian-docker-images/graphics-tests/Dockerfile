@@ -14,6 +14,6 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
         kmscube \
         libdrm-tests \
         openimageio-tools \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/torizon

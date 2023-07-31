@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends --no-install-suggests \
     ca-certificates \
     curl \
-    && apt-get clean && apt-get autoremove \
+    && apt-get clean && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 ARG DOTNET_DEBUGGER_RELEASE
