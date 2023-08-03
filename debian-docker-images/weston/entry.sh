@@ -13,7 +13,7 @@ declare -a WESTON_EXTRA_ARGS
 # `option:` means the option has a non-optional arguments
 # `option::` means the option has optional arguments
 # `option` means the option has no arguments.
-OPTIONS=developer,touch2pointer,tty:
+OPTIONS=developer,touch2pointer,no-change-tty,tty:
 
 WAYLAND_USER=${WAYLAND_USER:-torizon}
 WESTON_ARGS=${WESTON_ARGS:--Bdrm-backend.so --current-mode -S${WAYLAND_DISPLAY}}
@@ -39,6 +39,9 @@ fi
 eval set -- "${PARSED}"
 
 COMMAND_HAS_DOUBLE_DASH=false
+DO_NOT_SWITCH_TTY=false
+# use tty7 for the graphical server by default
+VT="7"
 while [[ $# -ne 0 ]]; do
 	case "$1" in
 	--developer)
@@ -49,8 +52,11 @@ while [[ $# -ne 0 ]]; do
 		/usr/bin/touch2pointer "$1" &
 		;;
 	--tty)
+		# Populates VT with the /dev/ttyX option that follows the --tty option
 		VT=${2:8}
-		chvt "${VT}"
+		;;
+	--no-change-tty)
+		DO_NOT_SWITCH_TTY=true
 		;;
 	--)
 		COMMAND_HAS_DOUBLE_DASH=true
@@ -63,6 +69,22 @@ while [[ $# -ne 0 ]]; do
 	esac
 	shift
 done
+
+# Change the foreground virtual terminal by default.
+# This is specifically done because Plymouth deactivates and releases the drm fd
+# if the foreground terminal is changed[0].
+# Otherwise we can run into an issue where seatd cannot grab the fd.
+
+# plymouth-quit.service is started by docker.service, so we don't need to
+# quit plymouth from inside the container.
+
+# [0] https://cgit.freedesktop.org/plymouth/commit/?id=5ab755153356b3f685afe87c5926969389665bb2
+
+if [ "$DO_NOT_SWITCH_TTY" = false ]; then
+	echo "Switching to VT ${VT}"
+	chvt "${VT}"
+fi
+
 set -- "${WESTON_EXTRA_ARGS[@]}"
 
 #
