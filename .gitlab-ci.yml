@@ -73,6 +73,31 @@ variables:
   ## debian-dotnet-development-images
 
   DOTNET_RELEASE: "6.0"
+
+  DOTNET_MAJOR: "3"
+  DOTNET_MINOR: "0"
+  DOTNET_PATCH: "0"
+
+  ASPDOTNET_MAJOR: "3"
+  ASPDOTNET_MINOR: "0"
+  ASPDOTNET_PATCH: "0"
+
+  DOTNET_DEBUG_MAJOR: "3"
+  DOTNET_DEBUG_MINOR: "0"
+  DOTNET_DEBUG_PATCH: "0"
+
+  ASPDOTNET_DEBUG_MAJOR: "3"
+  ASPDOTNET_DEBUG_MINOR: "0"
+  ASPDOTNET_DEBUG_PATCH: "0"
+
+  DOTNET_UNO_MAJOR: "3"
+  DOTNET_UNO_MINOR: "0"
+  DOTNET_UNO_PATCH: "0"
+
+  DOTNET_UNO_DEBUG_MAJOR: "3"
+  DOTNET_UNO_DEBUG_MINOR: "0"
+  DOTNET_UNO_DEBUG_PATCH: "0"
+
   DOTNET_SEMANTIC_VERSION: "6.0.16"
   # The latest version of vsdbg can be obtained by running the follow command:
   #curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
@@ -1250,7 +1275,7 @@ build-torizon-samples:
         export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
         export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND} ${MAJOR}.${MINOR}${RELEASE_APPEND}"
       else
-        export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE}"
+        export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}-${DOTNET_VERSION} ${MAJOR}.${MINOR}.${PATCH}-${DOTNET_RELEASE} ${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_VERSION} ${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_RELEASE}"
       fi
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN;
     - for tag in ${DOCKER_TAGS_CHECK};
@@ -1603,7 +1628,9 @@ docker-deploy-stress-tests-arm64:
 docker-deploy-dotnet-arm32:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_MAJOR}"
+    - export MINOR="${DOTNET_MINOR}"
+    - export PATCH="${DOTNET_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-dotnet
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1614,7 +1641,9 @@ docker-deploy-dotnet-arm32:
 docker-deploy-dotnet-arm64:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_MAJOR}"
+    - export MINOR="${DOTNET_MINOR}"
+    - export PATCH="${DOTNET_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-dotnet
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1625,7 +1654,9 @@ docker-deploy-dotnet-arm64:
 docker-deploy-dotnet-arm32-asp:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_MAJOR}"
+    - export MINOR="${ASPDOTNET_MINOR}"
+    - export PATCH="${ASPDOTNET_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-aspdotnet
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1636,7 +1667,9 @@ docker-deploy-dotnet-arm32-asp:
 docker-deploy-dotnet-arm64-asp:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_MAJOR}"
+    - export MINOR="${ASPDOTNET_MINOR}"
+    - export PATCH="${ASPDOTNET_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-aspdotnet
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1647,7 +1680,9 @@ docker-deploy-dotnet-arm64-asp:
 docker-deploy-dotnet-debug-arm32:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_DEBUG_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-dotnet-debug
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1658,7 +1693,9 @@ docker-deploy-dotnet-debug-arm32:
 docker-deploy-dotnet-debug-arm64:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_DEBUG_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-dotnet-debug
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1669,7 +1706,9 @@ docker-deploy-dotnet-debug-arm64:
 docker-deploy-dotnet-debug-arm32-asp:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_DEBUG_MAJOR}"
+    - export MINOR="${ASPDOTNET_DEBUG_MINOR}"
+    - export PATCH="${ASPDOTNET_DEBUG_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-aspdotnet-debug
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1680,7 +1719,9 @@ docker-deploy-dotnet-debug-arm32-asp:
 docker-deploy-dotnet-debug-arm64-asp:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_DEBUG_MAJOR}"
+    - export MINOR="${ASPDOTNET_DEBUG_MINOR}"
+    - export PATCH="${ASPDOTNET_DEBUG_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-aspdotnet-debug
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1691,7 +1732,9 @@ docker-deploy-dotnet-debug-arm64-asp:
 docker-deploy-dotnet-arm32-uno:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_UNO_MAJOR}"
+    - export MINOR="${DOTNET_UNO_MINOR}"
+    - export PATCH="${DOTNET_UNO_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-dotnet-uno
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1702,7 +1745,9 @@ docker-deploy-dotnet-arm32-uno:
 docker-deploy-dotnet-arm64-uno:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_UNO_MAJOR}"
+    - export MINOR="${DOTNET_UNO_MINOR}"
+    - export PATCH="${DOTNET_UNO_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-dotnet-uno
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1713,7 +1758,9 @@ docker-deploy-dotnet-arm64-uno:
 docker-deploy-dotnet-debug-arm32-uno:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_UNO_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_UNO_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_UNO_DEBUG_PATCH}"
   variables:
     IMAGE_NAME: arm32v7-dotnet-uno-debug
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1724,7 +1771,9 @@ docker-deploy-dotnet-debug-arm32-uno:
 docker-deploy-dotnet-debug-arm64-uno:
   extends: .docker-deploy
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_UNO_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_UNO_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_UNO_DEBUG_PATCH}"
   variables:
     IMAGE_NAME: arm64v8-dotnet-uno-debug
     RELEASE_APPEND: "-${DOTNET_RELEASE}"
@@ -1742,7 +1791,7 @@ docker-deploy-dotnet-debug-arm64-uno:
       export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
       export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND} ${MAJOR}.${MINOR}${RELEASE_APPEND}"
     else
-      export DOCKER_TAGS_CHECK="${MAJOR}-${DOTNET_VERSION} ${MAJOR}-${DOTNET_RELEASE} ${MAJOR}-${DATE}-${DOTNET_VERSION} ${MAJOR}-${DATE}-${DOTNET_RELEASE}"
+      export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}-${DOTNET_VERSION} ${MAJOR}.${MINOR}.${PATCH}-${DOTNET_RELEASE} ${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_VERSION} ${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_RELEASE}"
     fi
   - *do_print_environment_variables
   - rm -rf ~/.docker/manifests/*
@@ -1862,7 +1911,9 @@ docker-deploy-stress-tests-multiarch:
 docker-deploy-dotnet-multiarch:
   extends: .docker-deploy-multiarch
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_MAJOR}"
+    - export MINOR="${DOTNET_MINOR}"
+    - export PATCH="${DOTNET_PATCH}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
   variables:
     IMAGE_NAME: dotnet
@@ -1875,7 +1926,9 @@ docker-deploy-dotnet-multiarch:
 docker-deploy-aspnet-multiarch:
   extends: .docker-deploy-multiarch
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_MAJOR}"
+    - export MINOR="${ASPDOTNET_MINOR}"
+    - export PATCH="${ASPDOTNET_PATCH}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
   variables:
     IMAGE_NAME: aspdotnet
@@ -1888,7 +1941,9 @@ docker-deploy-aspnet-multiarch:
 docker-deploy-dotnet-debug-multiarch:
   extends: .docker-deploy-multiarch
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_DEBUG_PATCH}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
   variables:
     IMAGE_NAME: dotnet-debug
@@ -1901,7 +1956,9 @@ docker-deploy-dotnet-debug-multiarch:
 docker-deploy-aspnet-debug-multiarch:
   extends: .docker-deploy-multiarch
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_DEBUG_MAJOR}"
+    - export MINOR="${ASPDOTNET_DEBUG_MINOR}"
+    - export PATCH="${ASPDOTNET_DEBUG_PATCH}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
   variables:
     IMAGE_NAME: aspdotnet-debug
@@ -1914,7 +1971,9 @@ docker-deploy-aspnet-debug-multiarch:
 docker-deploy-dotnet-uno-multiarch:
   extends: .docker-deploy-multiarch
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_UNO_MAJOR}"
+    - export MINOR="${DOTNET_UNO_MINOR}"
+    - export PATCH="${DOTNET_UNO_PATCH}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
   variables:
     IMAGE_NAME: dotnet-uno
@@ -1927,7 +1986,9 @@ docker-deploy-dotnet-uno-multiarch:
 docker-deploy-dotnet-uno-debug-multiarch:
   extends: .docker-deploy-multiarch
   before_script:
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_UNO_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_UNO_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_UNO_DEBUG_PATCH}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
   variables:
     IMAGE_NAME: dotnet-uno-debug
