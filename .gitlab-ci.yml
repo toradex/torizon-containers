@@ -1,3 +1,7 @@
+---
+include:
+  - https://gitlab.int.toradex.com/rd/torizon-core/debian/debian-pipeline/-/raw/tdx-feed/torizon-core.yml
+
 image: docker:latest
 
 variables:
@@ -219,7 +223,7 @@ pull-tag-and-push-debian-image:
                   --build-arg ADD_TORADEX_REPOSITORY=${ADD_TORADEX_REPOSITORY}
                   --build-arg ACCEPT_FSL_EULA=${ACCEPT_FSL_EULA}
                   --build-arg QT5_EXAMPLES_DEBIAN=${QT5_EXAMPLES_DEBIAN}
-                  --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT:-20230602T160948Z}
+                  --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT}
                   --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
                   --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}
                   --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}
