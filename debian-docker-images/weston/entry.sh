@@ -70,6 +70,19 @@ while [[ $# -ne 0 ]]; do
 	shift
 done
 
+function vt_setup() {
+	# Some applications may leave old VT in graphics mode which causes
+	# applications like openvt and chvt to hang at VT_WAITACTIVE ioctl when they
+	# try to switch to a new VT
+
+	# grabs the current active VT, before possibly switching
+	OLD_VT=$(cat /sys/class/tty/tty0/active)
+	OLD_VT_MODE=$(kbdinfo -C /dev/"${OLD_VT}" getmode)
+	if [ "$OLD_VT_MODE" = "graphics" ]; then
+		/usr/bin/switchvtmode.pl "${OLD_VT:3}" text
+	fi
+}
+
 # Change the foreground virtual terminal by default.
 # This is specifically done because Plymouth deactivates and releases the drm fd
 # if the foreground terminal is changed[0].
@@ -81,8 +94,8 @@ done
 # [0] https://cgit.freedesktop.org/plymouth/commit/?id=5ab755153356b3f685afe87c5926969389665bb2
 
 if [ "$DO_NOT_SWITCH_TTY" = false ]; then
-	echo "Switching to VT ${VT}"
-	chvt "${VT}"
+	echo "Switching VT $(cat /sys/class/tty/tty0/active) to text mode if currently in graphics mode" && vt_setup
+	echo "Switching to VT ${VT}" && chvt "${VT}"
 fi
 
 set -- "${WESTON_EXTRA_ARGS[@]}"
@@ -155,23 +168,6 @@ function init_xdg() {
 }
 
 init_xdg
-
-#
-# Make sure old VT is in text mode
-#
-
-function vt_setup() {
-	# Some applications may leave old VT in graphics mode which causes
-	# applications like openvt and chvt to hang at VT_WAITACTIVE ioctl when they
-	# try to switch to a new VT
-	OLD_VT=$(cat /sys/class/tty/tty0/active)
-	OLD_VT_MODE=$(kbdinfo -C /dev/"${OLD_VT}" getmode)
-	if [ "$OLD_VT_MODE" = "graphics" ]; then
-		/usr/bin/switchvtmode.pl "${OLD_VT:3}" text
-	fi
-}
-
-vt_setup
 
 #
 # Execute the weston compositor.
