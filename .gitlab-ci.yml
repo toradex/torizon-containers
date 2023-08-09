@@ -127,25 +127,37 @@ variables:
 # jobs and as to not replicate the folder names in `changes:` tags as well
 
   DEBIAN_DOCKER_IMAGES_FOLDER: "debian-docker-images"
+  IMX8_FOLDER: "imx8"
+  UPSTREAM_FOLDER: "upstream"
+
   DEBIAN_CROSS_TOOLCHAINS_FOLDER: "debian-cross-toolchains"
   DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER: "debian-dotnet-development-images"
+  DEBIAN_PACKAGE_DEVEL_FOLDER: "debian-package-devel"
+
   SSH_FOLDER: "ssh"
+
+  BASE_IMX8_FOLDER: "base-imx8"
+  GRAPHICS_TESTS_IMX8_FOLDER: "graphics-tests-imx8"
+  QT5_WAYLAND_EXAMPLES_IMX8_FOLDER: "qt5-wayland-examples-imx8"
+  QT5_WAYLAND_IMX8_FOLDER: "qt5-wayland-imx8"
+  WAYLAND_BASE_IMX8_FOLDER: "wayland-base-imx8"
+  WESTON_TOUCH_CALIBRATOR_IMX8_FOLDER: "weston-touch-calibrator-imx8"
+  WESTON_IMX8_FOLDER: "weston-imx8"
+
   BASE_FOLDER: "base"
-  BASE_VIVANTE_FOLDER: "base-vivante"
-  WAYLAND_BASE_FOLDER: "wayland-base"
-  WAYLAND_BASE_VIVANTE_FOLDER: "wayland-base-vivante"
-  WESTON_FOLDER: "weston"
   GRAPHICS_TESTS_FOLDER: "graphics-tests"
-  GRAPHICS_TESTS_VIVANTE_FOLDER: "graphics-tests-vivante"
-  WESTON_TOUCH_CALIBRATOR_FOLDER: "weston-touch-calibrator"
   QT5_WAYLAND_FOLDER: "qt5-wayland"
   QT5_WAYLAND_EXAMPLES_FOLDER: "qt5-wayland-examples"
+  WAYLAND_BASE_FOLDER: "wayland-base"
+  WESTON_FOLDER: "weston"
+  WESTON_TOUCH_CALIBRATOR_FOLDER: "weston-touch-calibrator"
+
   DEBUG_FOLDER: "debug"
   UNO_BASE_FOLDER: "uno-base"
   UNO_DEBUG_FOLDER: "uno-debug"
-  DEBIAN_PACKAGE_DEVEL_FOLDER: "debian-package-devel"
-  RT_VALIDATION_FOLDER: "rt-validation"
+
   RT_TESTS_FOLDER: "rt-tests"
+  RT_VALIDATION_FOLDER: "rt-validation"
   STRESS_TESTS_FOLDER: "stress-tests"
 
 services:
