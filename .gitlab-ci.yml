@@ -994,11 +994,10 @@ lint_dockerfile:
     # - DL3006 (always tag the version of an image explicitly)
     # - DL3008 (pin versions in apt-get install)
     # - DL3020 (use COPY instead of ADD for files and folders)
-    # - DL3029 (do not use --platform flag with FROM)
     # - DL4006 (set the SHELL option -o pipefail before RUN with a pipe in it)
     # - SC2039 (in POSIX sh, something is undefined)
     # - SC2046 (quote this to prevent word splitting)
-    - hadolint */Dockerfile --failure-threshold warning --info DL3002 --info DL3003 --info DL3006 --info DL3008 --info DL3020 --info DL3029 --info DL4006 --info SC2039 --info SC2046
+    - hadolint */Dockerfile --failure-threshold warning --info DL3002 --info DL3003 --info DL3006 --info DL3008 --info DL3020 --info DL4006 --info SC2039 --info SC2046
 
 .shellcheck:
   stage: lint
@@ -1305,7 +1304,6 @@ docker-deploy-qt5-wayland-examples-imx8:
     IMAGE_NAME: qt5-wayland-examples-imx8
   stage: deploy
   needs: ["docker-build-qt5-wayland-imx8"]
-
 
 ## debian-cross-toolchains
 
