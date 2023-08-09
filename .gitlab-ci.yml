@@ -414,7 +414,7 @@ docker-build-wayland-base-arm64v8:
   stage: build-stage1
   needs: ["docker-build-base-arm64v8"]
 
-docker-build-wayland-base-vivante:
+docker-build-wayland-base-imx8:
   retry: 2
   extends: .docker-build
   before_script:
@@ -426,13 +426,13 @@ docker-build-wayland-base-vivante:
   variables:
     IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-debian
-    IMAGE_NAME: wayland-base-vivante
+    IMAGE_NAME: wayland-base-imx8
     ACCEPT_FSL_EULA: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WAYLAND_BASE_VIVANTE_FOLDER}/"
   stage: build-stage1
   needs: ["docker-build-base-arm64v8"]
 
-docker-build-weston-vivante:
+docker-build-weston-imx8:
   retry: 2
   extends: .docker-build
   before_script:
@@ -444,14 +444,14 @@ docker-build-weston-vivante:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: wayland-base-vivante
-    IMAGE_NAME: weston-vivante
+    BASE_NAME: wayland-base-imx8
+    IMAGE_NAME: weston-imx8
     ACCEPT_FSL_EULA: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_FOLDER}/"
   stage: build-stage2
-  needs: ["docker-build-wayland-base-vivante"]
+  needs: ["docker-build-wayland-base-imx8"]
 
-docker-build-graphics-tests-vivante:
+docker-build-graphics-tests-imx8:
   retry: 2
   extends: .docker-build
   before_script:
@@ -462,11 +462,11 @@ docker-build-graphics-tests-vivante:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: wayland-base-vivante
-    IMAGE_NAME: graphics-tests-vivante
+    BASE_NAME: wayland-base-imx8
+    IMAGE_NAME: graphics-tests-imx8
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${GRAPHICS_TESTS_VIVANTE_FOLDER}/"
   stage: build-stage2
-  needs: ["docker-build-wayland-base-vivante"]
+  needs: ["docker-build-wayland-base-imx8"]
 
 docker-build-weston-touch-calibrator-arm64v8:
   retry: 2
@@ -479,11 +479,11 @@ docker-build-weston-touch-calibrator-arm64v8:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: weston-vivante
+    BASE_NAME: weston-imx8
     IMAGE_NAME: arm64v8-debian-weston-touch-calibrator
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-weston-vivante"]
+  needs: ["docker-build-weston-imx8"]
 
 docker-build-qt5-wayland-arm64v8:
   retry: 2
@@ -518,7 +518,7 @@ docker-build-qt5-wayland-examples-arm64v8:
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-arm64v8"]
 
-docker-build-qt5-wayland-vivante:
+docker-build-qt5-wayland-imx8:
   retry: 2
   extends: .docker-build
   before_script:
@@ -529,13 +529,13 @@ docker-build-qt5-wayland-vivante:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: wayland-base-vivante
-    IMAGE_NAME: qt5-wayland-vivante
+    BASE_NAME: wayland-base-imx8
+    IMAGE_NAME: qt5-wayland-imx8
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
   stage: build-stage2
-  needs: ["docker-build-wayland-base-vivante"]
+  needs: ["docker-build-wayland-base-imx8"]
 
-docker-build-qt5-wayland-vivante-examples:
+docker-build-qt5-wayland-imx8-examples:
   retry: 2
   extends: .docker-build
   before_script:
@@ -546,12 +546,12 @@ docker-build-qt5-wayland-vivante-examples:
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: qt5-wayland-vivante
-    IMAGE_NAME: qt5-wayland-examples-vivante
+    BASE_NAME: qt5-wayland-imx8
+    IMAGE_NAME: qt5-wayland-examples-imx8
     QT5_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-qt5-wayland-vivante"]
+  needs: ["docker-build-qt5-wayland-imx8"]
 
 ## ${DEBIAN_CROSS_TOOLCHAINS_FOLDER}
 
@@ -623,7 +623,7 @@ docker-build-arm64-toolchain:
   stage: build-base
   needs: []
 
-docker-build-arm64-toolchain-vivante:
+docker-build-arm64-toolchain-imx8:
   retry: 2
   extends: .docker-build
   before_script:
@@ -635,7 +635,7 @@ docker-build-arm64-toolchain-vivante:
   variables:
     IMAGE_ARCH: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
-    IMAGE_NAME: debian-cross-toolchain-arm64-vivante
+    IMAGE_NAME: debian-cross-toolchain-arm64-imx8
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_VIVANTE_FOLDER}/"
     ACCEPT_FSL_EULA: 1
   stage: build-base
@@ -800,11 +800,11 @@ docker-build-dotnet-arm64-uno:
   variables:
     IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-dotnet
-    BASE_NAME_WAYLAND: wayland-base-vivante
+    BASE_NAME_WAYLAND: wayland-base-imx8
     IMAGE_NAME: arm64v8-dotnet-uno
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_BASE_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-dotnet-arm64", "docker-build-wayland-base-vivante"]
+  needs: ["docker-build-dotnet-arm64", "docker-build-wayland-base-imx8"]
 
 docker-build-dotnet-debug-arm32:
   retry: 2
@@ -1077,13 +1077,13 @@ tag:
             weston-${WESTON_MAJOR}.${WESTON_MINOR}.${WESTON_PATCH}
             qt5-wayland-${QT5_WAYLAND_MAJOR}.${QT5_WAYLAND_MINOR}.${QT5_WAYLAND_PATCH}
             qt5-wayland-examples-${QT5_WAYLAND_EXAMPLES_MAJOR}.${QT5_WAYLAND_EXAMPLES_MINOR}.${QT5_WAYLAND_EXAMPLES_PATCH}
-            wayland-base-vivante-${WAYLAND_BASE_VIVANTE_MAJOR}.${WAYLAND_BASE_VIVANTE_MINOR}.${WAYLAND_BASE_VIVANTE_PATCH}
-            weston-vivante-${WESTON_VIVANTE_MAJOR}.${WESTON_VIVANTE_MINOR}.${WESTON_VIVANTE_PATCH}
-            qt5-wayland-vivante-${QT5_WAYLAND_VIVANTE_MAJOR}.${QT5_WAYLAND_VIVANTE_MINOR}.${QT5_WAYLAND_VIVANTE_PATCH}
-            qt5-wayland-examples-vivante-${QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR}.${QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR}.${QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH}
+            wayland-base-imx8-${WAYLAND_BASE_VIVANTE_MAJOR}.${WAYLAND_BASE_VIVANTE_MINOR}.${WAYLAND_BASE_VIVANTE_PATCH}
+            weston-imx8-${WESTON_VIVANTE_MAJOR}.${WESTON_VIVANTE_MINOR}.${WESTON_VIVANTE_PATCH}
+            qt5-wayland-imx8-${QT5_WAYLAND_VIVANTE_MAJOR}.${QT5_WAYLAND_VIVANTE_MINOR}.${QT5_WAYLAND_VIVANTE_PATCH}
+            qt5-wayland-examples-imx8-${QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR}.${QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR}.${QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH}
             weston-touch-calibrator-${WESTON_TOUCH_CALIBRATOR_MAJOR}.${WESTON_TOUCH_CALIBRATOR_MINOR}.${WESTON_TOUCH_CALIBRATOR_PATCH}
             graphics-tests-${GRAPHICS_TESTS_MAJOR}.${GRAPHICS_TESTS_MINOR}.${GRAPHICS_TESTS_PATCH}
-            graphics-tests-vivante-${GRAPHICS_TESTS_VIVANTE_MAJOR}.${GRAPHICS_TESTS_VIVANTE_MINOR}.${GRAPHICS_TESTS_VIVANTE_PATCH}
+            graphics-tests-imx8-${GRAPHICS_TESTS_VIVANTE_MAJOR}.${GRAPHICS_TESTS_VIVANTE_MINOR}.${GRAPHICS_TESTS_VIVANTE_PATCH}
             debian-cross-toolchains-${DEBIAN_CROSS_TOOLCHAINS_MAJOR}.${DEBIAN_CROSS_TOOLCHAINS_MINOR}.${DEBIAN_CROSS_TOOLCHAINS_PATCH}
             debian-cross-toolchains-ssh-${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}.${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}.${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
   script:
@@ -1254,38 +1254,38 @@ docker-deploy-wayland-base-arm64v8:
   stage: deploy
   needs: ["docker-build-wayland-base-arm64v8"]
 
-docker-deploy-wayland-base-vivante:
+docker-deploy-wayland-base-imx8:
   extends: .docker-deploy
   before_script:
     - export MAJOR="${WAYLAND_BASE_VIVANTE_MAJOR}"
     - export MINOR="${WAYLAND_BASE_VIVANTE_MINOR}"
     - export PATCH="${WAYLAND_BASE_VIVANTE_PATCH}"
   variables:
-    IMAGE_NAME: wayland-base-vivante
+    IMAGE_NAME: wayland-base-imx8
   stage: deploy
-  needs: ["docker-build-wayland-base-vivante"]
+  needs: ["docker-build-wayland-base-imx8"]
 
-docker-deploy-weston-vivante:
+docker-deploy-weston-imx8:
   extends: .docker-deploy
   before_script:
     - export MAJOR="${WESTON_VIVANTE_MAJOR}"
     - export MINOR="${WESTON_VIVANTE_MINOR}"
     - export PATCH="${WESTON_VIVANTE_PATCH}"
   variables:
-    IMAGE_NAME: weston-vivante
+    IMAGE_NAME: weston-imx8
   stage: deploy
-  needs: ["docker-build-weston-vivante"]
+  needs: ["docker-build-weston-imx8"]
 
-docker-deploy-graphics-tests-vivante:
+docker-deploy-graphics-tests-imx8:
   extends: .docker-deploy
   before_script:
     - export MAJOR="${GRAPHICS_TESTS_VIVANTE_MAJOR}"
     - export MINOR="${GRAPHICS_TESTS_VIVANTE_MINOR}"
     - export PATCH="${GRAPHICS_TESTS_VIVANTE_PATCH}"
   variables:
-    IMAGE_NAME: graphics-tests-vivante
+    IMAGE_NAME: graphics-tests-imx8
   stage: deploy
-  needs: ["docker-build-graphics-tests-vivante"]
+  needs: ["docker-build-graphics-tests-imx8"]
 
 docker-deploy-weston-touch-calibrator-arm64v8:
   extends: .docker-deploy
@@ -1309,14 +1309,14 @@ docker-deploy-qt5-wayland-arm64v8:
   stage: deploy
   needs: ["docker-build-weston-touch-calibrator-arm64v8"]
 
-docker-deploy-qt5-wayland-vivante:
+docker-deploy-qt5-wayland-imx8:
   extends: .docker-deploy
   before_script:
     - export MAJOR="${QT5_WAYLAND_VIVANTE_MAJOR}"
     - export MINOR="${QT5_WAYLAND_VIVANTE_MINOR}"
     - export PATCH="${QT5_WAYLAND_VIVANTE_PATCH}"
   variables:
-    IMAGE_NAME: qt5-wayland-vivante
+    IMAGE_NAME: qt5-wayland-imx8
   stage: deploy
   needs: ["docker-build-qt5-wayland-arm64v8"]
 
@@ -1331,16 +1331,16 @@ docker-deploy-qt5-wayland-examples-arm64v8:
   stage: deploy
   needs: ["docker-build-qt5-wayland-arm64v8"]
 
-docker-deploy-qt5-wayland-examples-vivante:
+docker-deploy-qt5-wayland-examples-imx8:
   extends: .docker-deploy
   before_script:
     - export MAJOR="${QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR}"
     - export MINOR="${QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR}"
     - export PATCH="${QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH}"
   variables:
-    IMAGE_NAME: qt5-wayland-examples-vivante
+    IMAGE_NAME: qt5-wayland-examples-imx8
   stage: deploy
-  needs: ["docker-build-qt5-wayland-vivante"]
+  needs: ["docker-build-qt5-wayland-imx8"]
 
 
 ## debian-cross-toolchains
@@ -1393,7 +1393,7 @@ docker-deploy-arm64-toolchain:
   stage: deploy
   needs: ["docker-build-arm64-toolchain"]
 
-docker-deploy-arm64-toolchain-vivante:
+docker-deploy-arm64-toolchain-imx8:
   extends: .docker-deploy
   before_script:
     - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
@@ -1401,9 +1401,9 @@ docker-deploy-arm64-toolchain-vivante:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
-    IMAGE_NAME: debian-cross-toolchain-arm64-vivante
+    IMAGE_NAME: debian-cross-toolchain-arm64-imx8
   stage: deploy
-  needs: ["docker-build-arm64-toolchain-vivante"]
+  needs: ["docker-build-arm64-toolchain-imx8"]
 
 docker-deploy-arm64-toolchain-ssh:
   extends: .docker-deploy
