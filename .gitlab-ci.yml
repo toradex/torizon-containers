@@ -274,6 +274,8 @@ pull-tag-and-push-debian-image:
 
 ## debian-docker-images
 
+# upstream
+
 docker-build-base:
   retry: 2
   extends: .docker-build
@@ -389,38 +391,7 @@ docker-build-qt5-wayland-examples:
   stage: build-stage3
   needs: ["docker-build-qt5-wayland"]
 
-docker-build-base-arm64v8:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_NAME: arm64v8-debian
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${BASE_FOLDER}/"
-  stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
-
-docker-build-wayland-base-arm64v8:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${WAYLAND_BASE_MAJOR}"
-    - export MINOR="${WAYLAND_BASE_MINOR}"
-    - export PATCH="${WAYLAND_BASE_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: arm64v8-debian
-    IMAGE_NAME: arm64v8-debian-wayland-base
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WAYLAND_BASE_FOLDER}/"
-  stage: build-stage1
-  needs: ["docker-build-base-arm64v8"]
+# imx8
 
 docker-build-wayland-base-imx8:
   retry: 2
@@ -475,56 +446,6 @@ docker-build-graphics-tests-imx8:
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${GRAPHICS_TESTS_VIVANTE_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-imx8"]
-
-docker-build-weston-touch-calibrator-arm64v8:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_BASE_TAG="${WESTON_VIVANTE_MAJOR}"
-    - export MAJOR="${WESTON_TOUCH_CALIBRATOR_MAJOR}"
-    - export MINOR="${WESTON_TOUCH_CALIBRATOR_MINOR}"
-    - export PATCH="${WESTON_TOUCH_CALIBRATOR_PATCH}"
-    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: weston-imx8
-    IMAGE_NAME: arm64v8-debian-weston-touch-calibrator
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
-  stage: build-stage3
-  needs: ["docker-build-weston-imx8"]
-
-docker-build-qt5-wayland-arm64v8:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_BASE_TAG="${WAYLAND_BASE_MAJOR}"
-    - export MAJOR="${QT5_WAYLAND_MAJOR}"
-    - export MINOR="${QT5_WAYLAND_MINOR}"
-    - export PATCH="${QT5_WAYLAND_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: arm64v8-debian-wayland-base
-    IMAGE_NAME: arm64v8-debian-qt5-wayland
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_FOLDER}/"
-  stage: build-stage2
-  needs: ["docker-build-wayland-base-arm64v8"]
-
-docker-build-qt5-wayland-examples-arm64v8:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_BASE_TAG="${QT5_WAYLAND_MAJOR}"
-    - export MAJOR="${QT5_WAYLAND_EXAMPLES_MAJOR}"
-    - export MINOR="${QT5_WAYLAND_EXAMPLES_MINOR}"
-    - export PATCH="${QT5_WAYLAND_EXAMPLES_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    BASE_NAME: arm64v8-debian-qt5-wayland
-    IMAGE_NAME: arm64v8-debian-qt5-wayland-examples
-    QT5_EXAMPLES_DEBIAN: 1
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
-  stage: build-stage3
-  needs: ["docker-build-qt5-wayland-arm64v8"]
 
 docker-build-qt5-wayland-imx8:
   retry: 2
