@@ -1,9 +1,7 @@
 # Copyright (c) 2019-2023 Toradex AG
 # SPDX-License-Identifier: MIT
 
-ARG IMAGE_ARCH=linux/arm/v7
-# For arm64v8 use:
-# ARG IMAGE_ARCH=linux/arm64/v8
+ARG IMAGE_ARCH=linux/arm64/v8
 ARG IMAGE_TAG=bookworm-slim
 ARG TORADEX_SNAPSHOT
 ARG USE_TORADEX_SNAPSHOT=1
