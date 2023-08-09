@@ -219,10 +219,12 @@ pull-tag-and-push-debian-image:
   - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE};
   - docker manifest push ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE};
 
-# Docker image builds
-#
-# Build the Docker images specificd in project/$DOCKERFILE_FOLDER/ and push
-# it to Gitlab's internal Docker registry
+# Enable experimental features in Docker client (experimental feature are needed for manifest)
+.do_docker_experimental: &do_docker_experimental
+    - mkdir -p $HOME/.docker
+    - "echo -e '{\n  \"experimental\": \"true\"\n}' | tee $HOME/.docker/config.json"
+    - docker version
+
 .docker-build:
   variables:
     ADD_TORADEX_REPOSITORY: 1
@@ -1100,12 +1102,6 @@ tag:
           git push -o ci.skip origin ${TAG};
         fi
       done
-
-# Enable experimental features in Docker client (experimental feature are needed for manifest)
-.do_docker_experimental: &do_docker_experimental
-    - mkdir -p $HOME/.docker
-    - "echo -e '{\n  \"experimental\": \"true\"\n}' | tee $HOME/.docker/config.json"
-    - docker version
 
 # Bridge
 #
