@@ -6,9 +6,9 @@ ARG DOCKER_REGISTRY
 
 FROM ${DOCKER_REGISTRY}/debian:$DEBIAN_BASE_IMAGE
 
-ARG IMAGE_ARCH=armhf
+ARG CROSS_COMPILER_TARGET_ARCH=armhf
 # For arm64 use:
-# ARG IMAGE_ARCH=arm64
+# ARG CROSS_COMPILER_TARGET_ARCH=arm64
 ARG CROSS_COMPILE_ARG="arm-linux-gnueabihf"
 # For arm64 use:
 # ARG CROSS_COMPILE_ARG="aarch64-linux-gnu"
@@ -47,7 +47,7 @@ RUN if [ "${ACCEPT_FSL_EULA}" != "1" ];then \
     fi
 
 # Enable multiarch
-RUN dpkg --add-architecture ${IMAGE_ARCH}
+RUN dpkg --add-architecture ${CROSS_COMPILER_TARGET_ARCH}
 
 # Add toradex key and package feed
 RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo.gpg \
@@ -75,7 +75,7 @@ RUN apt-get -q -y update \
     openssl \
     wget \
     curl \
-    crossbuild-essential-${IMAGE_ARCH} \
+    crossbuild-essential-${CROSS_COMPILER_TARGET_ARCH} \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*

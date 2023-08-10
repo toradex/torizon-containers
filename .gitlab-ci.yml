@@ -245,6 +245,7 @@ pull-tag-and-push-debian-image:
   - if [ -n "$BUILD_FOR_AMD64" ]; then echo "Building for linux/amd64" && PLATFORM_BUILD_AMD64="--platform linux/amd64"; fi
 
   - docker buildx build --progress=plain --push ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
+                  --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
                   --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY:-${CI_REGISTRY_IMAGE}}
                   --build-arg BASE_NAME=${BASE_NAME}
                   --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
@@ -535,7 +536,7 @@ docker-build-armhf-toolchain:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
-    IMAGE_ARCH: armhf
+    CROSS_COMPILER_TARGET_ARCH: armhf
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-armhf
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
@@ -552,7 +553,7 @@ docker-build-arm-toolchain:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
-    IMAGE_ARCH: armhf
+    CROSS_COMPILER_TARGET_ARCH: armhf
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-arm
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
@@ -569,7 +570,7 @@ docker-build-armhf-toolchain-ssh:
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
   variables:
-    IMAGE_ARCH: armhf
+    CROSS_COMPILER_TARGET_ARCH: armhf
     BASE_NAME: debian-cross-toolchain-armhf
     IMAGE_NAME: debian-cross-toolchain-ssh-armhf
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
@@ -586,7 +587,7 @@ docker-build-arm64-toolchain:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
-    IMAGE_ARCH: arm64
+    CROSS_COMPILER_TARGET_ARCH: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
@@ -603,7 +604,7 @@ docker-build-arm64-toolchain-imx8:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
-    IMAGE_ARCH: arm64
+    CROSS_COMPILER_TARGET_ARCH: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64-imx8
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_VIVANTE_FOLDER}/"
@@ -621,7 +622,7 @@ docker-build-arm64-toolchain-ssh:
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
   variables:
-    IMAGE_ARCH: arm64
+    CROSS_COMPILER_TARGET_ARCH: arm64
     BASE_NAME: debian-cross-toolchain-arm64
     IMAGE_NAME: debian-cross-toolchain-ssh-arm64
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
@@ -638,7 +639,7 @@ docker-build-x86-toolchain:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
-    IMAGE_ARCH: amd64
+    CROSS_COMPILER_TARGET_ARCH: amd64
     CROSS_COMPILE_ARG: x86_64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-amd64
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
@@ -656,7 +657,7 @@ docker-build-x86-toolchain-ssh:
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
   variables:
-    IMAGE_ARCH: amd64
+    CROSS_COMPILER_TARGET_ARCH: amd64
     BASE_NAME: debian-cross-toolchain-amd64
     IMAGE_NAME: debian-cross-toolchain-ssh-amd64
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
