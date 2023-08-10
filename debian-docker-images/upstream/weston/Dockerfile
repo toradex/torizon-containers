@@ -15,11 +15,6 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
     seatd \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
-# Install touch2pointer application
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    touch2pointer \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
-
 # Container entry point and support files.
 COPY entry.sh /usr/bin/entry.sh
 COPY switchvtmode.pl /usr/bin/switchvtmode.pl
