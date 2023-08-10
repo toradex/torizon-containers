@@ -13,7 +13,7 @@ declare -a WESTON_EXTRA_ARGS
 # `option:` means the option has a non-optional arguments
 # `option::` means the option has optional arguments
 # `option` means the option has no arguments.
-OPTIONS=developer,touch2pointer,no-change-tty,tty:
+OPTIONS=developer,no-change-tty,tty:
 
 WAYLAND_USER=${WAYLAND_USER:-torizon}
 WESTON_ARGS=${WESTON_ARGS:--Bdrm-backend.so --current-mode -S${WAYLAND_DISPLAY}}
@@ -47,9 +47,6 @@ while [[ $# -ne 0 ]]; do
 	--developer)
 		export XDG_CONFIG_HOME=/etc/xdg/weston-dev
 		echo "XDG_CONFIG_HOME=/etc/xdg/weston-dev" >>/etc/environment
-		;;
-	--touch2pointer)
-		/usr/bin/touch2pointer "$1" &
 		;;
 	--tty)
 		# Populates VT with the /dev/ttyX option that follows the --tty option
