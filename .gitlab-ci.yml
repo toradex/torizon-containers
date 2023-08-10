@@ -927,8 +927,9 @@ docker-build-rt-tests:
     - export MINOR="${RT_TESTS_MINOR}"
     - export PATCH="${RT_TESTS_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_NAME: arm32v7-rt-tests
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    IMAGE_NAME: rt-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
@@ -943,40 +944,9 @@ docker-build-stress-tests:
     - export MINOR="${STRESS_TESTS_MINOR}"
     - export PATCH="${STRESS_TESTS_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_NAME: arm32v7-stress-tests
-    DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
-    DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
-  stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
-
-docker-build-rt-tests-arm64:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
-    - export MAJOR="${RT_TESTS_MAJOR}"
-    - export MINOR="${RT_TESTS_MINOR}"
-    - export PATCH="${RT_TESTS_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_NAME: arm64v8-rt-tests
-    DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
-    DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
-  stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
-
-docker-build-stress-tests-arm64:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
-    - export MAJOR="${STRESS_TESTS_MAJOR}"
-    - export MINOR="${STRESS_TESTS_MINOR}"
-    - export PATCH="${STRESS_TESTS_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_NAME: arm64v8-stress-tests
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    IMAGE_NAME: stress-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
