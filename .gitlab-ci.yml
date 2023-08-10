@@ -524,7 +524,7 @@ docker-build-qt5-wayland-imx8-examples:
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-imx8"]
 
-## ${DEBIAN_CROSS_TOOLCHAINS_FOLDER}
+## debian-cross-toolchains
 
 docker-build-armhf-toolchain:
   retry: 2
@@ -536,26 +536,10 @@ docker-build-armhf-toolchain:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
+    BUILD_FOR_AMD64: "true"
     CROSS_COMPILER_TARGET_ARCH: armhf
     CROSS_COMPILE_ARG: arm-linux-gnueabihf
     IMAGE_NAME: debian-cross-toolchain-armhf
-    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
-  stage: build-base
-  needs: []
-  
-docker-build-arm-toolchain:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-  variables:
-    CROSS_COMPILER_TARGET_ARCH: armhf
-    CROSS_COMPILE_ARG: arm-linux-gnueabihf
-    IMAGE_NAME: debian-cross-toolchain-arm
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
   needs: []
@@ -570,6 +554,7 @@ docker-build-armhf-toolchain-ssh:
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
   variables:
+    BUILD_FOR_AMD64: "true"
     CROSS_COMPILER_TARGET_ARCH: armhf
     BASE_NAME: debian-cross-toolchain-armhf
     IMAGE_NAME: debian-cross-toolchain-ssh-armhf
@@ -587,6 +572,7 @@ docker-build-arm64-toolchain:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
+    BUILD_FOR_AMD64: "true"
     CROSS_COMPILER_TARGET_ARCH: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64
@@ -604,10 +590,11 @@ docker-build-arm64-toolchain-imx8:
     - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
   variables:
+    BUILD_FOR_AMD64: "true"
     CROSS_COMPILER_TARGET_ARCH: arm64
     CROSS_COMPILE_ARG: aarch64-linux-gnu
     IMAGE_NAME: debian-cross-toolchain-arm64-imx8
-    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_VIVANTE_FOLDER}/"
+    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_IMX8_FOLDER}/"
     ACCEPT_FSL_EULA: 1
   stage: build-base
   needs: []
@@ -622,48 +609,13 @@ docker-build-arm64-toolchain-ssh:
     - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
   variables:
+    BUILD_FOR_AMD64: "true"
     CROSS_COMPILER_TARGET_ARCH: arm64
     BASE_NAME: debian-cross-toolchain-arm64
     IMAGE_NAME: debian-cross-toolchain-ssh-arm64
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
   stage: build-stage1
   needs: [docker-build-arm64-toolchain]
-
-docker-build-x86-toolchain:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
-  variables:
-    CROSS_COMPILER_TARGET_ARCH: amd64
-    CROSS_COMPILE_ARG: x86_64-linux-gnu
-    IMAGE_NAME: debian-cross-toolchain-amd64
-    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${BASE_FOLDER}/"
-    USE_TORADEX_SNAPSHOT: 0
-  stage: build-base
-  needs: []
-
-docker-build-x86-toolchain-ssh:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
-    - export MINOR="${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
-    - export PATCH="${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
-    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-  variables:
-    CROSS_COMPILER_TARGET_ARCH: amd64
-    BASE_NAME: debian-cross-toolchain-amd64
-    IMAGE_NAME: debian-cross-toolchain-ssh-amd64
-    DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
-    USE_TORADEX_SNAPSHOT: 0
-  stage: build-stage1
-  needs: ["docker-build-x86-toolchain"]
 
 ## debian-dotnet-development-images
 
