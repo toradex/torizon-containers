@@ -882,7 +882,7 @@ docker-build-dotnet-debug-arm64-uno:
 
 ## debian-package-devel
 
-docker-build-debian-package-devel-arm64v8:
+docker-build-debian-package-devel:
   retry: 2
   extends: .docker-build
   before_script:
@@ -893,25 +893,10 @@ docker-build-debian-package-devel-arm64v8:
     - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
     - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
   variables:
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_NAME: arm64v8-debian-package-devel
-    DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
-  stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
-
-docker-build-debian-package-devel-arm32v7:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export RELEASE_APPEND="${DEBIAN_RELEASE}"
-    - export DOCKER_BASE_TAG="${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_PACKAGE_DEVEL_MAJOR}"
-    - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
-    - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_NAME: arm32v7-${DEBIAN_PACKAGE_DEVEL_FOLDER}
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
+    IMAGE_NAME: debian-package-devel
     DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
