@@ -196,28 +196,27 @@ stages:
   - build-samples-bridge
   - deploy
 
+.include-regctl:
+  variables:
+    REGCTL_HASH: "484f98e99c90341336b1be99b2b333e7129fde3535b54ef97b4673e8fb2b1d6c"
+  before_script:
+    - apk add curl
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - curl -L https://github.com/regclient/regclient/releases/download/v0.5.1/regctl-linux-amd64 > regctl
+    # to update the hash: download the metadata the regctl repo, verify the signatures, generate the SHA256SUMS file
+    # with `sha256sum -b regctl > SHA256SUMS` and update it here.
+    - echo "484f98e99c90341336b1be99b2b333e7129fde3535b54ef97b4673e8fb2b1d6c *regctl" > SHA256SUMS
+    - if ! sha256sum -c SHA256SUMS; then echo "Checksum for regctl has failed"; fi
+    - chmod 755 regctl
+
 pull-tag-and-push-debian-image:
+  extends: .include-regctl
+  # Pull debian:bookworm-slim or bullseye-slim or sid-slim to cache it in ${CI_REGISTRY_IMAGE} 
+  # for docker-build-dotnet-debug*, which needs to pull from two different registers (dockerhub and gitlab).
+  # This way we can re-use the "DOCKER_REGISTRY" build-arg, otherwise we'd need two *_REGISTRY build-args.
   stage: chores before building
   script:
-  - *do_print_environment_variables
-  # Pull, retag and push debian:bookworm-slim or bullseye-slim or sid-slim to cache it in ${CI_REGISTRY_IMAGE} 
-  # for docker-build-dotnet-debug*, which needs to pull from two different registers (dockerhub and gitlab).
-  # This way we can re-use the "DOCKER_REGISTRY" build-arg, otherwise we need another one.
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - export ARCHITECTURES="arm arm64"
-
-  - for ARCH in ${ARCHITECTURES};
-      do
-        docker pull --platform linux/${ARCH} ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE};
-        docker tag ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-${ARCH}:${DEBIAN_BASE_IMAGE};
-        docker push ${CI_REGISTRY_IMAGE}/debian-${ARCH}:${DEBIAN_BASE_IMAGE};
-      done
-
-  - docker manifest create ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm64:${DEBIAN_BASE_IMAGE};
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm:${DEBIAN_BASE_IMAGE} --os linux --arch arm --variant v7;
-  - docker manifest annotate ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian-arm64:${DEBIAN_BASE_IMAGE} --os linux --arch arm --variant v8;
-  - docker manifest inspect -v ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE};
-  - docker manifest push ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE};
+    - ./regctl image copy ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE}
 
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
