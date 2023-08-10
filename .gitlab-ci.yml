@@ -636,7 +636,7 @@ docker-build-dotnet:
   stage: build-stage2
   needs: ["pull-tag-and-push-debian-image", "docker-build-base"]
 
-docker-build-dotnet-asp:
+docker-build-aspnet:
   retry: 2
   extends: .docker-build
   before_script:
@@ -692,7 +692,7 @@ docker-build-dotnet-debug:
   stage: build-stage3
   needs: ["docker-build-dotnet"]
 
-docker-build-dotnet-debug-asp:
+docker-build-aspnet-debug:
   retry: 2
   extends: .docker-build
   before_script:
@@ -708,9 +708,9 @@ docker-build-dotnet-debug-asp:
     IMAGE_NAME: aspdotnet-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-dotnet-asp"]
+  needs: ["docker-build-aspnet"]
 
-docker-build-dotnet-debug-uno:
+docker-build-dotnet-uno-debug:
   retry: 2
   extends: .docker-build
   before_script:
@@ -931,3 +931,301 @@ build-torizon-samples:
           ./regctl image copy ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag};
         done
 
+## upstream
+
+docker-deploy-base:
+  extends: .docker-deploy
+  variables:
+    RELEASE_APPEND: "-${DEBIAN_RELEASE}"
+    MAJOR: "${DEBIAN_MAJOR}"
+    MINOR: "${DEBIAN_MINOR}"
+    PATCH: "${DEBIAN_PATCH}"
+    IMAGE_NAME: debian
+  stage: deploy
+  needs: ["docker-build-base"]
+
+docker-deploy-wayland-base:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${WAYLAND_BASE_MAJOR}"
+    MINOR: "${WAYLAND_BASE_MINOR}"
+    PATCH: "${WAYLAND_BASE_PATCH}"
+    IMAGE_NAME: debian-wayland-base
+  stage: deploy
+  needs: ["docker-build-wayland-base"]
+
+docker-deploy-weston:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${WESTON_MAJOR}"
+    MINOR: "${WESTON_MINOR}"
+    PATCH: "${WESTON_PATCH}"
+    IMAGE_NAME: weston
+  stage: deploy
+  needs: ["docker-build-weston"]
+
+docker-deploy-graphics-tests:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${GRAPHICS_TESTS_MAJOR}"
+    MINOR: "${GRAPHICS_TESTS_MINOR}"
+    PATCH: "${GRAPHICS_TESTS_PATCH}"
+    IMAGE_NAME: graphics-tests
+  stage: deploy
+  needs: ["docker-build-graphics-tests"]
+
+docker-deploy-weston-touch-calibrator:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${WESTON_TOUCH_CALIBRATOR_MAJOR}"
+    MINOR: "${WESTON_TOUCH_CALIBRATOR_MINOR}"
+    PATCH: "${WESTON_TOUCH_CALIBRATOR_PATCH}"
+    IMAGE_NAME: debian-weston-touch-calibrator
+  stage: deploy
+  needs: ["docker-build-weston-touch-calibrator"]
+
+docker-deploy-qt5-wayland:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${QT5_WAYLAND_MAJOR}"
+    MINOR: "${QT5_WAYLAND_MINOR}"
+    PATCH: "${QT5_WAYLAND_PATCH}"
+    IMAGE_NAME: debian-qt5-wayland
+  stage: deploy
+  needs: ["docker-build-qt5-wayland"]
+
+docker-deploy-qt5-wayland-examples:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${QT5_WAYLAND_EXAMPLES_MAJOR}"
+    MINOR: "${QT5_WAYLAND_EXAMPLES_MINOR}"
+    PATCH: "${QT5_WAYLAND_EXAMPLES_PATCH}"
+    IMAGE_NAME: debian-qt5-wayland-examples
+  stage: deploy
+  needs: ["docker-build-qt5-wayland-examples"]
+
+## imx8
+
+docker-deploy-base-imx8:
+  extends: .docker-deploy
+  variables:
+    RELEASE_APPEND: "-${DEBIAN_RELEASE}"
+    MAJOR: "${DEBIAN_MAJOR}"
+    MINOR: "${DEBIAN_MINOR}"
+    PATCH: "${DEBIAN_PATCH}"
+    IMAGE_NAME: debian
+  stage: deploy
+  needs: ["docker-build-base-imx8"]
+
+docker-deploy-wayland-base-imx8:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${WAYLAND_BASE_MAJOR}"
+    MINOR: "${WAYLAND_BASE_MINOR}"
+    PATCH: "${WAYLAND_BASE_PATCH}"
+    IMAGE_NAME: debian-wayland-base
+  stage: deploy
+  needs: ["docker-build-wayland-base-imx8"]
+
+docker-deploy-weston-imx8:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${WESTON_MAJOR}"
+    MINOR: "${WESTON_MINOR}"
+    PATCH: "${WESTON_PATCH}"
+    IMAGE_NAME: weston
+  stage: deploy
+  needs: ["docker-build-weston-imx8"]
+
+docker-deploy-graphics-tests-imx8:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${GRAPHICS_TESTS_MAJOR}"
+    MINOR: "${GRAPHICS_TESTS_MINOR}"
+    PATCH: "${GRAPHICS_TESTS_PATCH}"
+    IMAGE_NAME: graphics-tests
+  stage: deploy
+  needs: ["docker-build-graphics-tests-imx8"]
+
+docker-deploy-weston-touch-calibrator-imx8:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${WESTON_TOUCH_CALIBRATOR_MAJOR}"
+    MINOR: "${WESTON_TOUCH_CALIBRATOR_MINOR}"
+    PATCH: "${WESTON_TOUCH_CALIBRATOR_PATCH}"
+    IMAGE_NAME: debian-weston-touch-calibrator
+  stage: deploy
+  needs: ["docker-build-weston-touch-calibrator-imx8"]
+
+docker-deploy-qt5-wayland-imx8:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${QT5_WAYLAND_MAJOR}"
+    MINOR: "${QT5_WAYLAND_MINOR}"
+    PATCH: "${QT5_WAYLAND_PATCH}"
+    IMAGE_NAME: debian-qt5-wayland
+  stage: deploy
+  needs: ["docker-build-qt5-wayland-imx8"]
+
+docker-deploy-qt5-wayland-examples-imx8:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${QT5_WAYLAND_EXAMPLES_MAJOR}"
+    MINOR: "${QT5_WAYLAND_EXAMPLES_MINOR}"
+    PATCH: "${QT5_WAYLAND_EXAMPLES_PATCH}"
+    IMAGE_NAME: debian-qt5-wayland-examples
+  stage: deploy
+  needs: ["docker-build-qt5-wayland-imx8-examples"]
+
+## debian-cross-toolchains
+
+docker-deploy-armhf-toolchain:
+  extends: .docker-deploy
+  variables:
+    RELEASE_APPEND: "-${DEBIAN_RELEASE}"
+    MAJOR: "${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
+    MINOR: "${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
+    PATCH: "${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    IMAGE_NAME: debian-cross-toolchain-armhf
+  stage: deploy
+  needs: ["docker-build-armhf-toolchain"]
+
+docker-deploy-armhf-toolchain-ssh:
+  extends: .docker-deploy
+  variables:
+    RELEASE_APPEND: "-${DEBIAN_RELEASE}"
+    MAJOR: "${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
+    MINOR: "${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
+    PATCH: "${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+    IMAGE_NAME: debian-cross-toolchain-ssh-armhf
+  stage: deploy
+  needs: ["docker-build-armhf-toolchain-ssh"]
+
+docker-deploy-arm64-toolchain:
+  extends: .docker-deploy
+  variables:
+    RELEASE_APPEND: "-${DEBIAN_RELEASE}"
+    MAJOR: "${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
+    MINOR: "${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
+    PATCH: "${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    IMAGE_NAME: debian-cross-toolchain-arm64
+  stage: deploy
+  needs: ["docker-build-arm64-toolchain"]
+
+docker-deploy-arm64-toolchain-imx8:
+  extends: .docker-deploy
+  variables:
+    RELEASE_APPEND: "-${DEBIAN_RELEASE}"
+    MAJOR: "${DEBIAN_CROSS_TOOLCHAINS_MAJOR}"
+    MINOR: "${DEBIAN_CROSS_TOOLCHAINS_MINOR}"
+    PATCH: "${DEBIAN_CROSS_TOOLCHAINS_PATCH}"
+    IMAGE_NAME: debian-cross-toolchain-arm64-imx8
+  stage: deploy
+  needs: ["docker-build-arm64-toolchain-imx8"]
+
+docker-deploy-arm64-toolchain-ssh:
+  extends: .docker-deploy
+  variables:
+    RELEASE_APPEND: "-${DEBIAN_RELEASE}"
+    MAJOR: "${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}"
+    MINOR: "${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}"
+    PATCH: "${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}"
+    IMAGE_NAME: debian-cross-toolchain-ssh-arm64
+  stage: deploy
+  needs: ["docker-build-arm64-toolchain-ssh"]
+
+## rt-validation
+
+docker-deploy-rt-tests:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${RT_TESTS_MAJOR}"
+    MINOR: "${RT_TESTS_MINOR}"
+    PATCH: "${RT_TESTS_PATCH}"
+    IMAGE_NAME: rt-tests
+  stage: deploy
+  needs: ["docker-build-rt-tests"]
+
+docker-deploy-stress-tests:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${STRESS_TESTS_MAJOR}"
+    MINOR: "${STRESS_TESTS_MINOR}"
+    PATCH: "${STRESS_TESTS_PATCH}"
+    IMAGE_NAME: stress-tests
+  stage: deploy
+  needs: ["docker-build-stress-tests"]
+
+## dotnet-development-images
+
+docker-deploy-dotnet:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${DOTNET_MAJOR}"
+    MINOR: "${DOTNET_MINOR}"
+    PATCH: "${DOTNET_PATCH}"
+    DOTNET_VERSION: "${DOTNET_SEMANTIC_VERSION}"
+    IMAGE_NAME: dotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy
+  needs: ["docker-build-dotnet"]
+
+docker-deploy-aspnet:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${ASPDOTNET_MAJOR}"
+    MINOR: "${ASPDOTNET_MINOR}"
+    PATCH: "${ASPDOTNET_PATCH}"
+    DOTNET_VERSION: "${DOTNET_SEMANTIC_VERSION}"
+    IMAGE_NAME: aspdotnet
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy
+  needs: ["docker-build-aspnet"]
+
+docker-deploy-dotnet-debug:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${DOTNET_DEBUG_MAJOR}"
+    MINOR: "${DOTNET_DEBUG_MINOR}"
+    PATCH: "${DOTNET_DEBUG_PATCH}"
+    DOTNET_VERSION: "${DOTNET_SEMANTIC_VERSION}"
+    IMAGE_NAME: dotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy
+  needs: ["docker-build-dotnet-debug"]
+
+docker-deploy-aspnet-debug:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${ASPDOTNET_DEBUG_MAJOR}"
+    MINOR: "${ASPDOTNET_DEBUG_MINOR}"
+    PATCH: "${ASPDOTNET_DEBUG_PATCH}"
+    DOTNET_VERSION: "${DOTNET_SEMANTIC_VERSION}"
+    IMAGE_NAME: aspdotnet-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy
+  needs: ["docker-build-aspnet-debug"]
+
+docker-deploy-dotnet-uno:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${DOTNET_UNO_MAJOR}"
+    MINOR: "${DOTNET_UNO_MINOR}"
+    PATCH: "${DOTNET_UNO_PATCH}"
+    DOTNET_VERSION: "${DOTNET_SEMANTIC_VERSION}"
+    IMAGE_NAME: dotnet-uno
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy
+  needs: ["docker-build-dotnet-uno"]
+
+docker-deploy-dotnet-uno-debug:
+  extends: .docker-deploy
+  variables:
+    MAJOR: "${DOTNET_UNO_DEBUG_MAJOR}"
+    MINOR: "${DOTNET_UNO_DEBUG_MINOR}"
+    PATCH: "${DOTNET_UNO_DEBUG_PATCH}"
+    DOTNET_VERSION: "${DOTNET_SEMANTIC_VERSION}"
+    IMAGE_NAME: dotnet-uno-debug
+    RELEASE_APPEND: "-${DOTNET_RELEASE}"
+  stage: deploy
+  needs: ["docker-build-dotnet-uno-debug"]
