@@ -900,9 +900,13 @@ build-torizon-samples:
 # Docker deploy jobs
 
 .docker-deploy:
+  allow_failure:
+  # If the image already exists, don't fail the job.
+  # Exit code 124 = success for a `regctl image digest`, ie, image exists.
+    exit_codes:
+      - 124
   extends: .include-regctl
   when: manual
-  allow_failure: false
   script:
     - *do_docker_experimental
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -923,7 +927,7 @@ build-torizon-samples:
     # Check if image with major.minor.patch already exists at DockerHub. Quit the deploy job if it does.
     - for tag in ${DOCKER_TAGS_CHECK};
         do
-          if ./regctl image digest docker.io/${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag} 2>&1 && [ "${DEPLOY_CONDITIONALLY}" == "true" ] >/dev/null 2>&1; then echo "Image with ${tag} tag already exists." && exit 1; fi
+          if ./regctl image digest docker.io/${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${tag} 2>&1 && [ "${DEPLOY_CONDITIONALLY}" == "true" ] >/dev/null 2>&1; then echo "Image with ${tag} tag already exists." && exit 124; fi
         done
     # Push latest image with different tags
     - for tag in ${DOCKER_TAGS} ${DOCKER_TAGS_CHECK};
