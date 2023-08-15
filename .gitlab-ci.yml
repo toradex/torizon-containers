@@ -36,6 +36,14 @@ variables:
   QT5_WAYLAND_EXAMPLES_MINOR: "1"
   QT5_WAYLAND_EXAMPLES_PATCH: "0"
 
+  QT6_WAYLAND_MAJOR: "3"
+  QT6_WAYLAND_MINOR: "0"
+  QT6_WAYLAND_PATCH: "0"
+
+  QT6_WAYLAND_EXAMPLES_MAJOR: "3"
+  QT6_WAYLAND_EXAMPLES_MINOR: "0"
+  QT6_WAYLAND_EXAMPLES_PATCH: "0"
+
   WAYLAND_BASE_VIVANTE_MAJOR: "3"
   WAYLAND_BASE_VIVANTE_MINOR: "1"
   WAYLAND_BASE_VIVANTE_PATCH: "0"
@@ -51,6 +59,14 @@ variables:
   QT5_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "3"
   QT5_WAYLAND_EXAMPLES_VIVANTE_MINOR: "1"
   QT5_WAYLAND_EXAMPLES_VIVANTE_PATCH: "0"
+
+  QT6_WAYLAND_VIVANTE_MAJOR: "3"
+  QT6_WAYLAND_VIVANTE_MINOR: "0"
+  QT6_WAYLAND_VIVANTE_PATCH: "0"
+
+  QT6_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "3"
+  QT6_WAYLAND_EXAMPLES_VIVANTE_MINOR: "0"
+  QT6_WAYLAND_EXAMPLES_VIVANTE_PATCH: "0"
 
   WESTON_TOUCH_CALIBRATOR_MAJOR: "3"
   WESTON_TOUCH_CALIBRATOR_MINOR: "1"
@@ -139,7 +155,9 @@ variables:
   GRAPHICS_TESTS_VIVANTE_FOLDER: "graphics-tests-vivante"
   WESTON_TOUCH_CALIBRATOR_FOLDER: "weston-touch-calibrator"
   QT5_WAYLAND_FOLDER: "qt5-wayland"
+  QT6_WAYLAND_FOLDER: "qt6-wayland"
   QT5_WAYLAND_EXAMPLES_FOLDER: "qt5-wayland-examples"
+  QT6_WAYLAND_EXAMPLES_FOLDER: "qt6-wayland-examples"
   DEBUG_FOLDER: "debug"
   UNO_BASE_FOLDER: "uno-base"
   UNO_DEBUG_FOLDER: "uno-debug"
@@ -363,6 +381,39 @@ docker-build-qt5-wayland-examples:
   stage: build-stage3
   needs: ["docker-build-qt5-wayland"]
 
+docker-build-qt6-wayland:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_MINOR}"
+    - export PATCH="${QT6_WAYLAND_PATCH}"
+  variables:
+    IMAGE_ARCH: linux/arm/v7
+    BASE_NAME: arm32v7-debian-wayland-base
+    IMAGE_NAME: arm32v7-debian-qt6-wayland
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base"]
+
+docker-build-qt6-wayland-examples:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${QT6_WAYLAND_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_PATCH}"
+  variables:
+    IMAGE_ARCH: linux/arm/v7
+    BASE_NAME: arm32v7-debian-qt6-wayland
+    IMAGE_NAME: arm32v7-debian-qt6-wayland-examples
+    QT5_EXAMPLES_DEBIAN: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-qt6-wayland"]
+
 docker-build-base-arm64v8:
   retry: 2
   extends: .docker-build
@@ -500,6 +551,39 @@ docker-build-qt5-wayland-examples-arm64v8:
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-arm64v8"]
 
+docker-build-qt6-wayland-arm64v8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_MINOR}"
+    - export PATCH="${QT6_WAYLAND_PATCH}"
+  variables:
+    IMAGE_ARCH: linux/arm64/v8
+    BASE_NAME: arm64v8-debian-wayland-base
+    IMAGE_NAME: arm64v8-debian-qt6-wayland
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-arm64v8"]
+
+docker-build-qt6-wayland-examples-arm64v8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${QT6_WAYLAND_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_PATCH}"
+  variables:
+    IMAGE_ARCH: linux/arm64/v8
+    BASE_NAME: arm64v8-debian-qt6-wayland
+    IMAGE_NAME: arm64v8-debian-qt6-wayland-examples
+    QT5_EXAMPLES_DEBIAN: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-qt6-wayland-arm64v8"]
+
 docker-build-qt5-wayland-vivante:
   retry: 2
   extends: .docker-build
@@ -534,6 +618,41 @@ docker-build-qt5-wayland-vivante-examples:
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-vivante"]
+
+docker-build-qt6-wayland-vivante:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_VIVANTE_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_VIVANTE_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_VIVANTE_MINOR}"
+    - export PATCH="${QT6_WAYLAND_VIVANTE_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    IMAGE_ARCH: linux/arm64/v8
+    BASE_NAME: wayland-base-vivante
+    IMAGE_NAME: qt6-wayland-vivante
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-vivante"]
+
+docker-build-qt6-wayland-vivante-examples:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${QT6_WAYLAND_VIVANTE_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_VIVANTE_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_VIVANTE_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_VIVANTE_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    IMAGE_ARCH: linux/arm64/v8
+    BASE_NAME: qt6-wayland-vivante
+    IMAGE_NAME: qt6-wayland-examples-vivante
+    QT6_EXAMPLES_DEBIAN: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-qt6-wayland-vivante"]
 
 ## ${DEBIAN_CROSS_TOOLCHAINS_FOLDER}
 
@@ -1139,6 +1258,17 @@ docker-build-qt5-wayland-multiarch:
   stage: build-stage2-multiarch
   needs: ["docker-build-qt5-wayland", "docker-build-qt5-wayland-arm64v8"]
 
+docker-build-qt6-wayland-multiarch:
+  retry: 2
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${QT6_WAYLAND_MAJOR}
+    IMAGE_NAME: qt6-wayland
+    IMAGE_NAME_32: arm32v7-debian-qt6-wayland
+    IMAGE_NAME_64: arm64v8-debian-qt6-wayland
+  stage: build-stage2-multiarch
+  needs: ["docker-build-qt6-wayland", "docker-build-qt6-wayland-arm64v8"]
+
 docker-build-qt5-wayland-examples-multiarch:
   retry: 2
   extends: .docker-build-multiarch
@@ -1149,6 +1279,17 @@ docker-build-qt5-wayland-examples-multiarch:
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland-examples
   stage: build-stage3-multiarch
   needs: ["docker-build-qt5-wayland-examples", "docker-build-qt5-wayland-examples-arm64v8"]
+
+docker-build-qt6-wayland-examples-multiarch:
+  retry: 2
+  extends: .docker-build-multiarch
+  variables:
+    IMAGE_TAG: ${QT6_WAYLAND_EXAMPLES_MAJOR}
+    IMAGE_NAME: qt6-wayland-examples
+    IMAGE_NAME_32: arm32v7-debian-qt6-wayland-examples
+    IMAGE_NAME_64: arm64v8-debian-qt6-wayland-examples
+  stage: build-stage3-multiarch
+  needs: ["docker-build-qt6-wayland-examples", "docker-build-qt6-wayland-examples-arm64v8"]
 
 docker-build-weston-touch-calibrator-multiarch:
   retry: 2
@@ -1360,6 +1501,17 @@ docker-deploy-qt5-wayland:
   stage: deploy
   needs: ["docker-build-qt5-wayland"]
 
+docker-deploy-qt6-wayland:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${QT6_WAYLAND_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_MINOR}"
+    - export PATCH="${QT6_WAYLAND_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-debian-qt6-wayland
+  stage: deploy
+  needs: ["docker-build-qt6-wayland"]
+
 docker-deploy-qt5-wayland-examples:
   extends: .docker-deploy
   before_script:
@@ -1370,6 +1522,17 @@ docker-deploy-qt5-wayland-examples:
     IMAGE_NAME: arm32v7-debian-qt5-wayland-examples
   stage: deploy
   needs: ["docker-build-qt5-wayland-examples"]
+
+docker-deploy-qt6-wayland-examples:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_PATCH}"
+  variables:
+    IMAGE_NAME: arm32v7-debian-qt6-wayland-examples
+  stage: deploy
+  needs: ["docker-build-qt6-wayland-examples"]
 
 docker-deploy-base-arm64v8:
   extends: .docker-deploy
@@ -1449,6 +1612,17 @@ docker-deploy-qt5-wayland-arm64v8:
   stage: deploy
   needs: ["docker-build-weston-touch-calibrator-arm64v8"]
 
+docker-deploy-qt6-wayland-arm64v8:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${QT6_WAYLAND_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_MINOR}"
+    - export PATCH="${QT6_WAYLAND_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-debian-qt6-wayland
+  stage: deploy
+  needs: ["docker-build-weston-touch-calibrator-arm64v8"]
+
 docker-deploy-qt5-wayland-vivante:
   extends: .docker-deploy
   before_script:
@@ -1459,6 +1633,28 @@ docker-deploy-qt5-wayland-vivante:
     IMAGE_NAME: qt5-wayland-vivante
   stage: deploy
   needs: ["docker-build-qt5-wayland-arm64v8"]
+
+docker-deploy-qt6-wayland-vivante:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${QT6_WAYLAND_VIVANTE_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_VIVANTE_MINOR}"
+    - export PATCH="${QT6_WAYLAND_VIVANTE_PATCH}"
+  variables:
+    IMAGE_NAME: qt6-wayland-vivante
+  stage: deploy
+  needs: ["docker-build-qt6-wayland-arm64v8"]
+
+docker-deploy-qt6-wayland-examples-arm64v8:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_PATCH}"
+  variables:
+    IMAGE_NAME: arm64v8-debian-qt6-wayland-examples
+  stage: deploy
+  needs: ["docker-build-qt6-wayland-arm64v8"]
 
 docker-deploy-qt5-wayland-examples-arm64v8:
   extends: .docker-deploy
@@ -1482,6 +1678,16 @@ docker-deploy-qt5-wayland-examples-vivante:
   stage: deploy
   needs: ["docker-build-qt5-wayland-vivante"]
 
+docker-deploy-qt6-wayland-examples-vivante:
+  extends: .docker-deploy
+  before_script:
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_VIVANTE_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_VIVANTE_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_VIVANTE_PATCH}"
+  variables:
+    IMAGE_NAME: qt6-wayland-examples-vivante
+  stage: deploy
+  needs: ["docker-build-qt6-wayland-vivante"]
 
 ## debian-cross-toolchains
 
