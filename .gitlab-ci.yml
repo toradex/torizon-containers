@@ -240,7 +240,6 @@ pull-tag-and-push-debian-image:
                   --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}
                   --build-arg ADD_TORADEX_REPOSITORY=${ADD_TORADEX_REPOSITORY}
                   --build-arg ACCEPT_FSL_EULA=${ACCEPT_FSL_EULA}
-                  --build-arg QT5_EXAMPLES_DEBIAN=${QT5_EXAMPLES_DEBIAN}
                   --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT}
                   --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
                   --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}
@@ -376,7 +375,6 @@ docker-build-qt5-wayland-examples:
     IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-debian-qt5-wayland
     IMAGE_NAME: arm32v7-debian-qt5-wayland-examples
-    QT5_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland"]
@@ -409,7 +407,6 @@ docker-build-qt6-wayland-examples:
     IMAGE_ARCH: linux/arm/v7
     BASE_NAME: arm32v7-debian-qt6-wayland
     IMAGE_NAME: arm32v7-debian-qt6-wayland-examples
-    QT5_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt6-wayland"]
@@ -546,7 +543,6 @@ docker-build-qt5-wayland-examples-arm64v8:
     IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-debian-qt5-wayland
     IMAGE_NAME: arm64v8-debian-qt5-wayland-examples
-    QT5_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-arm64v8"]
@@ -579,7 +575,6 @@ docker-build-qt6-wayland-examples-arm64v8:
     IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: arm64v8-debian-qt6-wayland
     IMAGE_NAME: arm64v8-debian-qt6-wayland-examples
-    QT5_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt6-wayland-arm64v8"]
@@ -614,7 +609,6 @@ docker-build-qt5-wayland-vivante-examples:
     IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: qt5-wayland-vivante
     IMAGE_NAME: qt5-wayland-examples-vivante
-    QT5_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-vivante"]
@@ -649,7 +643,6 @@ docker-build-qt6-wayland-vivante-examples:
     IMAGE_ARCH: linux/arm64/v8
     BASE_NAME: qt6-wayland-vivante
     IMAGE_NAME: qt6-wayland-examples-vivante
-    QT6_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt6-wayland-vivante"]
