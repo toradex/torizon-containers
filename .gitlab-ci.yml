@@ -247,7 +247,7 @@ pull-tag-and-push-debian-image:
                   --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
                   --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY:-${CI_REGISTRY_IMAGE}}
                   --build-arg BASE_NAME=${BASE_NAME}
-                  --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
+                  --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}${RELEASE_CANDIDATE}
                   --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}${RELEASE_CANDIDATE}
                   --build-arg ADD_TORADEX_REPOSITORY=${ADD_TORADEX_REPOSITORY}
                   --build-arg ACCEPT_FSL_EULA=${ACCEPT_FSL_EULA}
@@ -255,7 +255,7 @@ pull-tag-and-push-debian-image:
                   --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT}
                   --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
                   --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}${RELEASE_CANDIDATE}
-                  --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}${RC}
+                  --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}${RELEASE_CANDIDATE}
                   --build-arg DOTNET_RUNTIME=${DOTNET_RUNTIME}
                   --build-arg DOTNET_VERSION=${DOTNET_VERSION}
                   --build-arg DOTNET_DEBUGGER_RELEASE=${DOTNET_DEBUGGER_RELEASE}
@@ -885,16 +885,16 @@ build-torizon-samples:
     - *do_docker_experimental
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - export DATE=$(date +%Y%m%d)
-    # Latest image is always tagged with either "$MAJOR" or "$MAJOR-$RELEASE_APPEND"
-    - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}"
+    # Latest image is always tagged with either "$MAJOR" or "$MAJOR-$RELEASE_APPEND-$RELEASE_CANDIDATE
+    - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}${RELEASE_CANDIDATE}"
     # DOTNET images are different because they also contain the DOTNET_VERSION in the tag, so we have to check this first
     - >
       if [ -z "$DOTNET_VERSION" ]; then
-        export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}"
-        export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND} ${MAJOR}.${MINOR}${RELEASE_APPEND}"
+        export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}${RELEASE_APPEND}${RELEASE_CANDIDATE} ${MAJOR}.${MINOR}.${PATCH}-${DATE}${RELEASE_APPEND}${RELEASE_CANDIDATE}"
+        export DOCKER_TAGS="${MAJOR}${RELEASE_APPEND}${RELEASE_CANDIDATE} ${MAJOR}.${MINOR}${RELEASE_APPEND}${RELEASE_CANDIDATE}"
       else
-        export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}-${DOTNET_VERSION} ${MAJOR}.${MINOR}.${PATCH}-${DOTNET_RELEASE}"
-        export DOCKER_TAGS="${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_VERSION} ${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_RELEASE}"
+        export DOCKER_TAGS_CHECK="${MAJOR}.${MINOR}.${PATCH}-${DOTNET_VERSION}${RELEASE_CANDIDATE} ${MAJOR}.${MINOR}.${PATCH}-${DOTNET_RELEASE}${RELEASE_CANDIDATE}"
+        export DOCKER_TAGS="${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_VERSION}${RELEASE_CANDIDATE} ${MAJOR}.${MINOR}.${PATCH}-${DATE}-${DOTNET_RELEASE}${RELEASE_CANDIDATE}"
       fi
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN;
 
