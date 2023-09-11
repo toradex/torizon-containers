@@ -145,7 +145,6 @@ variables:
 
   DEBIAN_CROSS_TOOLCHAINS_FOLDER: "debian-cross-toolchains"
   DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER: "debian-dotnet-development-images"
-  DEBIAN_PACKAGE_DEVEL_FOLDER: "debian-package-devel"
 
   SSH_FOLDER: "ssh"
 
@@ -724,26 +723,6 @@ docker-build-dotnet-uno-debug:
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
   needs: ["docker-build-dotnet-uno"]
-
-## debian-package-devel
-
-docker-build-debian-package-devel:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export RELEASE_APPEND="${DEBIAN_RELEASE}"
-    - export DOCKER_BASE_TAG="${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_PACKAGE_DEVEL_MAJOR}"
-    - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
-    - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
-  variables:
-    BUILD_FOR_ARM_V8: "true"
-    BUILD_FOR_ARM_V7: "true"
-    BUILD_FOR_AMD64: "true"
-    IMAGE_NAME: debian-package-devel
-    DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
-  stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
 
 ## rt-validation
 
