@@ -305,7 +305,7 @@ docker-build-wayland-base:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
     BASE_NAME: debian
-    IMAGE_NAME: debian-wayland-base
+    IMAGE_NAME: wayland-base
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${WAYLAND_BASE_FOLDER}/"
   stage: build-stage1
   needs: ["docker-build-base"]
@@ -322,7 +322,7 @@ docker-build-weston:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
-    BASE_NAME: debian-wayland-base
+    BASE_NAME: wayland-base
     IMAGE_NAME: weston
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${WESTON_FOLDER}/"
   stage: build-stage2
@@ -339,7 +339,7 @@ docker-build-graphics-tests:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
-    BASE_NAME: debian-wayland-base
+    BASE_NAME: wayland-base
     IMAGE_NAME: graphics-tests
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${GRAPHICS_TESTS_FOLDER}/"
   stage: build-stage2
@@ -357,7 +357,7 @@ docker-build-weston-touch-calibrator:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
     BASE_NAME: weston
-    IMAGE_NAME: debian-weston-touch-calibrator
+    IMAGE_NAME: weston-touch-calibrator
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-weston"]
@@ -373,8 +373,8 @@ docker-build-qt5-wayland:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
-    BASE_NAME: debian-wayland-base
-    IMAGE_NAME: debian-qt5-wayland
+    BASE_NAME: wayland-base
+    IMAGE_NAME: qt5-wayland
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT5_WAYLAND_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base"]
@@ -390,8 +390,8 @@ docker-build-qt5-wayland-examples:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
-    BASE_NAME: debian-qt5-wayland
-    IMAGE_NAME: debian-qt5-wayland-examples
+    BASE_NAME: qt5-wayland
+    IMAGE_NAME: qt5-wayland-examples
     QT5_EXAMPLES_DEBIAN: 1
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT5_WAYLAND_EXAMPLES_FOLDER}/"
   stage: build-stage3
@@ -481,7 +481,7 @@ docker-build-weston-touch-calibrator-imx8:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BASE_NAME: weston-imx8
-    IMAGE_NAME: debian-weston-touch-calibrator-imx8
+    IMAGE_NAME: weston-touch-calibrator-imx8
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${WESTON_TOUCH_CALIBRATOR_IMX8_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-weston-imx8"]
@@ -911,7 +911,7 @@ docker-deploy-wayland-base:
     MAJOR: "${WAYLAND_BASE_MAJOR}"
     MINOR: "${WAYLAND_BASE_MINOR}"
     PATCH: "${WAYLAND_BASE_PATCH}"
-    IMAGE_NAME: debian-wayland-base
+    IMAGE_NAME: wayland-base
   stage: deploy
   needs: ["docker-build-wayland-base"]
 
@@ -941,7 +941,7 @@ docker-deploy-weston-touch-calibrator:
     MAJOR: "${WESTON_TOUCH_CALIBRATOR_MAJOR}"
     MINOR: "${WESTON_TOUCH_CALIBRATOR_MINOR}"
     PATCH: "${WESTON_TOUCH_CALIBRATOR_PATCH}"
-    IMAGE_NAME: debian-weston-touch-calibrator
+    IMAGE_NAME: weston-touch-calibrator
   stage: deploy
   needs: ["docker-build-weston-touch-calibrator"]
 
@@ -951,7 +951,7 @@ docker-deploy-qt5-wayland:
     MAJOR: "${QT5_WAYLAND_MAJOR}"
     MINOR: "${QT5_WAYLAND_MINOR}"
     PATCH: "${QT5_WAYLAND_PATCH}"
-    IMAGE_NAME: debian-qt5-wayland
+    IMAGE_NAME: qt5-wayland
   stage: deploy
   needs: ["docker-build-qt5-wayland"]
 
@@ -961,7 +961,7 @@ docker-deploy-qt5-wayland-examples:
     MAJOR: "${QT5_WAYLAND_EXAMPLES_MAJOR}"
     MINOR: "${QT5_WAYLAND_EXAMPLES_MINOR}"
     PATCH: "${QT5_WAYLAND_EXAMPLES_PATCH}"
-    IMAGE_NAME: debian-qt5-wayland-examples
+    IMAGE_NAME: qt5-wayland-examples
   stage: deploy
   needs: ["docker-build-qt5-wayland-examples"]
 
@@ -984,7 +984,7 @@ docker-deploy-wayland-base-imx8:
     MAJOR: "${WAYLAND_BASE_MAJOR}"
     MINOR: "${WAYLAND_BASE_MINOR}"
     PATCH: "${WAYLAND_BASE_PATCH}"
-    IMAGE_NAME: debian-wayland-base-imx8
+    IMAGE_NAME: wayland-base-imx8
   stage: deploy
   needs: ["docker-build-wayland-base-imx8"]
 
@@ -1014,7 +1014,7 @@ docker-deploy-weston-touch-calibrator-imx8:
     MAJOR: "${WESTON_TOUCH_CALIBRATOR_MAJOR}"
     MINOR: "${WESTON_TOUCH_CALIBRATOR_MINOR}"
     PATCH: "${WESTON_TOUCH_CALIBRATOR_PATCH}"
-    IMAGE_NAME: debian-weston-touch-calibrator-imx8
+    IMAGE_NAME: weston-touch-calibrator-imx8
   stage: deploy
   needs: ["docker-build-weston-touch-calibrator-imx8"]
 
@@ -1024,7 +1024,7 @@ docker-deploy-qt5-wayland-imx8:
     MAJOR: "${QT5_WAYLAND_MAJOR}"
     MINOR: "${QT5_WAYLAND_MINOR}"
     PATCH: "${QT5_WAYLAND_PATCH}"
-    IMAGE_NAME: debian-qt5-wayland-imx8
+    IMAGE_NAME: qt5-wayland-imx8
   stage: deploy
   needs: ["docker-build-qt5-wayland-imx8"]
 
@@ -1034,7 +1034,7 @@ docker-deploy-qt5-wayland-examples-imx8:
     MAJOR: "${QT5_WAYLAND_EXAMPLES_MAJOR}"
     MINOR: "${QT5_WAYLAND_EXAMPLES_MINOR}"
     PATCH: "${QT5_WAYLAND_EXAMPLES_PATCH}"
-    IMAGE_NAME: debian-qt5-wayland-examples-imx8
+    IMAGE_NAME: qt5-wayland-examples-imx8
   stage: deploy
   needs: ["docker-build-qt5-wayland-imx8-examples"]
 
