@@ -9,6 +9,7 @@ variables:
   DEBIAN_RELEASE: "bookworm"
   DEBIAN_BASE_IMAGE: "bookworm-slim"
   TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw"
+  DOCKER_HUB_REGISTRY: "docker.io"
   RELEASE_CANDIDATE: "-rc"
 
   # When running a deploy job, push the container even if the tag already exists.
@@ -245,7 +246,7 @@ pull-tag-and-push-debian-image:
 
   - docker buildx build --progress=plain --sbom=true --push ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
                   --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
-                  --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY:-${CI_REGISTRY_IMAGE}}
+                  --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKER_HUB_REGISTRY}
                   --build-arg BASE_NAME=${BASE_NAME}
                   --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}${RELEASE_CANDIDATE}
                   --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}${RELEASE_CANDIDATE}
@@ -261,7 +262,6 @@ pull-tag-and-push-debian-image:
                   --build-arg DOTNET_DEBUGGER_RELEASE=${DOTNET_DEBUGGER_RELEASE}
                   --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}
                   --build-arg BASE_NAME_WAYLAND=${BASE_NAME_WAYLAND}
-                  --cache-from ${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}
                   ${DOCKER_NO_CACHE:+--no-cache}
                   --label container.name=${IMAGE_NAME}
                   --label container.version=${MAJOR}.${MINOR}.${PATCH}-${DATE}
