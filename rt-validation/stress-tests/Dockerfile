@@ -1,10 +1,10 @@
 # Copyright (c) 2019-2023 Toradex AG
 # SPDX-License-Identifier: MIT
 
-ARG IMAGE_TAG=3-bookworm
+ARG DEBIAN_BASE_IMAGE=3-bookworm
 ARG DOCKER_REGISTRY=torizon
 
-FROM $DOCKER_REGISTRY/debian:$IMAGE_TAG
+FROM $DOCKER_REGISTRY/debian:$DEBIAN_BASE_IMAGE
 
 RUN apt update \
     && apt install -y --no-install-recommends \
