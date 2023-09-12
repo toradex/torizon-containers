@@ -210,15 +210,6 @@ stages:
     - if ! sha256sum -c SHA256SUMS; then echo "Checksum for regctl has failed"; fi
     - chmod 755 regctl
 
-pull-tag-and-push-debian-image:
-  extends: .include-regctl
-  # Pull debian:bookworm-slim or bullseye-slim or sid-slim to cache it in ${CI_REGISTRY_IMAGE} 
-  # for docker-build-dotnet-debug*, which needs to pull from two different registers (dockerhub and gitlab).
-  # This way we can re-use the "DOCKER_REGISTRY" build-arg, otherwise we'd need two *_REGISTRY build-args.
-  stage: chores before building
-  script:
-    - ./regctl image copy ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/debian:${DEBIAN_BASE_IMAGE} ${CI_REGISTRY_IMAGE}/debian:${DEBIAN_BASE_IMAGE}${RELEASE_CANDIDATE}
-
 # Enable experimental features in Docker client (experimental feature are needed for manifest)
 .do_docker_experimental: &do_docker_experimental
     - mkdir -p $HOME/.docker
@@ -248,7 +239,7 @@ pull-tag-and-push-debian-image:
                   --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
                   --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}
                   --build-arg BASE_NAME=${BASE_NAME}
-                  --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}${RELEASE_CANDIDATE}
+                  --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
                   --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}${RELEASE_CANDIDATE}
                   --build-arg ADD_TORADEX_REPOSITORY=${ADD_TORADEX_REPOSITORY}
                   --build-arg ACCEPT_FSL_EULA=${ACCEPT_FSL_EULA}
@@ -292,7 +283,6 @@ docker-build-base:
     IMAGE_NAME: debian
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
 
 docker-build-wayland-base:
   retry: 2
@@ -414,7 +404,6 @@ docker-build-base-imx8:
     IMAGE_NAME: debian-imx8
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${BASE_IMX8_FOLDER}/"
   stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
 
 docker-build-wayland-base-imx8:
   retry: 2
@@ -630,7 +619,7 @@ docker-build-dotnet:
     DOTNET_RUNTIME: dotnet
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
-  needs: ["pull-tag-and-push-debian-image", "docker-build-base"]
+  needs: ["docker-build-base"]
 
 docker-build-aspnet:
   retry: 2
@@ -648,7 +637,7 @@ docker-build-aspnet:
     DOTNET_RUNTIME: aspnetcore
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
   stage: build-stage2
-  needs: ["pull-tag-and-push-debian-image", "docker-build-base"]
+  needs: ["docker-build-base"]
 
 docker-build-dotnet-uno:
   retry: 2
@@ -742,7 +731,6 @@ docker-build-rt-tests:
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
 
 docker-build-stress-tests:
   retry: 2
@@ -759,7 +747,6 @@ docker-build-stress-tests:
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
 
 .shellcheck:
   stage: lint
