@@ -974,7 +974,7 @@ docker-deploy-base-imx8:
     MAJOR: "${DEBIAN_MAJOR}"
     MINOR: "${DEBIAN_MINOR}"
     PATCH: "${DEBIAN_PATCH}"
-    IMAGE_NAME: debian
+    IMAGE_NAME: debian-imx8
   stage: deploy
   needs: ["docker-build-base-imx8"]
 
@@ -984,7 +984,7 @@ docker-deploy-wayland-base-imx8:
     MAJOR: "${WAYLAND_BASE_MAJOR}"
     MINOR: "${WAYLAND_BASE_MINOR}"
     PATCH: "${WAYLAND_BASE_PATCH}"
-    IMAGE_NAME: debian-wayland-base
+    IMAGE_NAME: debian-wayland-base-imx8
   stage: deploy
   needs: ["docker-build-wayland-base-imx8"]
 
@@ -994,7 +994,7 @@ docker-deploy-weston-imx8:
     MAJOR: "${WESTON_MAJOR}"
     MINOR: "${WESTON_MINOR}"
     PATCH: "${WESTON_PATCH}"
-    IMAGE_NAME: weston
+    IMAGE_NAME: weston-imx8
   stage: deploy
   needs: ["docker-build-weston-imx8"]
 
@@ -1004,7 +1004,7 @@ docker-deploy-graphics-tests-imx8:
     MAJOR: "${GRAPHICS_TESTS_MAJOR}"
     MINOR: "${GRAPHICS_TESTS_MINOR}"
     PATCH: "${GRAPHICS_TESTS_PATCH}"
-    IMAGE_NAME: graphics-tests
+    IMAGE_NAME: graphics-tests-imx8
   stage: deploy
   needs: ["docker-build-graphics-tests-imx8"]
 
@@ -1014,7 +1014,7 @@ docker-deploy-weston-touch-calibrator-imx8:
     MAJOR: "${WESTON_TOUCH_CALIBRATOR_MAJOR}"
     MINOR: "${WESTON_TOUCH_CALIBRATOR_MINOR}"
     PATCH: "${WESTON_TOUCH_CALIBRATOR_PATCH}"
-    IMAGE_NAME: debian-weston-touch-calibrator
+    IMAGE_NAME: debian-weston-touch-calibrator-imx8
   stage: deploy
   needs: ["docker-build-weston-touch-calibrator-imx8"]
 
@@ -1024,7 +1024,7 @@ docker-deploy-qt5-wayland-imx8:
     MAJOR: "${QT5_WAYLAND_MAJOR}"
     MINOR: "${QT5_WAYLAND_MINOR}"
     PATCH: "${QT5_WAYLAND_PATCH}"
-    IMAGE_NAME: debian-qt5-wayland
+    IMAGE_NAME: debian-qt5-wayland-imx8
   stage: deploy
   needs: ["docker-build-qt5-wayland-imx8"]
 
@@ -1034,7 +1034,7 @@ docker-deploy-qt5-wayland-examples-imx8:
     MAJOR: "${QT5_WAYLAND_EXAMPLES_MAJOR}"
     MINOR: "${QT5_WAYLAND_EXAMPLES_MINOR}"
     PATCH: "${QT5_WAYLAND_EXAMPLES_PATCH}"
-    IMAGE_NAME: debian-qt5-wayland-examples
+    IMAGE_NAME: debian-qt5-wayland-examples-imx8
   stage: deploy
   needs: ["docker-build-qt5-wayland-imx8-examples"]
 
