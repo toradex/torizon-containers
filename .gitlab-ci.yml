@@ -243,7 +243,7 @@ pull-tag-and-push-debian-image:
   - if [ -n "$BUILD_FOR_ARM_V8" ]; then echo "Building for linux/arm64/v8" && PLATFORM_BUILD_ARM_V8="--platform linux/arm64/v8"; fi
   - if [ -n "$BUILD_FOR_AMD64" ]; then echo "Building for linux/amd64" && PLATFORM_BUILD_AMD64="--platform linux/amd64"; fi
 
-  - docker buildx build --progress=plain --push ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
+  - docker buildx build --progress=plain --sbom=true --push ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
                   --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
                   --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY:-${CI_REGISTRY_IMAGE}}
                   --build-arg BASE_NAME=${BASE_NAME}
@@ -271,6 +271,7 @@ pull-tag-and-push-debian-image:
                   -f ${DOCKERFILE_FOLDER}Dockerfile
                   -t ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}
                   ${DOCKERFILE_FOLDER}
+  - docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}
 
 ## debian-docker-images
 
