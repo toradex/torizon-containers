@@ -4,7 +4,7 @@
 ARG BASE_NAME=wayland-base-vivante
 ARG IMAGE_TAG=3
 ARG DOCKER_REGISTRY=torizon
-FROM $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS base
+FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
 # Install the weston compositor.
 RUN apt-get -y update && apt-get install -y --no-install-recommends \

@@ -9,7 +9,7 @@ variables:
   DEBIAN_RELEASE: "bookworm"
   DEBIAN_BASE_IMAGE: "bookworm-slim"
   TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw"
-  DOCKER_HUB_REGISTRY: "docker.io"
+  DOCKERHUB: "docker.io"
   RELEASE_CANDIDATE: "-rc"
 
   # When running a deploy job, push the container even if the tag already exists.
@@ -229,7 +229,7 @@ stages:
 
   - docker context create multiarch-build-context
   - docker buildx create --name multiarch-builder --driver docker-container --use multiarch-build-context --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --use
-  - docker run --privileged --rm ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/tonistiigi/binfmt --install arm64,arm
+  - docker run --privileged --rm tonistiigi/binfmt --install arm64,arm
 
   - if [ -n "$BUILD_FOR_ARM_V7" ]; then echo "Building for linux/arm/v7" && PLATFORM_BUILD_ARM_V7="--platform linux/arm/v7"; fi
   - if [ -n "$BUILD_FOR_ARM_V8" ]; then echo "Building for linux/arm64/v8" && PLATFORM_BUILD_ARM_V8="--platform linux/arm64/v8"; fi
@@ -237,7 +237,7 @@ stages:
 
   - docker buildx build --progress=plain --sbom=true --push ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
                   --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
-                  --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}
+                  --build-arg DOCKER_REGISTRY=${DOCKERHUB}
                   --build-arg BASE_NAME=${BASE_NAME}
                   --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
                   --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}${RELEASE_CANDIDATE}
@@ -251,7 +251,7 @@ stages:
                   --build-arg DOTNET_RUNTIME=${DOTNET_RUNTIME}
                   --build-arg DOTNET_VERSION=${DOTNET_VERSION}
                   --build-arg DOTNET_DEBUGGER_RELEASE=${DOTNET_DEBUGGER_RELEASE}
-                  --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}
+                  --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}${RELEASE_CANDIDATE}
                   --build-arg BASE_NAME_WAYLAND=${BASE_NAME_WAYLAND}
                   ${DOCKER_NO_CACHE:+--no-cache}
                   --label container.name=${IMAGE_NAME}
@@ -665,6 +665,7 @@ docker-build-dotnet-debug:
   retry: 2
   extends: .docker-build
   before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export RELEASE_APPEND="-${DOTNET_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
@@ -683,6 +684,7 @@ docker-build-aspnet-debug:
   retry: 2
   extends: .docker-build
   before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export RELEASE_APPEND="-${DOTNET_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
@@ -695,7 +697,7 @@ docker-build-aspnet-debug:
     IMAGE_NAME: aspdotnet-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-aspnet"]
+  needs: ["docker-build-aspnet", "docker-build-dotnet-debug"]
 
 docker-build-dotnet-uno-debug:
   retry: 2
@@ -714,7 +716,7 @@ docker-build-dotnet-uno-debug:
     IMAGE_NAME: dotnet-uno-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
-  needs: ["docker-build-dotnet-uno"]
+  needs: ["docker-build-dotnet-uno", "docker-build-dotnet-debug"]
 
 ## rt-validation
 

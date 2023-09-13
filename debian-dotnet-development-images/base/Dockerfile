@@ -4,7 +4,7 @@
 ARG DOCKER_REGISTRY=torizon
 ARG IMAGE_TAG=bookworm-slim
 
-FROM ${DOCKER_REGISTRY}/debian:${IMAGE_TAG} AS build
+FROM ${DOCKER_REGISTRY}/torizon/debian:${IMAGE_TAG} AS build
 
 # define specific .NET version you want to use or "latest"
 ARG DOTNET_VERSION=latest
@@ -30,7 +30,7 @@ WORKDIR /dotnet
 
 RUN /dotnet-install.sh --install-dir /dotnet --runtime ${DOTNET_RUNTIME} --version ${DOTNET_VERSION} --os linux --architecture ${TARGETARCH} --no-path
 
-FROM ${DOCKER_REGISTRY}/debian:${IMAGE_TAG}
+FROM ${DOCKER_REGISTRY}/torizon/debian:${IMAGE_TAG}
 
 ENV DOTNET_ROOT=/dotnet
 ENV PATH=$PATH:/dotnet

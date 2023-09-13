@@ -3,10 +3,10 @@
 
 ARG BASE_NAME
 ARG DOCKER_REGISTRY
-ARG DEBIAN_BASE_IMAGE_TAG=bookworm-slim
+ARG IMAGE_TAG
 ARG DOTNET_BASE_IMAGE_TAG
 
-FROM ${DOCKER_REGISTRY}/debian:${DEBIAN_BASE_IMAGE_TAG} AS build
+FROM ${DOCKER_REGISTRY}/torizon/debian:${IMAGE_TAG} AS build
 
 RUN apt-get update && apt-get install -y \
     --no-install-recommends --no-install-suggests \
@@ -19,6 +19,6 @@ ARG DOTNET_DEBUGGER_RELEASE
 
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v ${DOTNET_DEBUGGER_RELEASE} -l /vsdbg
 
-FROM ${DOCKER_REGISTRY}/${BASE_NAME}:${DOTNET_BASE_IMAGE_TAG}
+FROM ${DOCKER_REGISTRY}/torizon/${BASE_NAME}:${DOTNET_BASE_IMAGE_TAG}
 
 COPY --from=build /vsdbg /vsdbg

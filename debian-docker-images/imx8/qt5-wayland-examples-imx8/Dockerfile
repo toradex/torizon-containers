@@ -10,7 +10,7 @@ ARG QT5_EXAMPLES_DEBIAN
 # ARG QT5_EXAMPLES_DEBIAN=1
 ARG QT5_EXAMPLES_DEBIAN_INSTALL=${QT5_EXAMPLES_DEBIAN:+"qtbase5-examples qtdeclarative5-examples"}
 
-FROM $DOCKER_REGISTRY/$BASE_NAME:$IMAGE_TAG AS base
+FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 ARG QT5_EXAMPLES_DEBIAN_INSTALL
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
