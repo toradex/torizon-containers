@@ -51,7 +51,7 @@ ARG USE_TORADEX_SNAPSHOT
 ARG TORADEX_FEED_BASE_URL="https://feeds.toradex.com/debian"
 
 # Add toradex key and package feed
-RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo.gpg \
+RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo-19092023.gpg \
     | gpg --dearmor \ 
     | tee /usr/share/keyrings/toradex-debian-repo.gpg
 

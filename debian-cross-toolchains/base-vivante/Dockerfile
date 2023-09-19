@@ -50,7 +50,7 @@ RUN if [ "${ACCEPT_FSL_EULA}" != "1" ];then \
 RUN dpkg --add-architecture ${IMAGE_ARCH}
 
 # Add toradex key and package feed
-RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo.gpg \
+RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo-19092023.gpg \
     | gpg --dearmor \
     | tee /usr/share/keyrings/toradex-debian-repo.gpg
 
