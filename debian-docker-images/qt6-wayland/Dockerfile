@@ -12,12 +12,12 @@ COPY kms-setup.sh /usr/bin/kms-setup.sh
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     apt-utils \
-    libqt6gui6-gles \
     && apt-get -y upgrade \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Install remaining dependencies required to run qtbase
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
+       libqt6gui6 \
        libfontconfig1-dev \
        libqt6concurrent6 \
        libqt6dbus6 \
