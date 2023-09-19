@@ -161,7 +161,6 @@ variables:
   DEBUG_FOLDER: "debug"
   UNO_BASE_FOLDER: "uno-base"
   UNO_DEBUG_FOLDER: "uno-debug"
-  DEBIAN_PACKAGE_DEVEL_FOLDER: "debian-package-devel"
   RT_VALIDATION_FOLDER: "rt-validation"
   RT_TESTS_FOLDER: "rt-tests"
   STRESS_TESTS_FOLDER: "stress-tests"
@@ -1003,42 +1002,6 @@ docker-build-dotnet-debug-arm64-uno:
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
   needs: ["docker-build-dotnet-arm64-uno"]
-
-## debian-package-devel
-
-docker-build-debian-package-devel-arm64v8:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export RELEASE_APPEND="${DEBIAN_RELEASE}"
-    - export DOCKER_BASE_TAG="${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_PACKAGE_DEVEL_MAJOR}"
-    - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
-    - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm64/v8
-    IMAGE_NAME: arm64v8-debian-package-devel
-    DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
-  stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
-
-docker-build-debian-package-devel-arm32v7:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_REGISTRY="${TORADEX_INTERNAL_DOCKERHUB_CACHE}"
-    - export RELEASE_APPEND="${DEBIAN_RELEASE}"
-    - export DOCKER_BASE_TAG="${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_PACKAGE_DEVEL_MAJOR}"
-    - export MINOR="${DEBIAN_PACKAGE_DEVEL_MINOR}"
-    - export PATCH="${DEBIAN_PACKAGE_DEVEL_PATCH}"
-  variables:
-    IMAGE_ARCH: linux/arm/v7
-    IMAGE_NAME: arm32v7-${DEBIAN_PACKAGE_DEVEL_FOLDER}
-    DOCKERFILE_FOLDER: "${DEBIAN_PACKAGE_DEVEL_FOLDER}/"
-  stage: build-base
-  needs: ["pull-tag-and-push-debian-image"]
 
 ## rt-validation
 
