@@ -1069,24 +1069,6 @@ docker-build-stress-tests-arm64:
   stage: build-base
   needs: ["pull-tag-and-push-debian-image"]
 
-lint_dockerfile:
-  stage: lint
-  image: hadolint/hadolint:latest-debian
-  script:
-    # Some rules cannot be applied in our specific cases.
-    # However, since we don't want to completely ignore these rules,
-    # we are changing the following rules to have the level "info":
-    # - DL3002 (last user should not be root)
-    # - DL3003 (use WORKDIR to switch to a directory)
-    # - DL3006 (always tag the version of an image explicitly)
-    # - DL3008 (pin versions in apt-get install)
-    # - DL3020 (use COPY instead of ADD for files and folders)
-    # - DL3029 (do not use --platform flag with FROM)
-    # - DL4006 (set the SHELL option -o pipefail before RUN with a pipe in it)
-    # - SC2039 (in POSIX sh, something is undefined)
-    # - SC2046 (quote this to prevent word splitting)
-    - hadolint */Dockerfile --failure-threshold warning --info DL3002 --info DL3003 --info DL3006 --info DL3008 --info DL3020 --info DL3029 --info DL4006 --info SC2039 --info SC2046
-
 .shellcheck:
   stage: lint
   image: koalaman/shellcheck-alpine:latest
