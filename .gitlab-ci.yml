@@ -56,6 +56,14 @@ variables:
   WESTON_TOUCH_CALIBRATOR_MINOR: "0"
   WESTON_TOUCH_CALIBRATOR_PATCH: "0"
 
+  CHROMIUM_MAJOR: "4"
+  CHROMIUM_MINOR: "0"
+  CHROMIUM_PATCH: "0"
+
+  COG_MAJOR: "4"
+  COG_MINOR: "0"
+  COG_PATCH: "0"
+
   # iMX8 containers
 
   DEBIAN_IMX8_MAJOR: "4"
@@ -93,6 +101,14 @@ variables:
   WESTON_IMX8_TOUCH_CALIBRATOR_MAJOR: "4"
   WESTON_IMX8_TOUCH_CALIBRATOR_MINOR: "0"
   WESTON_IMX8_TOUCH_CALIBRATOR_PATCH: "0"
+
+  CHROMIUM_IMX8_MAJOR: "4"
+  CHROMIUM_IMX8_MINOR: "0"
+  CHROMIUM_IMX8_PATCH: "0"
+
+  COG_IMX8_MAJOR: "4"
+  COG_IMX8_MINOR: "0"
+  COG_IMX8_PATCH: "0"
 
   ## debian-cross-toolchains
 
@@ -174,6 +190,8 @@ variables:
   WAYLAND_BASE_IMX8_FOLDER: "wayland-base-imx8"
   WESTON_TOUCH_CALIBRATOR_IMX8_FOLDER: "weston-touch-calibrator-imx8"
   WESTON_IMX8_FOLDER: "weston-imx8"
+  CHROMIUM_IMX8_FOLDER: "chromium-imx8"
+  COG_IMX8_FOLDER: "cog-imx8"
 
   BASE_FOLDER: "base"
   GRAPHICS_TESTS_FOLDER: "graphics-tests"
@@ -184,6 +202,8 @@ variables:
   WAYLAND_BASE_FOLDER: "wayland-base"
   WESTON_FOLDER: "weston"
   WESTON_TOUCH_CALIBRATOR_FOLDER: "weston-touch-calibrator"
+  CHROMIUM_FOLDER: "chromium"
+  COG_FOLDER: "cog"
 
   DEBUG_FOLDER: "debug"
   UNO_BASE_FOLDER: "uno-base"
@@ -445,6 +465,40 @@ docker-build-qt6-wayland-examples:
   stage: build-stage3
   needs: ["docker-build-qt6-wayland"]
 
+docker-build-chromium:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_MAJOR}"
+    - export MAJOR="${CHROMIUM_MAJOR}"
+    - export MINOR="${CHROMIUM_MINOR}"
+    - export PATCH="${CHROMIUM_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base
+    IMAGE_NAME: chromium
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${CHROMIUM_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base"]
+
+docker-build-cog:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_MAJOR}"
+    - export MAJOR="${COG_MAJOR}"
+    - export MINOR="${COG_MINOR}"
+    - export PATCH="${COG_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base
+    IMAGE_NAME: cog
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${COG_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base"]
+
 # imx8
 
 docker-build-base-imx8:
@@ -602,6 +656,38 @@ docker-build-qt6-wayland-imx8-examples:
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${QT6_WAYLAND_EXAMPLES_IMX8_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt6-wayland-imx8"]
+
+docker-build-chromium-imx8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_IMX8_MAJOR}"
+    - export MAJOR="${CHROMIUM_IMX8_MAJOR}"
+    - export MINOR="${CHROMIUM_IMX8_MINOR}"
+    - export PATCH="${CHROMIUM_IMX8_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-imx8
+    IMAGE_NAME: chromium-imx8
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${CHROMIUM_IMX8_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-imx8"]
+
+docker-build-cog-imx8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_IMX8_MAJOR}"
+    - export MAJOR="${COG_IMX8_MAJOR}"
+    - export MINOR="${COG_IMX8_MINOR}"
+    - export PATCH="${COG_IMX8_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-imx8
+    IMAGE_NAME: cog-imx8
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${COG_IMX8_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-imx8"]
 
 ## debian-cross-toolchains
 
