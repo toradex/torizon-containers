@@ -36,6 +36,14 @@ variables:
   QT5_WAYLAND_EXAMPLES_MINOR: "0"
   QT5_WAYLAND_EXAMPLES_PATCH: "0"
 
+  QT6_WAYLAND_MAJOR: "4"
+  QT6_WAYLAND_MINOR: "0"
+  QT6_WAYLAND_PATCH: "0"
+
+  QT6_WAYLAND_EXAMPLES_MAJOR: "4"
+  QT6_WAYLAND_EXAMPLES_MINOR: "0"
+  QT6_WAYLAND_EXAMPLES_PATCH: "0"
+
   WAYLAND_BASE_MAJOR: "4"
   WAYLAND_BASE_MINOR: "0"
   WAYLAND_BASE_PATCH: "0"
@@ -65,6 +73,14 @@ variables:
   QT5_WAYLAND_EXAMPLES_IMX8_MAJOR: "4"
   QT5_WAYLAND_EXAMPLES_IMX8_MINOR: "0"
   QT5_WAYLAND_EXAMPLES_IMX8_PATCH: "0"
+
+  QT6_WAYLAND_IMX8_MAJOR: "4"
+  QT6_WAYLAND_IMX8_MINOR: "0"
+  QT6_WAYLAND_IMX8_PATCH: "0"
+
+  QT6_WAYLAND_EXAMPLES_IMX8_MAJOR: "4"
+  QT6_WAYLAND_EXAMPLES_IMX8_MINOR: "0"
+  QT6_WAYLAND_EXAMPLES_IMX8_PATCH: "0"
 
   WAYLAND_BASE_IMX8_MAJOR: "4"
   WAYLAND_BASE_IMX8_MINOR: "0"
@@ -152,7 +168,9 @@ variables:
   BASE_IMX8_FOLDER: "base-imx8"
   GRAPHICS_TESTS_IMX8_FOLDER: "graphics-tests-imx8"
   QT5_WAYLAND_EXAMPLES_IMX8_FOLDER: "qt5-wayland-examples-imx8"
+  QT6_WAYLAND_EXAMPLES_IMX8_FOLDER: "qt6-wayland-examples-imx8"
   QT5_WAYLAND_IMX8_FOLDER: "qt5-wayland-imx8"
+  QT6_WAYLAND_IMX8_FOLDER: "qt6-wayland-imx8"
   WAYLAND_BASE_IMX8_FOLDER: "wayland-base-imx8"
   WESTON_TOUCH_CALIBRATOR_IMX8_FOLDER: "weston-touch-calibrator-imx8"
   WESTON_IMX8_FOLDER: "weston-imx8"
@@ -161,6 +179,8 @@ variables:
   GRAPHICS_TESTS_FOLDER: "graphics-tests"
   QT5_WAYLAND_FOLDER: "qt5-wayland"
   QT5_WAYLAND_EXAMPLES_FOLDER: "qt5-wayland-examples"
+  QT6_WAYLAND_FOLDER: "qt6-wayland"
+  QT6_WAYLAND_EXAMPLES_FOLDER: "qt6-wayland-examples"
   WAYLAND_BASE_FOLDER: "wayland-base"
   WESTON_FOLDER: "weston"
   WESTON_TOUCH_CALIBRATOR_FOLDER: "weston-touch-calibrator"
@@ -390,6 +410,41 @@ docker-build-qt5-wayland-examples:
   stage: build-stage3
   needs: ["docker-build-qt5-wayland"]
 
+docker-build-qt6-wayland:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_MINOR}"
+    - export PATCH="${QT6_WAYLAND_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base
+    IMAGE_NAME: qt6-wayland
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT6_WAYLAND_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base"]
+
+docker-build-qt6-wayland-examples:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${QT6_WAYLAND_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: qt6-wayland
+    IMAGE_NAME: qt6-wayland-examples
+    QT6_EXAMPLES_DEBIAN: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-qt6-wayland"]
+
 # imx8
 
 docker-build-base-imx8:
@@ -512,6 +567,41 @@ docker-build-qt5-wayland-imx8-examples:
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${QT5_WAYLAND_EXAMPLES_IMX8_FOLDER}/"
   stage: build-stage3
   needs: ["docker-build-qt5-wayland-imx8"]
+
+docker-build-qt6-wayland-imx8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_IMX8_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_IMX8_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_IMX8_MINOR}"
+    - export PATCH="${QT6_WAYLAND_IMX8_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-imx8
+    IMAGE_NAME: qt6-wayland-imx8
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${QT6_WAYLAND_IMX8_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-imx8"]
+
+docker-build-qt6-wayland-imx8-examples:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${QT6_WAYLAND_IMX8_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_IMX8_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_IMX8_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_IMX8_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: qt6-wayland-imx8
+    IMAGE_NAME: qt6-wayland-examples-imx8
+    QT6_EXAMPLES_DEBIAN: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${QT6_WAYLAND_EXAMPLES_IMX8_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-qt6-wayland-imx8"]
 
 ## debian-cross-toolchains
 
