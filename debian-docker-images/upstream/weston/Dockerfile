@@ -3,7 +3,7 @@
 
 ARG BASE_NAME=wayland-base
 ARG IMAGE_TAG=3
-ARG DOCKER_REGISTRY=torizon
+ARG DOCKER_REGISTRY=docker.io
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
 # Install the weston compositor.
@@ -20,8 +20,6 @@ COPY entry.sh /usr/bin/entry.sh
 COPY switchvtmode.pl /usr/bin/switchvtmode.pl
 COPY weston.ini /etc/xdg/weston/weston.ini
 COPY weston-dev.ini /etc/xdg/weston-dev/weston.ini
-RUN mkdir -p /etc/imx_features
-COPY imx_features /etc/imx_features/
 
 # The compositor needs access to input devices
 RUN usermod -a -G input torizon
