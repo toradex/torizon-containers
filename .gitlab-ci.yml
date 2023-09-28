@@ -322,6 +322,7 @@ docker-build-base:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     IMAGE_NAME: debian
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${BASE_FOLDER}/"
   stage: build-base
@@ -337,6 +338,7 @@ docker-build-wayland-base:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: debian
     IMAGE_NAME: wayland-base
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${WAYLAND_BASE_FOLDER}/"
@@ -355,6 +357,7 @@ docker-build-weston:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: wayland-base
     IMAGE_NAME: weston
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${WESTON_FOLDER}/"
@@ -372,6 +375,7 @@ docker-build-graphics-tests:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: wayland-base
     IMAGE_NAME: graphics-tests
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${GRAPHICS_TESTS_FOLDER}/"
@@ -389,6 +393,7 @@ docker-build-weston-touch-calibrator:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: weston
     IMAGE_NAME: weston-touch-calibrator
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${WESTON_TOUCH_CALIBRATOR_FOLDER}/"
@@ -406,6 +411,7 @@ docker-build-qt5-wayland:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: wayland-base
     IMAGE_NAME: qt5-wayland
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT5_WAYLAND_FOLDER}/"
@@ -423,6 +429,7 @@ docker-build-qt5-wayland-examples:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: qt5-wayland
     IMAGE_NAME: qt5-wayland-examples
     QT5_EXAMPLES_DEBIAN: 1
@@ -441,6 +448,7 @@ docker-build-qt6-wayland:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: wayland-base
     IMAGE_NAME: qt6-wayland
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT6_WAYLAND_FOLDER}/"
@@ -458,6 +466,7 @@ docker-build-qt6-wayland-examples:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: qt6-wayland
     IMAGE_NAME: qt6-wayland-examples
     QT6_EXAMPLES_DEBIAN: 1
@@ -476,6 +485,7 @@ docker-build-chromium:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: wayland-base
     IMAGE_NAME: chromium
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${CHROMIUM_FOLDER}/"
@@ -493,6 +503,7 @@ docker-build-cog:
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: wayland-base
     IMAGE_NAME: cog
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${COG_FOLDER}/"
@@ -793,6 +804,7 @@ docker-build-dotnet:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     IMAGE_NAME: dotnet
     DOTNET_RUNTIME: dotnet
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
@@ -811,6 +823,7 @@ docker-build-aspnet:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     IMAGE_NAME: aspdotnet
     DOTNET_RUNTIME: aspnetcore
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
@@ -830,6 +843,7 @@ docker-build-dotnet-uno:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: dotnet
     BASE_NAME_WAYLAND: wayland-base
     IMAGE_NAME: dotnet-uno
@@ -850,6 +864,7 @@ docker-build-dotnet-debug:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: dotnet
     IMAGE_NAME: dotnet-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
@@ -869,6 +884,7 @@ docker-build-aspnet-debug:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME: aspdotnet
     IMAGE_NAME: aspdotnet-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
@@ -887,6 +903,7 @@ docker-build-dotnet-uno-debug:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     BASE_NAME_DEBUG: dotnet-debug
     BASE_NAME: dotnet-uno
     IMAGE_NAME: dotnet-uno-debug
@@ -907,6 +924,7 @@ docker-build-rt-tests:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     IMAGE_NAME: rt-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${RT_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
@@ -923,6 +941,7 @@ docker-build-stress-tests:
   variables:
     BUILD_FOR_ARM_V8: "true"
     BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
     IMAGE_NAME: stress-tests
     DOCKERFILE_FOLDER: "${RT_VALIDATION_FOLDER}/${STRESS_TESTS_FOLDER}/"
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
