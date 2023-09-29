@@ -353,7 +353,6 @@ docker-build-weston:
     - export MAJOR="${WESTON_MAJOR}"
     - export MINOR="${WESTON_MINOR}"
     - export PATCH="${WESTON_PATCH}"
-    - ./${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${WESTON_FOLDER}/make_feature_map.sh
   variables:
     BUILD_FOR_ARM_V7: "true"
     BUILD_FOR_ARM_V8: "true"
