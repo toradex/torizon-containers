@@ -9,7 +9,7 @@ variables:
   DEBIAN_RELEASE: "bookworm"
   DEBIAN_BASE_IMAGE: "bookworm-slim"
   TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw"
-  DOCKERHUB: "docker.io"
+  DOCKERHUB: "10.12.1.212:5000"
   RELEASE_CANDIDATE: "-rc"
 
   # When running a deploy job, push the container even if the tag already exists.
@@ -110,6 +110,52 @@ variables:
   COG_IMX8_MINOR: "0"
   COG_IMX8_PATCH: "0"
 
+  # am62 containers
+
+  DEBIAN_AM62_MAJOR: "4"
+  DEBIAN_AM62_MINOR: "0"
+  DEBIAN_AM62_PATCH: "0"
+
+  GRAPHICS_TESTS_AM62_MAJOR: "4"
+  GRAPHICS_TESTS_AM62_MINOR: "0"
+  GRAPHICS_TESTS_AM62_PATCH: "0"
+
+  QT5_WAYLAND_AM62_MAJOR: "4"
+  QT5_WAYLAND_AM62_MINOR: "0"
+  QT5_WAYLAND_AM62_PATCH: "0"
+
+  QT5_WAYLAND_EXAMPLES_AM62_MAJOR: "4"
+  QT5_WAYLAND_EXAMPLES_AM62_MINOR: "0"
+  QT5_WAYLAND_EXAMPLES_AM62_PATCH: "0"
+
+  QT6_WAYLAND_AM62_MAJOR: "4"
+  QT6_WAYLAND_AM62_MINOR: "0"
+  QT6_WAYLAND_AM62_PATCH: "0"
+
+  QT6_WAYLAND_EXAMPLES_AM62_MAJOR: "4"
+  QT6_WAYLAND_EXAMPLES_AM62_MINOR: "0"
+  QT6_WAYLAND_EXAMPLES_AM62_PATCH: "0"
+
+  WAYLAND_BASE_AM62_MAJOR: "4"
+  WAYLAND_BASE_AM62_MINOR: "0"
+  WAYLAND_BASE_AM62_PATCH: "0"
+
+  WESTON_AM62_MAJOR: "4"
+  WESTON_AM62_MINOR: "0"
+  WESTON_AM62_PATCH: "0"
+
+  WESTON_AM62_TOUCH_CALIBRATOR_MAJOR: "4"
+  WESTON_AM62_TOUCH_CALIBRATOR_MINOR: "0"
+  WESTON_AM62_TOUCH_CALIBRATOR_PATCH: "0"
+
+  CHROMIUM_AM62_MAJOR: "4"
+  CHROMIUM_AM62_MINOR: "0"
+  CHROMIUM_AM62_PATCH: "0"
+
+  COG_AM62_MAJOR: "4"
+  COG_AM62_MINOR: "0"
+  COG_AM62_PATCH: "0"
+
   ## debian-cross-toolchains
 
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "4"
@@ -174,6 +220,7 @@ variables:
 
   DEBIAN_DOCKER_IMAGES_FOLDER: "debian-docker-images"
   IMX8_FOLDER: "imx8"
+  AM62_FOLDER: "am62"
   UPSTREAM_FOLDER: "upstream"
 
   DEBIAN_CROSS_TOOLCHAINS_FOLDER: "debian-cross-toolchains"
@@ -192,6 +239,18 @@ variables:
   WESTON_IMX8_FOLDER: "weston-imx8"
   CHROMIUM_IMX8_FOLDER: "chromium-imx8"
   COG_IMX8_FOLDER: "cog-imx8"
+
+  BASE_AM62_FOLDER: "base-am62"
+  GRAPHICS_TESTS_AM62_FOLDER: "graphics-tests-am62"
+  QT5_WAYLAND_EXAMPLES_AM62_FOLDER: "qt5-wayland-examples-am62"
+  QT6_WAYLAND_EXAMPLES_AM62_FOLDER: "qt6-wayland-examples-am62"
+  QT5_WAYLAND_AM62_FOLDER: "qt5-wayland-am62"
+  QT6_WAYLAND_AM62_FOLDER: "qt6-wayland-am62"
+  WAYLAND_BASE_AM62_FOLDER: "wayland-base-am62"
+  WESTON_TOUCH_CALIBRATOR_AM62_FOLDER: "weston-touch-calibrator-am62"
+  WESTON_AM62_FOLDER: "weston-am62"
+  CHROMIUM_AM62_FOLDER: "chromium-am62"
+  COG_AM62_FOLDER: "cog-am62"
 
   BASE_FOLDER: "base"
   GRAPHICS_TESTS_FOLDER: "graphics-tests"
@@ -215,6 +274,7 @@ variables:
 
 services:
   - name: docker:dind
+    command: ["--insecure-registry=http://10.12.1.212:5000"]
 
 .do_print_environment_variables: &do_print_environment_variables
   - echo "GitLab CI/CD environment variables:"
@@ -267,8 +327,11 @@ stages:
   - docker info
   - export DATE=$(date +%Y%m%d)
 
-  - docker context create multiarch-build-context
-  - docker buildx create --name multiarch-builder --driver docker-container --use multiarch-build-context --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --use
+  - echo '[registry."10.12.1.212:5000"]' > config.toml
+  - echo '  http = true' >> config.toml
+  - echo '  insecure = true' >> config.toml
+  - docker buildx create --name multiarch-builder --driver docker-container --use --config config.toml --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --use
+  - docker buildx inspect --bootstrap
   - docker run --privileged --rm tonistiigi/binfmt --install arm64,arm
 
   - if [ -n "$BUILD_FOR_ARM_V7" ]; then echo "Building for linux/arm/v7" && PLATFORM_BUILD_ARM_V7="--platform linux/arm/v7"; fi
@@ -300,11 +363,11 @@ stages:
                   --label git.hash=${CI_COMMIT_SHA}
                   --label pipeline.id=${CI_PIPELINE_ID}
                   -f ${DOCKERFILE_FOLDER}Dockerfile
-                  -t ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}
+                  -t ${DOCKERHUB}/torizon/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}
                   ${DOCKERFILE_FOLDER}
-  - if [ -n "$BUILD_FOR_ARM_V7" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm/v7 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
-  - if [ -n "$BUILD_FOR_ARM_V8" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
-  - if [ -n "$BUILD_FOR_AMD64" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/amd64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
+  - if [ -n "$BUILD_FOR_ARM_V7" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm/v7 ${DOCKERHUB}/torizon/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
+  - if [ -n "$BUILD_FOR_ARM_V8" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm64 ${DOCKERHUB}/torizon/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
+  - if [ -n "$BUILD_FOR_AMD64" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/amd64 ${DOCKERHUB}/torizon/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
 
 ## debian-docker-images
 
@@ -788,6 +851,195 @@ docker-build-arm64-toolchain-ssh:
     DOCKERFILE_FOLDER: "${DEBIAN_CROSS_TOOLCHAINS_FOLDER}/${SSH_FOLDER}/"
   stage: build-stage1
   needs: [docker-build-arm64-toolchain]
+
+# am62
+
+docker-build-base-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
+    - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MINOR="${DEBIAN_MINOR}"
+    - export PATCH="${DEBIAN_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    IMAGE_NAME: debian-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${BASE_AM62_FOLDER}/"
+  stage: build-base
+
+docker-build-wayland-base-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
+    - export MAJOR="${WAYLAND_BASE_AM62_MAJOR}"
+    - export MINOR="${WAYLAND_BASE_AM62_MINOR}"
+    - export PATCH="${WAYLAND_BASE_AM62_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: debian-am62
+    IMAGE_NAME: wayland-base-am62
+    ACCEPT_FSL_EULA: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${WAYLAND_BASE_AM62_FOLDER}/"
+  stage: build-stage1
+  needs: ["docker-build-base-am62"]
+
+docker-build-weston-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_AM62_MAJOR}"
+    - export MAJOR="${WESTON_AM62_MAJOR}"
+    - export MINOR="${WESTON_AM62_MINOR}"
+    - export PATCH="${WESTON_AM62_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-am62
+    IMAGE_NAME: weston-am62
+    ACCEPT_FSL_EULA: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${WESTON_AM62_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-am62"]
+
+docker-build-graphics-tests-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_AM62_MAJOR}"
+    - export MAJOR="${GRAPHICS_TESTS_AM62_MAJOR}"
+    - export MINOR="${GRAPHICS_TESTS_AM62_MINOR}"
+    - export PATCH="${GRAPHICS_TESTS_AM62_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-am62
+    IMAGE_NAME: graphics-tests-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${GRAPHICS_TESTS_AM62_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-am62"]
+
+docker-build-weston-touch-calibrator-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WESTON_AM62_MAJOR}"
+    - export MAJOR="${WESTON_TOUCH_CALIBRATOR_MAJOR}"
+    - export MINOR="${WESTON_TOUCH_CALIBRATOR_MINOR}"
+    - export PATCH="${WESTON_TOUCH_CALIBRATOR_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: weston-am62
+    IMAGE_NAME: weston-touch-calibrator-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${WESTON_TOUCH_CALIBRATOR_AM62_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-weston-am62"]
+
+docker-build-qt5-wayland-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_AM62_MAJOR}"
+    - export MAJOR="${QT5_WAYLAND_AM62_MAJOR}"
+    - export MINOR="${QT5_WAYLAND_AM62_MINOR}"
+    - export PATCH="${QT5_WAYLAND_AM62_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-am62
+    IMAGE_NAME: qt5-wayland-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${QT5_WAYLAND_AM62_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-am62"]
+
+docker-build-qt5-wayland-am62-examples:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${QT5_WAYLAND_AM62_MAJOR}"
+    - export MAJOR="${QT5_WAYLAND_EXAMPLES_AM62_MAJOR}"
+    - export MINOR="${QT5_WAYLAND_EXAMPLES_AM62_MINOR}"
+    - export PATCH="${QT5_WAYLAND_EXAMPLES_AM62_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: qt5-wayland-am62
+    IMAGE_NAME: qt5-wayland-examples-am62
+    QT5_EXAMPLES_DEBIAN: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${QT5_WAYLAND_EXAMPLES_AM62_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-qt5-wayland-am62"]
+
+docker-build-qt6-wayland-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_AM62_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_AM62_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_AM62_MINOR}"
+    - export PATCH="${QT6_WAYLAND_AM62_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-am62
+    IMAGE_NAME: qt6-wayland-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${QT6_WAYLAND_AM62_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-am62"]
+
+docker-build-qt6-wayland-am62-examples:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${QT6_WAYLAND_AM62_MAJOR}"
+    - export MAJOR="${QT6_WAYLAND_EXAMPLES_AM62_MAJOR}"
+    - export MINOR="${QT6_WAYLAND_EXAMPLES_AM62_MINOR}"
+    - export PATCH="${QT6_WAYLAND_EXAMPLES_AM62_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: qt6-wayland-am62
+    IMAGE_NAME: qt6-wayland-examples-am62
+    QT6_EXAMPLES_DEBIAN: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${QT6_WAYLAND_EXAMPLES_AM62_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-qt6-wayland-am62"]
+
+docker-build-chromium-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_AM62_MAJOR}"
+    - export MAJOR="${CHROMIUM_AM62_MAJOR}"
+    - export MINOR="${CHROMIUM_AM62_MINOR}"
+    - export PATCH="${CHROMIUM_AM62_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-am62
+    IMAGE_NAME: chromium-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${CHROMIUM_AM62_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-am62"]
+
+docker-build-cog-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${WAYLAND_BASE_AM62_MAJOR}"
+    - export MAJOR="${COG_AM62_MAJOR}"
+    - export MINOR="${COG_AM62_MINOR}"
+    - export PATCH="${COG_AM62_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: wayland-base-am62
+    IMAGE_NAME: cog-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${COG_AM62_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-wayland-base-am62"]
 
 ## debian-dotnet-development-images
 
