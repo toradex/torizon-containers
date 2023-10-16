@@ -19,7 +19,7 @@ COPY start-chromium.sh /usr/bin/start-browser
 
 ENV WAYLAND_DISPLAY=wayland-1
 ENV XDG_RUNTIME_DIR=/tmp/1000-runtime-dir/
-ENV DISPLAY=:0
+ENV DISPLAY=:1
 
 ENTRYPOINT ["/usr/bin/start-browser"]
 
