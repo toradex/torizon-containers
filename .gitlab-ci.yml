@@ -156,6 +156,10 @@ variables:
   COG_AM62_MINOR: "0"
   COG_AM62_PATCH: "0"
 
+  CHROMIUM_TESTS_AM62_MAJOR: "4"
+  CHROMIUM_TESTS_AM62_MINOR: "0"
+  CHROMIUM_TESTS_AM62_PATCH: "0"
+
   ## debian-cross-toolchains
 
   DEBIAN_CROSS_TOOLCHAINS_MAJOR: "4"
@@ -241,6 +245,7 @@ variables:
   COG_IMX8_FOLDER: "cog-imx8"
 
   BASE_AM62_FOLDER: "base-am62"
+  TESTS_AM62_FOLDER: "tests-am62"
   GRAPHICS_TESTS_AM62_FOLDER: "graphics-tests-am62"
   QT5_WAYLAND_EXAMPLES_AM62_FOLDER: "qt5-wayland-examples-am62"
   QT6_WAYLAND_EXAMPLES_AM62_FOLDER: "qt6-wayland-examples-am62"
@@ -250,9 +255,11 @@ variables:
   WESTON_TOUCH_CALIBRATOR_AM62_FOLDER: "weston-touch-calibrator-am62"
   WESTON_AM62_FOLDER: "weston-am62"
   CHROMIUM_AM62_FOLDER: "chromium-am62"
+  CHROMIUM_AM62_TESTS_FOLDER: "chromium-tests-am62"
   COG_AM62_FOLDER: "cog-am62"
 
   BASE_FOLDER: "base"
+  TESTS_FOLDER: "tests"
   GRAPHICS_TESTS_FOLDER: "graphics-tests"
   QT5_WAYLAND_FOLDER: "qt5-wayland"
   QT5_WAYLAND_EXAMPLES_FOLDER: "qt5-wayland-examples"
@@ -440,7 +447,7 @@ docker-build-graphics-tests:
     BUILD_FOR_AMD64: "true"
     BASE_NAME: wayland-base
     IMAGE_NAME: graphics-tests
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${GRAPHICS_TESTS_FOLDER}/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${TESTS_FOLDER}/${GRAPHICS_TESTS_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base"]
 
@@ -918,7 +925,7 @@ docker-build-graphics-tests-am62:
     BUILD_FOR_ARM_V8: "true"
     BASE_NAME: wayland-base-am62
     IMAGE_NAME: graphics-tests-am62
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${GRAPHICS_TESTS_AM62_FOLDER}/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${TESTS_AM62_FOLDER}/${GRAPHICS_TESTS_AM62_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-am62"]
 
@@ -1023,6 +1030,22 @@ docker-build-chromium-am62:
     IMAGE_NAME: chromium-am62
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${CHROMIUM_AM62_FOLDER}/"
   stage: build-stage2
+  needs: ["docker-build-wayland-base-am62"]
+
+docker-build-chromium-tests-am62:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${CHROMIUM_AM62_MAJOR}"
+    - export MAJOR="${CHROMIUM_TESTS_AM62_MAJOR}"
+    - export MINOR="${CHROMIUM_TESTS_AM62_MINOR}"
+    - export PATCH="${CHROMIUM_TESTS_AM62_PATCH}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: chromium-am62
+    IMAGE_NAME: chromium-tests-am62
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${TESTS_AM62_FOLDER}/${CHROMIUM_AM62_TESTS_FOLDER}/"
+  stage: build-stage3
   needs: ["docker-build-wayland-base-am62"]
 
 docker-build-cog-am62:
