@@ -45,20 +45,24 @@ FROM base as add_toradex-repository-0
 FROM base as add_toradex-repository-1
 ARG TORADEX_SNAPSHOT
 ARG USE_TORADEX_SNAPSHOT
-# Run with executor in network_mode host or privileged
-ARG TORADEX_FEED_BASE_URL="http://10.12.1.212:8080/"
+ARG TORADEX_FEED_BASE_URL="https://feeds.toradex.com/debian-am62"
 
 # Add toradex key and package feed
-RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo-ti.gpg \
+RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo-24102023.gpg \
     | gpg --dearmor \ 
-    | tee /usr/share/keyrings/toradex-debian-repo-ti.gpg
+    | tee /usr/share/keyrings/toradex-debian-repo.gpg
 
-RUN TORADEX_FEED_URL="20231005T141153Z" && echo "Types: deb\n\
-URIs: http://10.12.1.212:8080/snapshots/20231005T141153Z/\n\
+RUN if [ "${USE_TORADEX_SNAPSHOT}" = 1 ]; then \
+           TORADEX_FEED_URL="${TORADEX_FEED_BASE_URL}/snapshots/${TORADEX_SNAPSHOT}"; \
+       else \
+           TORADEX_FEED_URL="${TORADEX_FEED_BASE_URL}"; \
+       fi \
+    && echo "Types: deb\n\
+URIs: https://feeds.toradex.com/debian-am62/snapshots/$TORADEX_SNAPSHOT\n\
 Suites: testing\n\
 Components: main non-free\n\
-Signed-By: /usr/share/keyrings/toradex-debian-repo-ti.gpg" > /etc/apt/sources.list.d/toradex.sources \
-    && echo "Package: *\nPin: origin 10.12.1.212\nPin-Priority: 900" > /etc/apt/preferences.d/toradex-feeds
+Signed-By: /usr/share/keyrings/toradex-debian-repo.gpg" > /etc/apt/sources.list.d/toradex.sources \
+    && echo "Package: *\nPin: origin feeds.toradex.com\nPin-Priority: 900" > /etc/apt/preferences.d/toradex-feeds
 
 FROM add_toradex-repository-${ADD_TORADEX_REPOSITORY}
 
