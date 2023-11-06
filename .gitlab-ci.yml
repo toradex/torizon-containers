@@ -1050,7 +1050,7 @@ docker-build-chromium-tests-am62:
     IMAGE_NAME: chromium-tests-am62
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${AM62_FOLDER}/${TESTS_AM62_FOLDER}/${CHROMIUM_AM62_TESTS_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-wayland-base-am62"]
+  needs: ["docker-build-chromium-am62"]
 
 docker-build-cog-am62:
   retry: 2
