@@ -232,6 +232,7 @@ variables:
   SSH_FOLDER: "ssh"
 
   BASE_IMX8_FOLDER: "base-imx8"
+  TESTS_IMX8_FOLDER: "tests-imx8"
   GRAPHICS_TESTS_IMX8_FOLDER: "graphics-tests-imx8"
   QT5_WAYLAND_EXAMPLES_IMX8_FOLDER: "qt5-wayland-examples-imx8"
   QT6_WAYLAND_EXAMPLES_IMX8_FOLDER: "qt6-wayland-examples-imx8"
@@ -649,7 +650,7 @@ docker-build-graphics-tests-imx8:
     BUILD_FOR_ARM_V8: "true"
     BASE_NAME: wayland-base-imx8
     IMAGE_NAME: graphics-tests-imx8
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${GRAPHICS_TESTS_IMX8_FOLDER}/"
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${TESTS_IMX8_FOLDER}/${GRAPHICS_TESTS_IMX8_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-imx8"]
 
