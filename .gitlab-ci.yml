@@ -10,7 +10,6 @@ variables:
   DEBIAN_BASE_IMAGE: "bookworm-slim"
   TORADEX_INTERNAL_DOCKERHUB_CACHE: "artifactory-horw.int.toradex.com/dockerhub-proxy-horw"
   DOCKERHUB: "docker.io"
-  RELEASE_CANDIDATE: "-rc"
 
   # When running a deploy job, push the container even if the tag already exists.
   # Can be overriden by setting "DEPLOY_CONDITIONALLY" to anything other than "true" when starting a new job manually.
@@ -20,153 +19,153 @@ variables:
 
   # Upstream containers
 
-  DEBIAN_MAJOR: "4"
+  DEBIAN_MAJOR: "rc"
   DEBIAN_MINOR: "0"
   DEBIAN_PATCH: "0"
 
-  GRAPHICS_TESTS_MAJOR: "4"
+  GRAPHICS_TESTS_MAJOR: "rc"
   GRAPHICS_TESTS_MINOR: "0"
   GRAPHICS_TESTS_PATCH: "0"
 
-  QT5_WAYLAND_MAJOR: "4"
+  QT5_WAYLAND_MAJOR: "rc"
   QT5_WAYLAND_MINOR: "0"
   QT5_WAYLAND_PATCH: "0"
 
-  QT5_WAYLAND_EXAMPLES_MAJOR: "4"
+  QT5_WAYLAND_EXAMPLES_MAJOR: "rc"
   QT5_WAYLAND_EXAMPLES_MINOR: "0"
   QT5_WAYLAND_EXAMPLES_PATCH: "0"
 
-  QT6_WAYLAND_MAJOR: "4"
+  QT6_WAYLAND_MAJOR: "rc"
   QT6_WAYLAND_MINOR: "0"
   QT6_WAYLAND_PATCH: "0"
 
-  QT6_WAYLAND_EXAMPLES_MAJOR: "4"
+  QT6_WAYLAND_EXAMPLES_MAJOR: "rc"
   QT6_WAYLAND_EXAMPLES_MINOR: "0"
   QT6_WAYLAND_EXAMPLES_PATCH: "0"
 
-  WAYLAND_BASE_MAJOR: "4"
+  WAYLAND_BASE_MAJOR: "rc"
   WAYLAND_BASE_MINOR: "0"
   WAYLAND_BASE_PATCH: "0"
 
-  WESTON_MAJOR: "4"
+  WESTON_MAJOR: "rc"
   WESTON_MINOR: "0"
   WESTON_PATCH: "0"
 
-  WESTON_TOUCH_CALIBRATOR_MAJOR: "4"
+  WESTON_TOUCH_CALIBRATOR_MAJOR: "rc"
   WESTON_TOUCH_CALIBRATOR_MINOR: "0"
   WESTON_TOUCH_CALIBRATOR_PATCH: "0"
 
-  CHROMIUM_MAJOR: "4"
+  CHROMIUM_MAJOR: "rc"
   CHROMIUM_MINOR: "0"
   CHROMIUM_PATCH: "0"
 
-  COG_MAJOR: "4"
+  COG_MAJOR: "rc"
   COG_MINOR: "0"
   COG_PATCH: "0"
 
   # iMX8 containers
 
-  DEBIAN_IMX8_MAJOR: "4"
+  DEBIAN_IMX8_MAJOR: "rc"
   DEBIAN_IMX8_MINOR: "0"
   DEBIAN_IMX8_PATCH: "0"
 
-  GRAPHICS_TESTS_IMX8_MAJOR: "4"
+  GRAPHICS_TESTS_IMX8_MAJOR: "rc"
   GRAPHICS_TESTS_IMX8_MINOR: "0"
   GRAPHICS_TESTS_IMX8_PATCH: "0"
 
-  QT5_WAYLAND_IMX8_MAJOR: "4"
+  QT5_WAYLAND_IMX8_MAJOR: "rc"
   QT5_WAYLAND_IMX8_MINOR: "0"
   QT5_WAYLAND_IMX8_PATCH: "0"
 
-  QT5_WAYLAND_EXAMPLES_IMX8_MAJOR: "4"
+  QT5_WAYLAND_EXAMPLES_IMX8_MAJOR: "rc"
   QT5_WAYLAND_EXAMPLES_IMX8_MINOR: "0"
   QT5_WAYLAND_EXAMPLES_IMX8_PATCH: "0"
 
-  QT6_WAYLAND_IMX8_MAJOR: "4"
+  QT6_WAYLAND_IMX8_MAJOR: "rc"
   QT6_WAYLAND_IMX8_MINOR: "0"
   QT6_WAYLAND_IMX8_PATCH: "0"
 
-  QT6_WAYLAND_EXAMPLES_IMX8_MAJOR: "4"
+  QT6_WAYLAND_EXAMPLES_IMX8_MAJOR: "rc"
   QT6_WAYLAND_EXAMPLES_IMX8_MINOR: "0"
   QT6_WAYLAND_EXAMPLES_IMX8_PATCH: "0"
 
-  WAYLAND_BASE_IMX8_MAJOR: "4"
+  WAYLAND_BASE_IMX8_MAJOR: "rc"
   WAYLAND_BASE_IMX8_MINOR: "0"
   WAYLAND_BASE_IMX8_PATCH: "0"
 
-  WESTON_IMX8_MAJOR: "4"
+  WESTON_IMX8_MAJOR: "rc"
   WESTON_IMX8_MINOR: "0"
   WESTON_IMX8_PATCH: "0"
 
-  WESTON_IMX8_TOUCH_CALIBRATOR_MAJOR: "4"
+  WESTON_IMX8_TOUCH_CALIBRATOR_MAJOR: "rc"
   WESTON_IMX8_TOUCH_CALIBRATOR_MINOR: "0"
   WESTON_IMX8_TOUCH_CALIBRATOR_PATCH: "0"
 
-  CHROMIUM_IMX8_MAJOR: "4"
+  CHROMIUM_IMX8_MAJOR: "rc"
   CHROMIUM_IMX8_MINOR: "0"
   CHROMIUM_IMX8_PATCH: "0"
 
-  COG_IMX8_MAJOR: "4"
+  COG_IMX8_MAJOR: "rc"
   COG_IMX8_MINOR: "0"
   COG_IMX8_PATCH: "0"
 
   # am62 containers
 
-  DEBIAN_AM62_MAJOR: "4"
+  DEBIAN_AM62_MAJOR: "rc"
   DEBIAN_AM62_MINOR: "0"
   DEBIAN_AM62_PATCH: "0"
 
-  GRAPHICS_TESTS_AM62_MAJOR: "4"
+  GRAPHICS_TESTS_AM62_MAJOR: "rc"
   GRAPHICS_TESTS_AM62_MINOR: "0"
   GRAPHICS_TESTS_AM62_PATCH: "0"
 
-  QT5_WAYLAND_AM62_MAJOR: "4"
+  QT5_WAYLAND_AM62_MAJOR: "rc"
   QT5_WAYLAND_AM62_MINOR: "0"
   QT5_WAYLAND_AM62_PATCH: "0"
 
-  QT5_WAYLAND_EXAMPLES_AM62_MAJOR: "4"
+  QT5_WAYLAND_EXAMPLES_AM62_MAJOR: "rc"
   QT5_WAYLAND_EXAMPLES_AM62_MINOR: "0"
   QT5_WAYLAND_EXAMPLES_AM62_PATCH: "0"
 
-  QT6_WAYLAND_AM62_MAJOR: "4"
+  QT6_WAYLAND_AM62_MAJOR: "rc"
   QT6_WAYLAND_AM62_MINOR: "0"
   QT6_WAYLAND_AM62_PATCH: "0"
 
-  QT6_WAYLAND_EXAMPLES_AM62_MAJOR: "4"
+  QT6_WAYLAND_EXAMPLES_AM62_MAJOR: "rc"
   QT6_WAYLAND_EXAMPLES_AM62_MINOR: "0"
   QT6_WAYLAND_EXAMPLES_AM62_PATCH: "0"
 
-  WAYLAND_BASE_AM62_MAJOR: "4"
+  WAYLAND_BASE_AM62_MAJOR: "rc"
   WAYLAND_BASE_AM62_MINOR: "0"
   WAYLAND_BASE_AM62_PATCH: "0"
 
-  WESTON_AM62_MAJOR: "4"
+  WESTON_AM62_MAJOR: "rc"
   WESTON_AM62_MINOR: "0"
   WESTON_AM62_PATCH: "0"
 
-  WESTON_AM62_TOUCH_CALIBRATOR_MAJOR: "4"
+  WESTON_AM62_TOUCH_CALIBRATOR_MAJOR: "rc"
   WESTON_AM62_TOUCH_CALIBRATOR_MINOR: "0"
   WESTON_AM62_TOUCH_CALIBRATOR_PATCH: "0"
 
-  CHROMIUM_AM62_MAJOR: "4"
+  CHROMIUM_AM62_MAJOR: "rc"
   CHROMIUM_AM62_MINOR: "0"
   CHROMIUM_AM62_PATCH: "0"
 
-  COG_AM62_MAJOR: "4"
+  COG_AM62_MAJOR: "rc"
   COG_AM62_MINOR: "0"
   COG_AM62_PATCH: "0"
 
-  CHROMIUM_TESTS_AM62_MAJOR: "4"
+  CHROMIUM_TESTS_AM62_MAJOR: "rc"
   CHROMIUM_TESTS_AM62_MINOR: "0"
   CHROMIUM_TESTS_AM62_PATCH: "0"
 
   ## debian-cross-toolchains
 
-  DEBIAN_CROSS_TOOLCHAINS_MAJOR: "4"
+  DEBIAN_CROSS_TOOLCHAINS_MAJOR: "rc"
   DEBIAN_CROSS_TOOLCHAINS_MINOR: "0"
   DEBIAN_CROSS_TOOLCHAINS_PATCH: "0"
 
-  DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "4"
+  DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR: "rc"
   DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR: "0"
   DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH: "0"
 
@@ -174,27 +173,27 @@ variables:
 
   DOTNET_RELEASE: "6.0"
 
-  DOTNET_MAJOR: "4"
+  DOTNET_MAJOR: "rc"
   DOTNET_MINOR: "0"
   DOTNET_PATCH: "0"
 
-  ASPDOTNET_MAJOR: "4"
+  ASPDOTNET_MAJOR: "rc"
   ASPDOTNET_MINOR: "0"
   ASPDOTNET_PATCH: "0"
 
-  DOTNET_DEBUG_MAJOR: "4"
+  DOTNET_DEBUG_MAJOR: "rc"
   DOTNET_DEBUG_MINOR: "0"
   DOTNET_DEBUG_PATCH: "0"
 
-  ASPDOTNET_DEBUG_MAJOR: "4"
+  ASPDOTNET_DEBUG_MAJOR: "rc"
   ASPDOTNET_DEBUG_MINOR: "0"
   ASPDOTNET_DEBUG_PATCH: "0"
 
-  DOTNET_UNO_MAJOR: "4"
+  DOTNET_UNO_MAJOR: "rc"
   DOTNET_UNO_MINOR: "0"
   DOTNET_UNO_PATCH: "0"
 
-  DOTNET_UNO_DEBUG_MAJOR: "4"
+  DOTNET_UNO_DEBUG_MAJOR: "rc"
   DOTNET_UNO_DEBUG_MINOR: "0"
   DOTNET_UNO_DEBUG_PATCH: "0"
 
@@ -211,11 +210,11 @@ variables:
 
   ## rt-validation
 
-  RT_TESTS_MAJOR: "4"
+  RT_TESTS_MAJOR: "rc"
   RT_TESTS_MINOR: "0"
   RT_TESTS_PATCH: "0"
 
-  STRESS_TESTS_MAJOR: "4"
+  STRESS_TESTS_MAJOR: "rc"
   STRESS_TESTS_MINOR: "0"
   STRESS_TESTS_PATCH: "0"
 
@@ -354,18 +353,18 @@ stages:
                   --build-arg DOCKER_REGISTRY=${DOCKERHUB}
                   --build-arg BASE_NAME=${BASE_NAME}
                   --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
-                  --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}${RELEASE_CANDIDATE}
+                  --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}
                   --build-arg ADD_TORADEX_REPOSITORY=${ADD_TORADEX_REPOSITORY}
                   --build-arg ACCEPT_FSL_EULA=${ACCEPT_FSL_EULA}
                   --build-arg QT5_EXAMPLES_DEBIAN=${QT5_EXAMPLES_DEBIAN}
-                  --build-arg TORADEX_SNAPSHOT="20231024T164802Z"
+                  --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT}
                   --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
-                  --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}${RELEASE_CANDIDATE}
-                  --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}${RELEASE_CANDIDATE}
+                  --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}
+                  --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}
                   --build-arg DOTNET_RUNTIME=${DOTNET_RUNTIME}
                   --build-arg DOTNET_VERSION=${DOTNET_VERSION}
                   --build-arg DOTNET_DEBUGGER_RELEASE=${DOTNET_DEBUGGER_RELEASE}
-                  --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}${RELEASE_CANDIDATE}
+                  --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}
                   --build-arg BASE_NAME_WAYLAND=${BASE_NAME_WAYLAND}
                   ${DOCKER_NO_CACHE:+--no-cache}
                   --label container.name=${IMAGE_NAME}
@@ -374,11 +373,11 @@ stages:
                   --label git.hash=${CI_COMMIT_SHA}
                   --label pipeline.id=${CI_PIPELINE_ID}
                   -f ${DOCKERFILE_FOLDER}Dockerfile
-                  -t ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}
+                  -t ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}
                   ${DOCKERFILE_FOLDER}
-  - if [ -n "$BUILD_FOR_ARM_V7" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm/v7 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
-  - if [ -n "$BUILD_FOR_ARM_V8" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
-  - if [ -n "$BUILD_FOR_AMD64" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/amd64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${RELEASE_CANDIDATE}; fi
+  - if [ -n "$BUILD_FOR_ARM_V7" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm/v7 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}; fi
+  - if [ -n "$BUILD_FOR_ARM_V8" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}; fi
+  - if [ -n "$BUILD_FOR_AMD64" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/amd64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}; fi
 
 ## debian-docker-images
 
