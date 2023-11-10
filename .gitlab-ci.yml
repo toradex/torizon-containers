@@ -1,7 +1,3 @@
----
-include:
-  - https://gitlab.int.toradex.com/rd/torizon-core/debian/debian-pipeline/-/raw/tdx-feed/torizon-core.yml
-
 image: docker:latest
 
 variables:
@@ -307,7 +303,7 @@ stages:
   variables:
     REGCTL_HASH: "484f98e99c90341336b1be99b2b333e7129fde3535b54ef97b4673e8fb2b1d6c"
   before_script:
-    - apk add curl
+    - apk update && apk add curl
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - curl -L https://github.com/regclient/regclient/releases/download/v0.5.1/regctl-linux-amd64 > regctl
     # to update the hash: download the metadata the regctl repo, verify the signatures, generate the SHA256SUMS file
@@ -328,15 +324,16 @@ stages:
   script:
   - *do_docker_experimental
   - *do_print_environment_variables
+  - apk add curl
   - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}"
   - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_TOKEN
   - docker info
   - export DATE=$(date +%Y%m%d)
   - |
     if [[ "${IMAGE_NAME}" == *imx8 ]]; then
-      export TORADEX_SNAPSHOT="20230919T165641Z"
+      export TORADEX_SNAPSHOT=$(curl https://feeds.toradex.com/debian/snapshots/latest-snapshot)
     elif [[ "${IMAGE_NAME}" == *am62 ]]; then
-      export TORADEX_SNAPSHOT="20231024T164802Z"
+      export TORADEX_SNAPSHOT=$(curl https://feeds.toradex.com/debian-am62/snapshots/latest-snapshot)
     else
       echo "Assuming upstream image."
     fi
