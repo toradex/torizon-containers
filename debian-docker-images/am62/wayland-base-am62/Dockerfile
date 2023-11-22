@@ -23,7 +23,6 @@ RUN apt-get -y update && apt-get install -y \
     libglx-mesa0 \
     libosmesa6 \
     libosmesa6-dev \
-    libpowervr-gl-am62x \
     libpru-pssp-dev \
     libwayland-egl1-mesa \
     libwayland-client0 \
@@ -35,7 +34,11 @@ RUN apt-get -y update && apt-get install -y \
     mesa-vdpau-drivers \
     mesa-vulkan-drivers \
     mesa-utils-extra \
-    ti-img-rogue-driver \
+    ti-img-rogue-driver-am62-dkms \
+    ti-img-rogue-firmware-am62 \
+    ti-img-rogue-tools-am62 \
+    ti-img-rogue-umlibs-am62 \
+
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Make sure the user can access DRM and video devices
