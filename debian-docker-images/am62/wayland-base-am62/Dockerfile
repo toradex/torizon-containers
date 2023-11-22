@@ -38,7 +38,6 @@ RUN apt-get -y update && apt-get install -y \
     ti-img-rogue-firmware-am62 \
     ti-img-rogue-tools-am62 \
     ti-img-rogue-umlibs-am62 \
-
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Make sure the user can access DRM and video devices

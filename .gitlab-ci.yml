@@ -373,9 +373,9 @@ stages:
                   -f ${DOCKERFILE_FOLDER}Dockerfile
                   -t ${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
                   ${DOCKERFILE_FOLDER}
-  - if [ -n "$BUILD_FOR_ARM_V7" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm/v7 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}; fi
-  - if [ -n "$BUILD_FOR_ARM_V8" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}; fi
-  - if [ -n "$BUILD_FOR_AMD64" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/amd64 ${DOCKER_HUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}; fi
+  - if [ -n "$BUILD_FOR_ARM_V7" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm/v7 ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}; fi
+  - if [ -n "$BUILD_FOR_ARM_V8" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/arm64 ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}; fi
+  - if [ -n "$BUILD_FOR_AMD64" ]; then docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/bitnami/trivy image --no-progress --exit-code 0 --platform linux/amd64 ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}; fi
 
 ## debian-docker-images
 
