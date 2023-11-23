@@ -167,7 +167,8 @@ variables:
 
   ## debian-dotnet-development-images
 
-  DOTNET_RELEASE: "6.0"
+  DOTNET_6_RELEASE: "6.0"
+  DOTNET_8_RELEASE: "8.0"
 
   DOTNET_MAJOR: "rc"
   DOTNET_MINOR: "0"
@@ -193,7 +194,8 @@ variables:
   DOTNET_UNO_DEBUG_MINOR: "0"
   DOTNET_UNO_DEBUG_PATCH: "0"
 
-  DOTNET_SEMANTIC_VERSION: "6.0.16"
+  DOTNET_6_SEMANTIC_VERSION: "6.0.16"
+  DOTNET_8_SEMANTIC_VERSION: "8.0.0"
   # The latest version of vsdbg can be obtained by running the follow command:
   #curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
   DOTNET_DEBUGGER_RELEASE: "17.6.10208.1"
@@ -1067,14 +1069,14 @@ docker-build-cog-am62:
 
 ## debian-dotnet-development-images
 
-docker-build-dotnet:
+docker-build-dotnet-6:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
-    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     BUILD_FOR_ARM_V8: "true"
@@ -1086,14 +1088,14 @@ docker-build-dotnet:
   stage: build-stage2
   needs: ["docker-build-base"]
 
-docker-build-aspnet:
+docker-build-aspnet-6:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
-    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     BUILD_FOR_ARM_V8: "true"
@@ -1105,14 +1107,14 @@ docker-build-aspnet:
   stage: build-stage2
   needs: ["docker-build-base"]
 
-docker-build-dotnet-uno:
+docker-build-dotnet-6-uno:
   retry: 2
   extends: .docker-build
   before_script:
-    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DOTNET_RELEASE}"
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DOTNET_6_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
-    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
@@ -1124,16 +1126,16 @@ docker-build-dotnet-uno:
     IMAGE_NAME: dotnet-uno
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_BASE_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-dotnet"]
+  needs: ["docker-build-dotnet-6"]
 
-docker-build-dotnet-debug:
+docker-build-dotnet-6-debug:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
-    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
@@ -1144,16 +1146,16 @@ docker-build-dotnet-debug:
     IMAGE_NAME: dotnet-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-dotnet"]
+  needs: ["docker-build-dotnet-6"]
 
-docker-build-aspnet-debug:
+docker-build-aspnet-6-debug:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
-    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
     - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
   variables:
@@ -1164,16 +1166,16 @@ docker-build-aspnet-debug:
     IMAGE_NAME: aspdotnet-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
   stage: build-stage3
-  needs: ["docker-build-aspnet", "docker-build-dotnet-debug"]
+  needs: ["docker-build-aspnet-6", "docker-build-dotnet-6-debug"]
 
-docker-build-dotnet-uno-debug:
+docker-build-dotnet-6-uno-debug:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
     - export MAJOR="${DEBIAN_MAJOR}"
-    - export RELEASE_APPEND="-${DOTNET_RELEASE}"
-    - export DOTNET_VERSION="${DOTNET_SEMANTIC_VERSION}"
+    - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     BUILD_FOR_ARM_V8: "true"
@@ -1184,7 +1186,126 @@ docker-build-dotnet-uno-debug:
     IMAGE_NAME: dotnet-uno-debug
     DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
   stage: build-stage4
-  needs: ["docker-build-dotnet-uno", "docker-build-dotnet-debug"]
+  needs: ["docker-build-dotnet-6-uno", "docker-build-dotnet-6-debug"]
+
+docker-build-dotnet-8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
+    IMAGE_NAME: dotnet
+    DOTNET_RUNTIME: dotnet
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-base"]
+
+docker-build-aspnet-8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
+    IMAGE_NAME: aspdotnet
+    DOTNET_RUNTIME: aspnetcore
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${BASE_FOLDER}/"
+  stage: build-stage2
+  needs: ["docker-build-base"]
+
+docker-build-dotnet-8-uno:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DOTNET_8_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
+    - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
+    BASE_NAME: dotnet
+    BASE_NAME_WAYLAND: wayland-base
+    IMAGE_NAME: dotnet-uno
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_BASE_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-dotnet-8"]
+
+docker-build-dotnet-8-debug:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+    - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
+    BASE_NAME: dotnet
+    IMAGE_NAME: dotnet-debug
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-dotnet-8"]
+
+docker-build-aspnet-8-debug:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+    - export DOTNET_DEBUGGER_RELEASE="${DOTNET_DEBUGGER_RELEASE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
+    BASE_NAME: aspdotnet
+    IMAGE_NAME: aspdotnet-debug
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${DEBUG_FOLDER}/"
+  stage: build-stage3
+  needs: ["docker-build-aspnet-8", "docker-build-dotnet-8-debug"]
+
+docker-build-dotnet-8-uno-debug:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
+    - export MAJOR="${DEBIAN_MAJOR}"
+    - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
+    - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BUILD_FOR_ARM_V7: "true"
+    BUILD_FOR_AMD64: "true"
+    BASE_NAME_DEBUG: dotnet-debug
+    BASE_NAME: dotnet-uno
+    IMAGE_NAME: dotnet-uno-debug
+    DOCKERFILE_FOLDER: "${DEBIAN_DOTNET_DEVELOPMENT_IMAGES_FOLDER}/${UNO_DEBUG_FOLDER}/"
+  stage: build-stage4
+  needs: ["docker-build-dotnet-8-uno", "docker-build-dotnet-8-debug"]
 
 ## rt-validation
 
