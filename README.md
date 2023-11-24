@@ -24,7 +24,7 @@ For comprehensive documentation, check out our developer website:
 Our release branch is always the name of the current Debian Stable.
 Changes are rebased on top of this release branch from the `rc` (for `Release Candidate`) branch.
 
-The reason why we don't do point-releases from `rc` directly is that we can re-run the release pipeline if a new version of Debian comes out. That includes a bump in the minor version of the tags defined in the [.gitlab-ci.yml](.gitlab-ci.yml).
+The reason why we don't do point-releases from `rc` directly is that we can re-run the release pipeline if a new [point release](https://wiki.debian.org/DebianReleases/PointReleases) of Debian Stable comes out, which includes security fixes. This re-release from the Stable branch will included a bump in the patch version of the tags defined in the [.gitlab-ci.yml](.gitlab-ci.yml).
 
 We also have two branches based on the Stable branch but using the Unstable (`sid`) and Testing distributions of Debian instead of Stable. This allows us to easily release a new stable version from testing whenever the upstream promotes it. Whenever a change is done in the stable branch it should be cherry picked to the `sid` and the current testing branches!
 
