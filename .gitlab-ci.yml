@@ -1,7 +1,3 @@
----
-include:
-  - https://gitlab.int.toradex.com/rd/torizon-core/debian/debian-pipeline/-/raw/tdx-feed/torizon-core.yml
-
 image: docker:latest
 
 variables:
@@ -60,6 +56,14 @@ variables:
   GRAPHICS_TESTS_MINOR: "0"
   GRAPHICS_TESTS_PATCH: "0"
 
+  QT6_WAYLAND_VIVANTE_MAJOR: "4"
+  QT6_WAYLAND_VIVANTE_MINOR: "0"
+  QT6_WAYLAND_VIVANTE_PATCH: "0"
+
+  QT6_WAYLAND_EXAMPLES_VIVANTE_MAJOR: "4"
+  QT6_WAYLAND_EXAMPLES_VIVANTE_MINOR: "0"
+  QT6_WAYLAND_EXAMPLES_VIVANTE_PATCH: "0"
+
   GRAPHICS_TESTS_VIVANTE_MAJOR: "4"
   GRAPHICS_TESTS_VIVANTE_MINOR: "0"
   GRAPHICS_TESTS_VIVANTE_PATCH: "0"
@@ -102,10 +106,10 @@ variables:
   DOTNET_UNO_DEBUG_MINOR: "0"
   DOTNET_UNO_DEBUG_PATCH: "1"
 
-  DOTNET_SEMANTIC_VERSION: "6.0.16"
+  DOTNET_SEMANTIC_VERSION: "6.0.25"
   # The latest version of vsdbg can be obtained by running the follow command:
   #curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
-  DOTNET_DEBUGGER_RELEASE: "17.6.10208.1"
+  DOTNET_DEBUGGER_RELEASE: "17.7.10808.2"
 
   # This should be set by docker image already, just to be sure...
   DOCKER_HOST: tcp://docker:2375
@@ -209,8 +213,11 @@ pull-tag-and-push-debian-image:
 .docker-build:
   variables:
     ADD_TORADEX_REPOSITORY: 1
+  before_script: apk update && apk add curl
   script:
+  - apk update && apk add curl
   - *do_print_environment_variables
+  - export TORADEX_SNAPSHOT=$(curl https://feeds.toradex.com/debian/snapshots/latest-snapshot)
   - export IMAGE_TAG="${MAJOR}${RELEASE_APPEND}"
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   - docker info
@@ -1996,6 +2003,32 @@ docker-deploy-qt5-wayland-examples-multiarch:
     IMAGE_NAME_64: arm64v8-debian-qt5-wayland-examples
   stage: deploy-multiarch
   needs: ["docker-build-qt5-wayland-examples-multiarch"]
+
+docker-deploy-qt6-wayland-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${QT5_WAYLAND_MAJOR}"
+    - export MINOR="${QT5_WAYLAND_MINOR}"
+    - export PATCH="${QT5_WAYLAND_PATCH}"
+  variables:
+    IMAGE_NAME: qt6-wayland
+    IMAGE_NAME_32: arm32v7-debian-qt6-wayland
+    IMAGE_NAME_64: arm64v8-debian-qt6-wayland
+  stage: deploy-multiarch
+  needs: ["docker-build-qt6-wayland-multiarch"]
+
+docker-deploy-qt6-wayland-examples-multiarch:
+  extends: .docker-deploy-multiarch
+  before_script:
+    - export MAJOR="${QT5_WAYLAND_EXAMPLES_MAJOR}"
+    - export MINOR="${QT5_WAYLAND_EXAMPLES_MINOR}"
+    - export PATCH="${QT5_WAYLAND_EXAMPLES_PATCH}"
+  variables:
+    IMAGE_NAME: qt6-wayland-examples
+    IMAGE_NAME_32: arm32v7-debian-qt6-wayland-examples
+    IMAGE_NAME_64: arm64v8-debian-qt6-wayland-examples
+  stage: deploy-multiarch
+  needs: ["docker-build-qt6-wayland-examples-multiarch"]
 
 docker-deploy-weston-touch-calibrator-multiarch:
   extends: .docker-deploy-multiarch
