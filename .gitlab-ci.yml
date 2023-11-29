@@ -298,8 +298,7 @@ stages:
   - build-stage2
   - build-stage3
   - build-stage4
-  - build-samples-bridge
-  - deploy
+  - test
 
 .include-regctl:
   variables:
@@ -1436,3 +1435,10 @@ build-torizon-samples:
     project: rd/torizon-core/samples
     branch: ${DEBIAN_RELEASE}
     strategy: depend
+
+dotnet-8-tests:
+  image: ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/torizon/dotnet:${DOTNET_MAJOR}-${DOTNET_8_RELEASE}
+  stage: test
+  script:
+    - dotnet --info
+  needs: ["docker-build-dotnet-8"]
