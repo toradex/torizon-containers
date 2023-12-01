@@ -167,35 +167,66 @@ variables:
 
   ## debian-dotnet-development-images
 
+  ### Dotnet 6
+
   DOTNET_6_RELEASE: "6.0"
-  DOTNET_8_RELEASE: "8.0"
 
-  DOTNET_MAJOR: "rc"
-  DOTNET_MINOR: "0"
-  DOTNET_PATCH: "0"
+  DOTNET_6_MAJOR: "rc"
+  DOTNET_6_MINOR: "0"
+  DOTNET_6_PATCH: "0"
 
-  ASPDOTNET_MAJOR: "rc"
-  ASPDOTNET_MINOR: "0"
-  ASPDOTNET_PATCH: "0"
+  ASPDOTNET_6_MAJOR: "rc"
+  ASPDOTNET_6_MINOR: "0"
+  ASPDOTNET_6_PATCH: "0"
 
-  DOTNET_DEBUG_MAJOR: "rc"
-  DOTNET_DEBUG_MINOR: "0"
-  DOTNET_DEBUG_PATCH: "0"
+  DOTNET_6_DEBUG_MAJOR: "rc"
+  DOTNET_6_DEBUG_MINOR: "0"
+  DOTNET_6_DEBUG_PATCH: "0"
 
-  ASPDOTNET_DEBUG_MAJOR: "rc"
-  ASPDOTNET_DEBUG_MINOR: "0"
-  ASPDOTNET_DEBUG_PATCH: "0"
+  ASPDOTNET_6_DEBUG_MAJOR: "rc"
+  ASPDOTNET_6_DEBUG_MINOR: "0"
+  ASPDOTNET_6_DEBUG_PATCH: "0"
 
-  DOTNET_UNO_MAJOR: "rc"
-  DOTNET_UNO_MINOR: "0"
-  DOTNET_UNO_PATCH: "0"
+  DOTNET_6_UNO_MAJOR: "rc"
+  DOTNET_6_UNO_MINOR: "0"
+  DOTNET_6_UNO_PATCH: "0"
 
-  DOTNET_UNO_DEBUG_MAJOR: "rc"
-  DOTNET_UNO_DEBUG_MINOR: "0"
-  DOTNET_UNO_DEBUG_PATCH: "0"
+  DOTNET_6_UNO_DEBUG_MAJOR: "rc"
+  DOTNET_6_UNO_DEBUG_MINOR: "0"
+  DOTNET_6_UNO_DEBUG_PATCH: "0"
 
   DOTNET_6_SEMANTIC_VERSION: "6.0.16"
+
+  ### Dotnet 8
+
+  DOTNET_8_RELEASE: "8.0"
+
+  DOTNET_8_MAJOR: "rc"
+  DOTNET_8_MINOR: "0"
+  DOTNET_8_PATCH: "0"
+
+  ASPDOTNET_8_MAJOR: "rc"
+  ASPDOTNET_8_MINOR: "0"
+  ASPDOTNET_8_PATCH: "0"
+
+  DOTNET_8_DEBUG_MAJOR: "rc"
+  DOTNET_8_DEBUG_MINOR: "0"
+  DOTNET_8_DEBUG_PATCH: "0"
+
+  ASPDOTNET_8_DEBUG_MAJOR: "rc"
+  ASPDOTNET_8_DEBUG_MINOR: "0"
+  ASPDOTNET_8_DEBUG_PATCH: "0"
+
+  DOTNET_8_UNO_MAJOR: "rc"
+  DOTNET_8_UNO_MINOR: "0"
+  DOTNET_8_UNO_PATCH: "0"
+
+  DOTNET_8_UNO_DEBUG_MAJOR: "rc"
+  DOTNET_8_UNO_DEBUG_MINOR: "0"
+  DOTNET_8_UNO_DEBUG_PATCH: "0"
+
   DOTNET_8_SEMANTIC_VERSION: "8.0.0"
+
   # The latest version of vsdbg can be obtained by running the follow command:
   #curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
   DOTNET_DEBUGGER_RELEASE: "17.6.10208.1"
@@ -1068,12 +1099,16 @@ docker-build-cog-am62:
 
 ## debian-dotnet-development-images
 
+### Dotnet 6
+
 docker-build-dotnet-6:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_6_MAJOR}"
+    - export MINOR="${DOTNET_6_MINOR}"
+    - export PATCH="${DOTNET_6_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1092,7 +1127,9 @@ docker-build-aspnet-6:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_6_MAJOR}"
+    - export MINOR="${ASPDOTNET_6_MINOR}"
+    - export PATCH="${ASPDOTNET_6_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1111,7 +1148,9 @@ docker-build-dotnet-6-uno:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DOTNET_6_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_6_UNO_MAJOR}"
+    - export MINOR="${DOTNET_6_UNO_MINOR}"
+    - export PATCH="${DOTNET_6_UNO_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
@@ -1132,7 +1171,9 @@ docker-build-dotnet-6-debug:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_6_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_6_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_6_DEBUG_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1152,7 +1193,9 @@ docker-build-aspnet-6-debug:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_6_DEBUG_MAJOR}"
+    - export MINOR="${ASPDOTNET_6_DEBUG_MINOR}"
+    - export PATCH="${ASPDOTNET_6_DEBUG_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1172,7 +1215,9 @@ docker-build-dotnet-6-uno-debug:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_6_UNO_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_6_UNO_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_6_UNO_DEBUG_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_6_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_6_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1187,12 +1232,16 @@ docker-build-dotnet-6-uno-debug:
   stage: build-stage4
   needs: ["docker-build-dotnet-6-uno", "docker-build-dotnet-6-debug"]
 
+### Dotnet 8
+
 docker-build-dotnet-8:
   retry: 2
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_8_MAJOR}"
+    - export MINOR="${DOTNET_8_MINOR}"
+    - export PATCH="${DOTNET_8_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1211,7 +1260,9 @@ docker-build-aspnet-8:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_8_MAJOR}"
+    - export MINOR="${ASPDOTNET_8_MINOR}"
+    - export PATCH="${ASPDOTNET_8_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1230,7 +1281,9 @@ docker-build-dotnet-8-uno:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DOTNET_8_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_8_UNO_MAJOR}"
+    - export MINOR="${DOTNET_8_UNO_MINOR}"
+    - export PATCH="${DOTNET_8_UNO_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
     - export BASE_TAG_WAYLAND="${DEBIAN_MAJOR}"
@@ -1251,7 +1304,9 @@ docker-build-dotnet-8-debug:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_8_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_8_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_8_DEBUG_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1271,7 +1326,9 @@ docker-build-aspnet-8-debug:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${ASPDOTNET_8_DEBUG_MAJOR}"
+    - export MINOR="${ASPDOTNET_8_DEBUG_MINOR}"
+    - export PATCH="${ASPDOTNET_8_DEBUG_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1291,7 +1348,9 @@ docker-build-dotnet-8-uno-debug:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
-    - export MAJOR="${DEBIAN_MAJOR}"
+    - export MAJOR="${DOTNET_8_UNO_DEBUG_MAJOR}"
+    - export MINOR="${DOTNET_8_UNO_DEBUG_MINOR}"
+    - export PATCH="${DOTNET_8_UNO_DEBUG_PATCH}"
     - export RELEASE_APPEND="-${DOTNET_8_RELEASE}"
     - export DOTNET_VERSION="${DOTNET_8_SEMANTIC_VERSION}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
@@ -1399,12 +1458,18 @@ tag:
             graphics-tests-imx8-${GRAPHICS_TESTS_IMX8_MAJOR}.${GRAPHICS_TESTS_IMX8_MINOR}.${GRAPHICS_TESTS_IMX8_PATCH}
             debian-cross-toolchains-${DEBIAN_CROSS_TOOLCHAINS_MAJOR}.${DEBIAN_CROSS_TOOLCHAINS_MINOR}.${DEBIAN_CROSS_TOOLCHAINS_PATCH}
             debian-cross-toolchains-ssh-${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}.${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}.${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}
-            dotnet-${DOTNET_MAJOR}.${DOTNET_MINOR}.${DOTNET_PATCH}
-            dotnet-${DOTNET_DEBUG_MAJOR}.${DOTNET_DEBUG_MINOR}.${DOTNET_DEBUG_PATCH}
-            dotnet-${ASPDOTNET_MAJOR}.${ASPDOTNET_MINOR}.${ASPDOTNET_PATCH}
-            dotnet-${ASPDOTNET_DEBUG_MAJOR}.${ASPDOTNET_DEBUG_MINOR}.${ASPDOTNET_DEBUG_PATCH}
-            dotnet-${DOTNET_UNO_MAJOR}.${DOTNET_UNO_MINOR}.${DOTNET_UNO_PATCH}
-            dotnet-${DOTNET_UNO_DEBUG_MAJOR}.${DOTNET_UNO_DEBUG_MINOR}.${DOTNET_UNO_DEBUG_PATCH}
+            dotnet-6-${DOTNET_6_MAJOR}.${DOTNET_6_MINOR}.${DOTNET_6_PATCH}
+            dotnet-6-${DOTNET_6_DEBUG_MAJOR}.${DOTNET_6_DEBUG_MINOR}.${DOTNET_6_DEBUG_PATCH}
+            dotnet-6-${ASPDOTNET_6_MAJOR}.${ASPDOTNET_6_MINOR}.${ASPDOTNET_6_PATCH}
+            dotnet-6-${ASPDOTNET_6_DEBUG_MAJOR}.${ASPDOTNET_6_DEBUG_MINOR}.${ASPDOTNET_6_DEBUG_PATCH}
+            dotnet-6-${DOTNET_6_UNO_MAJOR}.${DOTNET_6_UNO_MINOR}.${DOTNET_6_UNO_PATCH}
+            dotnet-6-${DOTNET_6_UNO_DEBUG_MAJOR}.${DOTNET_6_UNO_DEBUG_MINOR}.${DOTNET_6_UNO_DEBUG_PATCH}
+            dotnet-8-${DOTNET_8_MAJOR}.${DOTNET_8_MINOR}.${DOTNET_8_PATCH}
+            dotnet-8-${DOTNET_8_DEBUG_MAJOR}.${DOTNET_8_DEBUG_MINOR}.${DOTNET_8_DEBUG_PATCH}
+            dotnet-8-${ASPDOTNET_8_MAJOR}.${ASPDOTNET_8_MINOR}.${ASPDOTNET_8_PATCH}
+            dotnet-8-${ASPDOTNET_8_DEBUG_MAJOR}.${ASPDOTNET_8_DEBUG_MINOR}.${ASPDOTNET_8_DEBUG_PATCH}
+            dotnet-8-${DOTNET_8_UNO_MAJOR}.${DOTNET_8_UNO_MINOR}.${DOTNET_8_UNO_PATCH}
+            dotnet-8-${DOTNET_8_UNO_DEBUG_MAJOR}.${DOTNET_8_UNO_DEBUG_MINOR}.${DOTNET_8_UNO_DEBUG_PATCH}
             rt-tests-${RT_TESTS_MAJOR}.${RT_TESTS_MINOR}.${RT_TESTS_PATCH}
             rt-tests-${STRESS_TESTS_MAJOR}.${STRESS_TESTS_MINOR}.${STRESS_TESTS_PATCH}"
   script:
@@ -1423,7 +1488,7 @@ tag:
       done
 
 dotnet-8-tests:
-  image: ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/torizon/dotnet:${DOTNET_MAJOR}-${DOTNET_8_RELEASE}
+  image: ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/torizon/dotnet:${DOTNET_8_MAJOR}-${DOTNET_8_RELEASE}
   stage: test
   script:
     - dotnet --info
