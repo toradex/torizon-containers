@@ -11,6 +11,10 @@ variables:
   # Can be overriden by setting "DEPLOY_CONDITIONALLY" to anything other than "true" when starting a new job manually.
   DEPLOY_CONDITIONALLY: "true"
 
+  # Images should only be pushed to container registry if the ci is launched
+  # from the default branch and not from feature branches
+  DEFAULT_BRANCH: "rc"
+
   # Container versions, used as final tags for the image.
 
   # Upstream containers
@@ -362,6 +366,12 @@ stages:
   - docker info
   - export DATE=$(date +%Y%m%d)
   - |
+    if [[ "${CI_COMMIT_BRANCH}" == "${DEFAULT_BRANCH}" ]]; then
+      export PUSH_TO_REGISTRY="--push"
+      echo "Pushing images to ${DOCKERHUB_NAMESPACE}"
+    fi
+
+  - |
     if [[ "${IMAGE_NAME}" == *imx8 ]]; then
       export TORADEX_SNAPSHOT=$(curl https://feeds.toradex.com/debian/snapshots/latest-snapshot)
     elif [[ "${IMAGE_NAME}" == *am62 ]]; then
@@ -378,7 +388,7 @@ stages:
   - if [ -n "$BUILD_FOR_ARM_V8" ]; then echo "Building for linux/arm64/v8" && PLATFORM_BUILD_ARM_V8="--platform linux/arm64/v8"; fi
   - if [ -n "$BUILD_FOR_AMD64" ]; then echo "Building for linux/amd64" && PLATFORM_BUILD_AMD64="--platform linux/amd64"; fi
 
-  - docker buildx build --progress=plain --sbom=true --push ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
+  - docker buildx build --progress=plain --sbom=true ${PUSH_TO_REGISTRY} ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
                   --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
                   --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}
                   --build-arg BASE_NAME=${BASE_NAME}
