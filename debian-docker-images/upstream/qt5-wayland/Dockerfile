@@ -3,7 +3,7 @@
 
 ARG BASE_NAME=wayland-base
 ARG IMAGE_TAG=3
-ARG DOCKER_REGISTRY=torizon
+ARG DOCKER_REGISTRY
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
 COPY kms-setup.sh /usr/bin/kms-setup.sh
@@ -18,33 +18,25 @@ RUN apt-get -y update  && apt-get install -y --no-install-recommends libqt5gui5-
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Install libqt5opengl5.
-# Under Bullesyse, libqt5opengl5:arm64 is currently at version 5.14.2+dfsg-6 and contains a redundant dependency for libqt5gui5 (>= 5.1.0):
+# Under Bookworm, libqt5opengl5 is currently at version 5.15.8+dfsg-11 and contains a redundant dependency for libqt5gui5 (>= 5.1.0):
 #
-# $ apt-cache show libqt5opengl5 | grep ^Depends:
-# Depends: libc6 (>= 2.17), libqt5core5a (>= 5.14.1), libqt5gui5 (>= 5.1.0), libqt5gui5 (>= 5.12.5) | libqt5gui5-gles (>= 5.12.5), libqt5widgets5 (>= 5.9.0~beta), libstdc++6 (>= 5), qtbase-abi-5-14-2
-# 
 # This forbids installing qtbase5-examples with libqt5gui5-gles.
-# Workaround the issue by mangling the package file and remove the leftover dependency.
+# Workaround the issue by mangling the package file and remove the leftover dependency for each of the architectures
 RUN apt-get -y update \
-    && if test "$(uname -m)" = 'armv7l' ; \
-    then \
-        apt-get -y install --no-install-recommends libqt5opengl5 ; \
-    else \
-        apt-get -y install --no-install-recommends binutils xz-utils \
-        && WORK_DIR=$(mktemp -d) \
-        && cd $WORK_DIR \
-        && apt-get download libqt5opengl5 \
-        && ar x libqt5opengl5_*_arm64.deb \
-        && tar -xJf control.tar.xz \
-        && sed -i '/^Depends:/s/, libqt5gui5 (>= 5.1.0)//' control \
-        && tar -cJf control.tar.xz control md5sums shlibs symbols triggers \
-        && ar rcs libqt5opengl5.deb debian-binary control.tar.xz data.tar.xz \
-        && apt-get -y install --no-install-recommends ./libqt5opengl5.deb \
-        && cd ~ \
-        && rm -rf $WORK_DIR \
-        && apt-get -y remove binutils xz-utils \
-        && apt-mark hold libqt5opengl5 ; \
-    fi \
+    && apt-get -y install --no-install-recommends binutils xz-utils \
+    && WORK_DIR=$(mktemp -d) \
+    && cd $WORK_DIR \
+    && ARCH=$(dpkg --print-architecture) apt-get download libqt5opengl5:$ARCH \
+    && ar x libqt5opengl5*.deb \
+    && tar -xJf control.tar.xz \
+    && sed -i '/^Depends:/s/, libqt5gui5 (>= 5.1.0)//' control \
+    && tar -cJf control.tar.xz control md5sums shlibs symbols triggers \
+    && ar rcs libqt5opengl5.deb debian-binary control.tar.xz data.tar.xz \
+    && apt-get -y install --no-install-recommends ./libqt5opengl5.deb \
+    && cd ~ \
+    && rm -rf $WORK_DIR \
+    && apt-get -y remove binutils xz-utils \
+    && apt-mark hold libqt5opengl5 \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Install remaining dependencies required to run qtbase and qtdeclarative examples
