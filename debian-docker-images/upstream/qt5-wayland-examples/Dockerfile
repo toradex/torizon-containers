@@ -3,14 +3,14 @@
 
 ARG BASE_NAME=qt5-wayland
 ARG IMAGE_TAG=3
-ARG DOCKER_REGISTRY=torizon
-
+ARG DOCKER_REGISTRY=docker.io
+ARG DOCKER_NAMESPACE=torizon
 ARG QT5_EXAMPLES_DEBIAN
 # Uncomment the line below if building outside of the context of GitLab CI
-# ARG QT5_EXAMPLES_DEBIAN=1
+ARG QT5_EXAMPLES_DEBIAN=1
 ARG QT5_EXAMPLES_DEBIAN_INSTALL=${QT5_EXAMPLES_DEBIAN:+"qtbase5-examples qtdeclarative5-examples"}
 
-FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
+FROM $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$BASE_NAME:$IMAGE_TAG AS base
 ARG QT5_EXAMPLES_DEBIAN_INSTALL
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
