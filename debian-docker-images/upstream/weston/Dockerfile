@@ -30,6 +30,9 @@ RUN usermod -a -G input torizon
 # See https://github.com/kennylevinsen/seatd/blob/a803ba0502cccf147eec7fbcacd11c5b8643c0e0/man/seatd-launch.1.scd
 RUN chmod u+s /usr/bin/seatd-launch
 
+HEALTHCHECK --interval=1s --timeout=5s --start-period=0s --retries=3 \
+    CMD find /tmp/1000-runtime-dir -maxdepth 1 -type s -name 'wayland-*' -print -quit | grep -q .
+
 WORKDIR /home/torizon
 
 ENTRYPOINT ["/usr/bin/entry.sh"]
