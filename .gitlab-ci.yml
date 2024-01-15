@@ -109,6 +109,10 @@ variables:
   COG_IMX8_MINOR: "0"
   COG_IMX8_PATCH: "0"
 
+  GPUTOP_IMX8_MAJOR: "rc"
+  GPUTOP_IMX8_MINOR: "0"
+  GPUTOP_IMX8_PATCH: "0"
+
   # am62 containers
 
   DEBIAN_AM62_MAJOR: "rc"
@@ -276,6 +280,7 @@ variables:
   WESTON_IMX8_FOLDER: "weston-imx8"
   CHROMIUM_IMX8_FOLDER: "chromium-imx8"
   COG_IMX8_FOLDER: "cog-imx8"
+  GPUTOP_IMX8_FOLDER: "gputop-imx8"
 
   BASE_AM62_FOLDER: "base-am62"
   TESTS_AM62_FOLDER: "tests-am62"
@@ -811,6 +816,24 @@ docker-build-cog-imx8:
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${COG_IMX8_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base-imx8"]
+
+docker-build-gputop-imx8:
+  retry: 2
+  extends: .docker-build
+  before_script:
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
+    - export MAJOR="${GPUTOP_IMX8_MAJOR}"
+    - export MINOR="${GPUTOP_IMX8_MINOR}"
+    - export PATCH="${GPUTOP_IMX8_PATCH}"
+    - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
+  variables:
+    BUILD_FOR_ARM_V8: "true"
+    BASE_NAME: debian-imx8
+    IMAGE_NAME: gputop-imx8
+    ACCEPT_FSL_EULA: 1
+    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${IMX8_FOLDER}/${GPUTOP_IMX8_FOLDER}/"
+  stage: build-stage1
+  needs: ["docker-build-base-imx8"]
 
 ## debian-cross-toolchains
 
