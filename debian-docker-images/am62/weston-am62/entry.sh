@@ -126,17 +126,6 @@ function init_xdg() {
 
 init_xdg
 
-function cleanup() {
-	if [ "$IGNORE_VT_SWITCH_BACK" != "1" ]; then
-		# switch back to tty1, otherwise the console screen is not displayed.
-		echo "Switching back to vt ${OLD_VT:3}"
-		chvt "${OLD_VT:3}"
-	fi
-        rm -rf /run/seatd.sock
-}
-
-trap cleanup EXIT
-
 function init() {
 	if CMD=$(command -v "$1" 2>/dev/null); then
 		shift
@@ -152,6 +141,17 @@ if [ "$IGNORE_X_LOCKS" != "1" ]; then
        echo "Removing previously created '.X*-lock' entries under /tmp before starting Weston. Pass 'IGNORE_X_LOCKS=1' environment variable to Weston container to disable this behavior."
        rm -rf /tmp/.X*-lock
 fi
+
+function cleanup() {
+	if [ "$IGNORE_VT_SWITCH_BACK" != "1" ]; then
+		# switch back to tty1, otherwise the console screen is not displayed.
+		echo "Switching back to vt ${OLD_VT:3}"
+		chvt "${OLD_VT:3}"
+	fi
+        rm -rf /run/seatd.sock
+}
+
+trap cleanup EXIT
 
 # for every argument after "--", append that argument to WESTON_ARGS
 for i in "${!WESTON_EXTRA_ARGS[@]}"; do
