@@ -387,7 +387,7 @@ stages:
 
   - docker buildx create --name multiarch-builder --driver docker-container --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --use
   - docker buildx inspect --bootstrap
-  - docker run --privileged --rm tonistiigi/binfmt --install arm64,arm
+  - docker run --privileged --rm ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/tonistiigi/binfmt --install arm64,arm
 
   - if [ -n "$BUILD_FOR_ARM_V7" ]; then echo "Building for linux/arm/v7" && PLATFORM_BUILD_ARM_V7="--platform linux/arm/v7"; fi
   - if [ -n "$BUILD_FOR_ARM_V8" ]; then echo "Building for linux/arm64/v8" && PLATFORM_BUILD_ARM_V8="--platform linux/arm64/v8"; fi
