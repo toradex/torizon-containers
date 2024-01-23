@@ -16,7 +16,7 @@ declare -a WESTON_EXTRA_ARGS
 OPTIONS=developer,no-change-tty,tty:
 
 WAYLAND_USER=${WAYLAND_USER:-torizon}
-WESTON_ARGS=${WESTON_ARGS:---backend=drm-backend.so --tty 7}
+WESTON_ARGS=${WESTON_ARGS:--Bdrm-backend.so --current-mode -S${WAYLAND_DISPLAY}}
 IGNORE_VT_SWITCH_BACK=${IGNORE_VT_SWITCH_BACK:-0}
 
 #
