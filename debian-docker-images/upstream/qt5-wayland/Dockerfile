@@ -6,8 +6,6 @@ ARG IMAGE_TAG=3
 ARG DOCKER_REGISTRY
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
-COPY kms-setup.sh /usr/bin/kms-setup.sh
-
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     apt-utils \
     && apt-get -y upgrade \
@@ -68,6 +66,8 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     qtwayland5 \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+
+COPY kms-setup.sh /usr/bin/kms-setup.sh
 
 ENV QT_QPA_PLATFORM="wayland"
 
