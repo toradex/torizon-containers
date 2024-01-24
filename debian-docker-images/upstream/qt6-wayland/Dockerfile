@@ -5,11 +5,6 @@ FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
 COPY kms-setup.sh /usr/bin/kms-setup.sh
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    apt-utils \
-    && apt-get -y upgrade \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
-
 # Install remaining dependencies required to run qtbase
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
        libqt6gui6 \
