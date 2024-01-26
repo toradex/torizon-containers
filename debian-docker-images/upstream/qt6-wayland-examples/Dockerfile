@@ -1,9 +1,9 @@
 # Copyright (c) 2019-2024 Toradex AG
 # SPDX-License-Identifier: MIT
 
-ARG BASE_NAME=qt5-wayland
-ARG IMAGE_TAG=3
-ARG DOCKER_REGISTRY
+ARG BASE_NAME=qt6-wayland
+ARG DOCKER_REGISTRY=docker.io
+ARG IMAGE_TAG=rc
 
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 

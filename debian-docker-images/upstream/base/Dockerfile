@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 ARG DEBIAN_BASE_IMAGE=bookworm-slim
-ARG DOCKER_REGISTRY
+ARG DOCKER_REGISTRY=docker.io
+
 FROM ${DOCKER_REGISTRY}/debian:$DEBIAN_BASE_IMAGE AS base
 
 ARG DEBIAN_FRONTEND=noninteractive

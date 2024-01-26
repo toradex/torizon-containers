@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 ARG BASE_NAME=qt5-wayland
-ARG IMAGE_TAG=3
-ARG DOCKER_REGISTRY=docker.io
 ARG DOCKER_NAMESPACE=torizon
+ARG DOCKER_REGISTRY=docker.io
+ARG IMAGE_TAG=rc
+
 ARG QT5_EXAMPLES_DEBIAN
 # Uncomment the line below if building outside of the context of GitLab CI
 ARG QT5_EXAMPLES_DEBIAN=1

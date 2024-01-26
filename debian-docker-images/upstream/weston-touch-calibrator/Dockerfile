@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: MIT
 
 ARG BASE_NAME=weston
-ARG IMAGE_TAG=3
-ARG DOCKER_REGISTRY=torizon
+ARG DOCKER_REGISTRY=docker.io
+ARG IMAGE_TAG=rc
+
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
 COPY entry.sh /usr/bin/

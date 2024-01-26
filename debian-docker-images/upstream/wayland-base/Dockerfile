@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: MIT
 
 ARG BASE_NAME=debian
-ARG IMAGE_TAG=3-bookworm
-ARG DOCKER_REGISTRY=torizon
+ARG DOCKER_REGISTRY=docker.io
+ARG IMAGE_TAG=rc-bookworm
+
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
 RUN apt-get -y update \
