@@ -7,13 +7,16 @@ ARG DOCKER_REGISTRY=docker.io
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
 # Install the weston compositor.
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    weston \
-    xwayland \
-    kbd \
-    dos2unix \
-    seatd \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update \
+    && apt-get install -y --no-install-recommends \
+        dos2unix \
+        kbd \
+        seatd \
+        weston \
+        xwayland \
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*
 
 # The compositor needs access to input devices
 RUN usermod -a -G input torizon

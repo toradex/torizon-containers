@@ -12,8 +12,12 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
 # Install libqt5gui5-gles before libqt5opengl5 which also has an alternate dependency on libqt5gui5(non-gles)
-RUN apt-get -y update  && apt-get install -y --no-install-recommends libqt5gui5-gles \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update  \
+    && apt-get install -y --no-install-recommends \
+        libqt5gui5-gles \
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install libqt5opengl5.
 # Under Bookworm, libqt5opengl5 is currently at version 5.15.8+dfsg-11 and contains a redundant dependency for libqt5gui5 (>= 5.1.0):
@@ -21,7 +25,9 @@ RUN apt-get -y update  && apt-get install -y --no-install-recommends libqt5gui5-
 # This forbids installing qtbase5-examples with libqt5gui5-gles.
 # Workaround the issue by mangling the package file and remove the leftover dependency for each of the architectures
 RUN apt-get -y update \
-    && apt-get -y install --no-install-recommends binutils xz-utils \
+    && apt-get -y install --no-install-recommends \
+        binutils \
+        xz-utils \
     && WORK_DIR=$(mktemp -d) \
     && cd $WORK_DIR \
     && ARCH=$(dpkg --print-architecture) apt-get download libqt5opengl5:$ARCH \
@@ -30,15 +36,19 @@ RUN apt-get -y update \
     && sed -i '/^Depends:/s/, libqt5gui5 (>= 5.1.0)//' control \
     && tar -cJf control.tar.xz control md5sums shlibs symbols triggers \
     && ar rcs libqt5opengl5.deb debian-binary control.tar.xz data.tar.xz \
-    && apt-get -y install --no-install-recommends ./libqt5opengl5.deb \
+    && apt-get -y install --no-install-recommends \
+        ./libqt5opengl5.deb \
     && cd ~ \
     && rm -rf $WORK_DIR \
     && apt-get -y remove binutils xz-utils \
     && apt-mark hold libqt5opengl5 \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install remaining dependencies required to run qtbase and qtdeclarative examples
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
+RUN apt-get -y update \
+    && apt-get install -y --no-install-recommends \
         libfontconfig1-dev \
         libqt5quick5-gles \
         libqt5quickparticles5-gles \
@@ -60,12 +70,10 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
         qml-module-qtquick-particles2 \
         qml-module-qtquick-shapes \
         qml-module-qttest \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
-
-# Install Wayland Qt module
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    qtwayland5 \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+        qtwayland5 \
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY kms-setup.sh /usr/bin/kms-setup.sh
 

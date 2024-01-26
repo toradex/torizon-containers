@@ -12,10 +12,10 @@ ONBUILD ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
-        sudo \
         ca-certificates \
-        netbase \
         gpg \
+        netbase \
+        sudo \
         wget \
     && apt-get clean \
     && apt-get autoremove \
@@ -37,9 +37,12 @@ COPY users-groups.sh /users-groups.sh
 RUN ./users-groups.sh \
     && rm users-groups.sh
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    neofetch \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update \
+    && apt-get install -y --no-install-recommends \
+        neofetch \
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY neofetch.conf /root/.config/neofetch/config.conf
 

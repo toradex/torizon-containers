@@ -13,6 +13,9 @@ ARG QT5_EXAMPLES_DEBIAN_INSTALL=${QT5_EXAMPLES_DEBIAN:+"qtbase5-examples qtdecla
 FROM $DOCKER_REGISTRY/$DOCKER_NAMESPACE/$BASE_NAME:$IMAGE_TAG AS base
 ARG QT5_EXAMPLES_DEBIAN_INSTALL
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    ${QT5_EXAMPLES_DEBIAN_INSTALL} \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update \
+    && apt-get install -y --no-install-recommends \
+        ${QT5_EXAMPLES_DEBIAN_INSTALL} \
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*

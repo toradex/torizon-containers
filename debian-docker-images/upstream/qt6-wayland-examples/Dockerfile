@@ -7,6 +7,9 @@ ARG DOCKER_REGISTRY
 
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    qt6-base-examples \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update \
+    && apt-get install -y --no-install-recommends \
+        qt6-base-examples \
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*
