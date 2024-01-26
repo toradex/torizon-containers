@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2023 Toradex AG
+# Copyright (c) 2019-2024 Toradex AG
 # SPDX-License-Identifier: MIT
 
 ARG CROSS_COMPILER_TARGET_ARCH=armhf

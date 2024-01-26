@@ -1,3 +1,6 @@
+# Copyright (c) 2019-2024 Toradex AG
+# SPDX-License-Identifier: MIT
+
 ARG BASE_NAME=wayland-base
 ARG DOCKER_REGISTRY=docker.io
 ARG IMAGE_TAG=4-rc
