@@ -15,12 +15,6 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
     seatd \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
-# Container entry point and support files.
-COPY entry.sh /usr/bin/entry.sh
-COPY switchvtmode.pl /usr/bin/switchvtmode.pl
-COPY weston.ini /etc/xdg/weston/weston.ini
-COPY weston-dev.ini /etc/xdg/weston-dev/weston.ini
-
 # The compositor needs access to input devices
 RUN usermod -a -G input torizon
 
@@ -29,6 +23,12 @@ RUN usermod -a -G input torizon
 # This allows 'torizon' user to launch weston using seatd-launch
 # See https://github.com/kennylevinsen/seatd/blob/a803ba0502cccf147eec7fbcacd11c5b8643c0e0/man/seatd-launch.1.scd
 RUN chmod u+s /usr/bin/seatd-launch
+
+# Container entry point and support files.
+COPY entry.sh /usr/bin/entry.sh
+COPY switchvtmode.pl /usr/bin/switchvtmode.pl
+COPY weston.ini /etc/xdg/weston/weston.ini
+COPY weston-dev.ini /etc/xdg/weston-dev/weston.ini
 
 HEALTHCHECK --interval=1s --timeout=5s --start-period=0s --retries=3 \
     CMD find /tmp/1000-runtime-dir -maxdepth 1 -type s -name 'wayland-*' -print -quit | grep -q .
