@@ -1,0 +1,22 @@
+  - docker buildx build --progress=plain --sbom=true ${PUSH_TO_REGISTRY} ${PLATFORM_BUILD_ARM_V7} ${PLATFORM_BUILD_ARM_V8} ${PLATFORM_BUILD_AMD64}
+                  --build-arg CROSS_COMPILER_TARGET_ARCH=${CROSS_COMPILER_TARGET_ARCH}
+                  --build-arg DOCKER_REGISTRY=${TORADEX_INTERNAL_DOCKERHUB_CACHE}
+                  --build-arg BASE_NAME=${BASE_NAME}
+                  --build-arg DEBIAN_BASE_IMAGE=${DEBIAN_BASE_IMAGE}
+                  --build-arg IMAGE_TAG=${DOCKER_BASE_TAG}
+                  --build-arg ADD_TORADEX_REPOSITORY=${ADD_TORADEX_REPOSITORY}
+                  --build-arg ACCEPT_FSL_EULA=${ACCEPT_FSL_EULA}
+                  --build-arg QT5_EXAMPLES_DEBIAN=${QT5_EXAMPLES_DEBIAN}
+                  --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT}
+                  --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
+                  --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}
+                  --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}
+                  --build-arg DOTNET_RUNTIME=${DOTNET_RUNTIME}
+                  --build-arg DOTNET_VERSION=${DOTNET_VERSION}
+                  --build-arg DOTNET_DEBUGGER_RELEASE=${DOTNET_DEBUGGER_RELEASE}
+                  --build-arg BASE_TAG_WAYLAND=${DEBIAN_MAJOR}
+                  --build-arg BASE_NAME_WAYLAND=${BASE_NAME_WAYLAND}
+                  ${DOCKER_NO_CACHE:+--no-cache}
+                  -f ${DOCKERFILE_FOLDER}Dockerfile
+                  -t ${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
+                  ${DOCKERFILE_FOLDER}

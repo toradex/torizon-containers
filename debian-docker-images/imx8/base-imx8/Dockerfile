@@ -1,12 +1,28 @@
 # Copyright (c) 2019-2023 Toradex AG
 # SPDX-License-Identifier: MIT
 
-ARG DEBIAN_BASE_IMAGE=bookworm-slim
-ARG TORADEX_SNAPSHOT
-ARG USE_TORADEX_SNAPSHOT=1
-ARG ADD_TORADEX_REPOSITORY=1
-ARG DOCKER_REGISTRY
-FROM ${DOCKER_REGISTRY}/debian:$DEBIAN_BASE_IMAGE AS base
+ARG BASE_IMAGE_REGISTRY
+ARG BASE_IMAGE_NAMESPACE
+ARG BASE_IMAGE_NAME
+ARG BASE_IMAGE_TAG
+
+FROM $BASE_IMAGE_REGISTRY/$BASE_IMAGE_NAMESPACE/$BASE_IMAGE_NAME:$BASE_IMAGE_TAG
+
+LABEL org.toradex.image.base.registry="docker.io" \
+      org.toradex.image.base.namespace="library" \
+      org.toradex.image.base.name="debian" \
+      org.toradex.image.base.tag.major="12" \
+      org.toradex.image.base.tag.minor="4" \
+      org.toradex.image.base.tag.patch="" \
+      org.toradex.image.variant="slim" \
+      org.toradex.image.registry="docker.io" \
+      org.toradex.image.namespace="torizon" \
+      org.toradex.image.name="debian-imx8" \
+      org.toradex.image.base.tag.major="rc" \
+      org.toradex.image.base.tag.minor="" \
+      org.toradex.image.base.tag.patch="" \
+      org.toradex.image.license="MIT" \
+      org.toradex.image.arch="linux/arm64/v8"
 
 ARG DEBIAN_FRONTEND=noninteractive
 ONBUILD ARG DEBIAN_FRONTEND=noninteractive

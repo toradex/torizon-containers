@@ -1,18 +1,22 @@
 # Copyright (c) 2019-2023 Toradex AG
 # SPDX-License-Identifier: MIT
 
-ARG BASE_NAME=qt5-wayland-vivante
-ARG IMAGE_TAG=3
-ARG DOCKER_REGISTRY=torizon
+ARG BASE_IMAGE_REGISTRY
+ARG BASE_IMAGE_NAMESPACE
+ARG BASE_IMAGE_NAME
+ARG BASE_IMAGE_TAG
 
-ARG QT5_EXAMPLES_DEBIAN
-# Uncomment the line below if building outside of the context of GitLab CI
-# ARG QT5_EXAMPLES_DEBIAN=1
-ARG QT5_EXAMPLES_DEBIAN_INSTALL=${QT5_EXAMPLES_DEBIAN:+"qtbase5-examples qtdeclarative5-examples"}
+FROM $BASE_IMAGE_REGISTRY/$BASE_IMAGE_NAMESPACE/$BASE_IMAGE_NAME:$BASE_IMAGE_TAG
 
-FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
-ARG QT5_EXAMPLES_DEBIAN_INSTALL
+LABEL org.toradex.image.base.namespace="torizon" \
+      org.toradex.image.base.name="qt5-wayland-imx8" \
+      org.toradex.image.base.tag="rc" \
+      org.toradex.image.namespace="torizon" \
+      org.toradex.image.name="qt5-wayland-examples-imx8" \
+      org.toradex.image.tag="rc" \
+      org.toradex.image.license="MIT" \
+      org.toradex.image.arch="linux/arm64/v8"
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    ${QT5_EXAMPLES_DEBIAN_INSTALL} \
+    qtbase5-examples qtdeclarative5-examples \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*

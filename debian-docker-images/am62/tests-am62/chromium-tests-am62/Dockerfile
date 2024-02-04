@@ -6,6 +6,22 @@ ARG IMAGE_TAG=4-rc
 ARG DOCKER_REGISTRY=torizon
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
+LABEL org.toradex.image.base.registry="docker.io" \
+      org.toradex.image.base.namespace="torizon" \
+      org.toradex.image.base.name="chromium-am62" \
+      org.toradex.image.base.tag.major="rc" \
+      org.toradex.image.base.tag.minor="" \
+      org.toradex.image.base.tag.patch="" \
+      org.toradex.image.variant="" \
+      org.toradex.image.registry="docker.io" \
+      org.toradex.image.namespace="torizon" \
+      org.toradex.image.name="chromium-tests-am62" \
+      org.toradex.image.base.tag.major="rc" \
+      org.toradex.image.base.tag.minor="" \
+      org.toradex.image.base.tag.patch="" \
+      org.toradex.image.license="MIT" \
+      org.toradex.image.arch="linux/arm64/v8"
+
 ## Un-comment if you want to run it with the
 # integrated puppeteer chromium distribution
 # RUN apt-get update && apt-get install -y libnss3 \

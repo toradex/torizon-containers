@@ -1,30 +1,37 @@
-# Copyright (c) 2019-2023 Toradex AG
-# SPDX-License-Identifier: MIT
+package main
 
-ARG BASE_IMAGE_REGISTRY
-ARG BASE_IMAGE_NAMESPACE
-ARG BASE_IMAGE_NAME
-ARG BASE_IMAGE_TAG
+import (
+	"os"
+	"reflect"
+	"testing"
+)
 
-FROM $BASE_IMAGE_REGISTRY/$BASE_IMAGE_NAMESPACE/$BASE_IMAGE_NAME:$BASE_IMAGE_TAG
+func TestParseDockerfileLabels(t *testing.T) {
+	tempDockerfile := "testDockerfile"
+	defer func() {
+		// Clean up the temporary Dockerfile after the test
+		if err := os.Remove(tempDockerfile); err != nil {
+			t.Errorf("Error cleaning up temporary Dockerfile: %v", err)
+		}
+	}()
 
+	dockerfileContent := `FROM ubuntu
 LABEL org.toradex.image.base.registry="docker.io" \
-      org.toradex.image.base.namespace="torizon" \
-      org.toradex.image.base.name="wayland-base" \
-      org.toradex.image.base.tag.major="rc" \
-      org.toradex.image.base.tag.minor="" \
+      org.toradex.image.base.namespace="library" \
+      org.toradex.image.base.name="debian" \
+      org.toradex.image.base.tag.major="12" \
+      org.toradex.image.base.tag.minor="4" \
       org.toradex.image.base.tag.patch="" \
-      org.toradex.image.base.tag.variant="" \
+      org.toradex.image.variant="slim" \
       org.toradex.image.registry="docker.io" \
       org.toradex.image.namespace="torizon" \
-      org.toradex.image.name="qt5-wayland" \
+      org.toradex.image.name="debian" \
       org.toradex.image.tag.major="rc" \
       org.toradex.image.tag.minor="" \
       org.toradex.image.tag.patch="" \
-      org.toradex.image.tag.variant="" \
+      org.toradex.image.tag.variant="bookworm" \
       org.toradex.image.license="MIT" \
-      org.toradex.image.arch="linux/arm64/v8"
-
+      org.toradex.image.arch="linux/amd64,linux/arm64/v8,linux/arm/v7"
 COPY kms-setup.sh /usr/bin/kms-setup.sh
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
@@ -129,3 +136,38 @@ ENV QT_QPA_PLATFORM="wayland"
 ENV QT_QPA_EGLFS_INTEGRATION="eglfs_kms"
 ENV QT_QPA_EGLFS_KMS_ATOMIC="1"
 ENV QT_QPA_EGLFS_KMS_CONFIG="/etc/kms.conf"
+
+`
+
+	if err := os.WriteFile(tempDockerfile, []byte(dockerfileContent), 0644); err != nil {
+		t.Fatalf("Error creating temporary Dockerfile: %v", err)
+	}
+
+	labels, err := parseDockerfileLabels(tempDockerfile)
+	if err != nil {
+		t.Errorf("Error parsing Dockerfile labels: %v", err)
+	}
+
+	expectedLabels := map[string]string{
+		"org.toradex.image.base.registry":  "docker.io",
+		"org.toradex.image.base.namespace": "library",
+		"org.toradex.image.base.name":      "debian",
+		"org.toradex.image.base.tag.major": "12",
+		"org.toradex.image.base.tag.minor": "4",
+		"org.toradex.image.base.tag.patch": "",
+		"org.toradex.image.variant":        "slim",
+		"org.toradex.image.registry":       "docker.io",
+		"org.toradex.image.namespace":      "torizon",
+		"org.toradex.image.name":           "debian",
+		"org.toradex.image.tag.major":      "rc",
+		"org.toradex.image.tag.minor":      "",
+		"org.toradex.image.tag.patch":      "",
+		"org.toradex.image.tag.variant":    "bookworm",
+		"org.toradex.image.license":        "MIT",
+		"org.toradex.image.arch":           "linux/amd64,linux/arm64/v8,linux/arm/v7",
+	}
+
+	if !reflect.DeepEqual(labels, expectedLabels) {
+		t.Errorf("Parsed labels do not match expected labels. Got: %v, Expected: %v", labels, expectedLabels)
+	}
+}

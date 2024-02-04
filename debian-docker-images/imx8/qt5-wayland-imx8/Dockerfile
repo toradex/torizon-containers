@@ -6,6 +6,15 @@ ARG IMAGE_TAG=3
 ARG DOCKER_REGISTRY=torizon
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
+LABEL org.toradex.image.base.namespace="torizon" \
+      org.toradex.image.base.name="wayland-base-imx8" \
+      org.toradex.image.base.tag="rc" \
+      org.toradex.image.namespace="torizon" \
+      org.toradex.image.name="qt5-wayland-imx8" \
+      org.toradex.image.tag="rc" \
+      org.toradex.image.license="MIT" \
+      org.toradex.image.arch="linux/arm64/v8"
+
 COPY kms-setup.sh /usr/bin/kms-setup.sh
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \

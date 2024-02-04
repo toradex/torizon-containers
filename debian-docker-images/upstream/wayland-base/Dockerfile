@@ -1,10 +1,29 @@
 # Copyright (c) 2019-2023 Toradex AG
 # SPDX-License-Identifier: MIT
 
-ARG BASE_NAME=debian
-ARG IMAGE_TAG=3-bookworm
-ARG DOCKER_REGISTRY=torizon
-FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
+ARG BASE_IMAGE_REGISTRY
+ARG BASE_IMAGE_NAMESPACE
+ARG BASE_IMAGE_NAME
+ARG BASE_IMAGE_TAG
+
+FROM $BASE_IMAGE_REGISTRY/$BASE_IMAGE_NAMESPACE/$BASE_IMAGE_NAME:$BASE_IMAGE_TAG
+
+LABEL org.toradex.image.base.registry="docker.io" \
+      org.toradex.image.base.namespace="torizon" \
+      org.toradex.image.base.name="debian" \
+      org.toradex.image.base.tag.major="rc" \
+      org.toradex.image.base.tag.minor="" \
+      org.toradex.image.base.tag.patch="" \
+      org.toradex.image.base.tag.variant="bookworm" \
+      org.toradex.image.registry="docker.io" \
+      org.toradex.image.namespace="torizon" \
+      org.toradex.image.name="wayland-base" \
+      org.toradex.image.tag.major="rc" \
+      org.toradex.image.tag.minor="" \
+      org.toradex.image.tag.patch="" \
+      org.toradex.image.tag.variant="" \
+      org.toradex.image.license="MIT" \
+      org.toradex.image.arch="linux/amd64,linux/arm64/v8,linux/arm/v7"
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
     apt-utils \
