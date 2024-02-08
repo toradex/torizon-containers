@@ -7,11 +7,6 @@ ARG IMAGE_TAG=rc
 
 FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    apt-utils \
-    && apt-get -y upgrade \
-    && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
-
 # Install libqt5gui5-gles before libqt5opengl5 which also has an alternate dependency on libqt5gui5(non-gles)
 RUN apt-get -y update  \
     && apt-get install -y --no-install-recommends \
