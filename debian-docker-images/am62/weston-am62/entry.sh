@@ -158,6 +158,4 @@ for i in "${!WESTON_EXTRA_ARGS[@]}"; do
 	WESTON_ARGS+=" "${WESTON_EXTRA_ARGS[$i]}
 done
 
-# FIXME: this should be run as ... init seatd-launch ... to make sure Weston
-# is running as 'torizon' user, but it didn't really work.
-rm -rf /run/seatd.sock || true && seatd-launch -- weston ${WESTON_ARGS}
+rm -rf /run/seatd.sock || true && init seatd-launch -- weston ${WESTON_ARGS}
