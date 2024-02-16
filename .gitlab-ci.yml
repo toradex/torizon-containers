@@ -39,10 +39,6 @@ variables:
   QT6_WAYLAND_MINOR: "0"
   QT6_WAYLAND_PATCH: "0"
 
-  QT6_WAYLAND_EXAMPLES_MAJOR: "rc"
-  QT6_WAYLAND_EXAMPLES_MINOR: "0"
-  QT6_WAYLAND_EXAMPLES_PATCH: "0"
-
   WAYLAND_BASE_MAJOR: "rc"
   WAYLAND_BASE_MINOR: "0"
   WAYLAND_BASE_PATCH: "0"
@@ -302,7 +298,6 @@ variables:
   QT5_WAYLAND_FOLDER: "qt5-wayland"
   QT5_WAYLAND_EXAMPLES_FOLDER: "qt5-wayland-examples"
   QT6_WAYLAND_FOLDER: "qt6-wayland"
-  QT6_WAYLAND_EXAMPLES_FOLDER: "qt6-wayland-examples"
   WAYLAND_BASE_FOLDER: "wayland-base"
   WESTON_FOLDER: "weston"
   WESTON_TOUCH_CALIBRATOR_FOLDER: "weston-touch-calibrator"
@@ -571,25 +566,6 @@ docker-build-qt6-wayland:
     DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT6_WAYLAND_FOLDER}/"
   stage: build-stage2
   needs: ["docker-build-wayland-base"]
-
-docker-build-qt6-wayland-examples:
-  retry: 2
-  extends: .docker-build
-  before_script:
-    - export DOCKER_BASE_TAG="${QT6_WAYLAND_MAJOR}"
-    - export MAJOR="${QT6_WAYLAND_EXAMPLES_MAJOR}"
-    - export MINOR="${QT6_WAYLAND_EXAMPLES_MINOR}"
-    - export PATCH="${QT6_WAYLAND_EXAMPLES_PATCH}"
-  variables:
-    BUILD_FOR_ARM_V7: "true"
-    BUILD_FOR_ARM_V8: "true"
-    BUILD_FOR_AMD64: "true"
-    BASE_NAME: qt6-wayland
-    IMAGE_NAME: qt6-wayland-examples
-    QT6_EXAMPLES_DEBIAN: 1
-    DOCKERFILE_FOLDER: "${DEBIAN_DOCKER_IMAGES_FOLDER}/${UPSTREAM_FOLDER}/${QT6_WAYLAND_EXAMPLES_FOLDER}/"
-  stage: build-stage3
-  needs: ["docker-build-qt6-wayland"]
 
 docker-build-chromium:
   retry: 2
