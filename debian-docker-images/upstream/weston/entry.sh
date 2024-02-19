@@ -29,6 +29,7 @@ PARSED=$(getopt --options '' \
 	--longoptions ${OPTIONS} \
 	--name "$0" \
 	-- "$@")
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
 	echo "ERROR: getopt failed when setting up the options"
 	exit 1
@@ -161,4 +162,4 @@ done
 
 # FIXME: this should be run as ... init seatd-launch ... to make sure Weston
 # is running as 'torizon' user, but it didn't really work.
-rm -rf /run/seatd.sock || true && seatd-launch -- weston ${WESTON_ARGS}
+rm -rf /run/seatd.sock || true && seatd-launch -- weston "${WESTON_ARGS}"

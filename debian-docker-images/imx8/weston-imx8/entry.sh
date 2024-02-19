@@ -31,6 +31,7 @@ PARSED=$(getopt --options '' \
 	--longoptions ${OPTIONS} \
 	--name "$0" \
 	-- "$@")
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
 	echo "ERROR: getopt failed when setting up the options"
 	exit 1

@@ -3,9 +3,6 @@
 # default URL
 URL="www.toradex.com"
 
-# Enable GPU support by default
-ENABLE_GPU=1
-
 # default parms for kiosk mode
 chromium_parms_base="--test-type --allow-insecure-localhost --disable-notifications --check-for-update-interval=315360000 "
 chromium_parms="--kiosk "
@@ -32,11 +29,6 @@ do
         chromium_parms_extended="$chromium_parms_extended --load-extension=/chrome-extensions/chrome-virtual-keyboard-master"
         shift
         ;;
-    --disable-gpu)
-        # Disable GPU support completely
-        ENABLE_GPU=0
-        shift
-        ;;
     --disable-gpu-compositing)
         # Disable GPU Compositing only
         chromium_parms_extended="$chromium_parms_extended --disable-gpu-compositing"
@@ -57,8 +49,8 @@ chromium_parms_extended="$chromium_parms_extended --enable-features=UseOzonePlat
 # See: https://github.com/OSSystems/meta-browser/issues/510#issuecomment-854653930
 chromium_parms_extended="$chromium_parms_extended --in-process-gpu"
 
-if [ ! -z "$1" ]; then
+if [ -n "$1" ]; then
     URL=$1
 fi
 
-exec chromium $chromium_parms_base $chromium_parms_extended $chromium_parms$URL
+exec chromium "$chromium_parms_base" "$chromium_parms_extended" "$chromium_parms""$URL"

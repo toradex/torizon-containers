@@ -3,7 +3,7 @@
 echo "Setting up stress tests..."
 
 # CPU load
-for i in $(seq $(nproc)); do dd if=/dev/zero of=/dev/null bs=4M & done
+for _ in $(seq "$(nproc)"); do dd if=/dev/zero of=/dev/null bs=4M & done
 
 # I/O read load
 for dev in /dev/mmcblk? /dev/sd?; do
@@ -15,7 +15,7 @@ done
 # I/O load (USB read/write)
 if mount | grep -q /mnt/pendrive; then
     if [ -e /mnt/pendrive/file.tar ]; then
-        cd /mnt/pendrive
+        cd /mnt/pendrive || exit
         while true; do rm -rf output; mkdir -p output; tar xfv file.tar -C output/ >/dev/null 2>&1; done &
     else
         echo "Warning: Archive file.tar not found in /mnt/pendrive. USB read/write stress test will not run."
@@ -40,7 +40,7 @@ while true; do
 done &
 
 ping -A -f -t 3 -q -s 49152 \
-    ${STRESS_SERVER:-$(ip route get 1.1.1.1 |sed '/.* via \([^ ]*\) .*/ s//\1/; q')}
+    "${STRESS_SERVER:-$(ip route get 1.1.1.1 |sed '/.* via \([^ ]*\) .*/ s//\1/; q')}"
 
 echo "RT stress tests started successfully!"
 
