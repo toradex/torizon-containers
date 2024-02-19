@@ -1,7 +1,7 @@
 # Copyright (c) 2019-2023 Toradex AG
 # SPDX-License-Identifier: MIT
 
-ARG DEBIAN_BASE_IMAGE=bookworm-slim
+ARG DEBIAN_BASE_IMAGE=12.5-slim
 ARG DOCKER_REGISTRY
 
 FROM ${DOCKER_REGISTRY}/debian:$DEBIAN_BASE_IMAGE
