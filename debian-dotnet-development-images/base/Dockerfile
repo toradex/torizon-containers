@@ -3,7 +3,7 @@
 
 ARG IMAGE_ARCH
 ARG DOCKER_REGISTRY=torizon
-ARG IMAGE_TAG=bookworm-slim
+ARG IMAGE_TAG=12.5-slim
 
 FROM --platform=${IMAGE_ARCH} ${DOCKER_REGISTRY}/debian:${IMAGE_TAG} AS build
 
