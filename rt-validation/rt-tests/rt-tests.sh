@@ -14,8 +14,7 @@ grep -v -e "^#" -e "^$" output | tr " " "\t" >histogram
 
 # Create two-column data sets with latency classes and frequency values for each core
 cores=$(grep -c ^processor /proc/cpuinfo)
-for i in $(seq 1 "$cores")
-do
+for i in $(seq 1 "$cores"); do
   column=$((i + 1))
   cut -f1,"$column" histogram >histogram"$i"
 done
@@ -32,17 +31,14 @@ set output \"plot.png\"\n\
 plot " >plotcmd
 
 # Append plot command data references
-for i in $(seq 1 "$cores")
-do
-  if test "$i" != 1
-  then
+for i in $(seq 1 "$cores"); do
+  if test "$i" != 1; then
     echo -n ", " >>plotcmd
   fi
   cpuno=$((i - 1))
-  if test "$cpuno" -lt 10
-  then
+  if test "$cpuno" -lt 10; then
     title=" CPU$cpuno"
-   else
+  else
     title="CPU$cpuno"
   fi
   echo -n "\"histogram$i\" using 1:2 title \"$title\" with histeps" >>plotcmd

@@ -13,28 +13,27 @@ chromium_parms_extended=""
 # FIXME: TOR-1426: work around seccomp-bpf failures in chromium.
 chromium_parms_extended="$chromium_parms_extended --disable-seccomp-filter-sandbox"
 
-for arg in "$@"
-do
-    case $arg in
+for arg in "$@"; do
+  case $arg in
     --window-mode)
-        chromium_parms="--start-maximized --app="
-        shift
-        ;;
+      chromium_parms="--start-maximized --app="
+      shift
+      ;;
     --browser-mode)
-        chromium_parms="--start-maximized "
-        shift
-        ;;
+      chromium_parms="--start-maximized "
+      shift
+      ;;
     --virtual-keyboard)
-        # Load the virtual keyboard
-        chromium_parms_extended="$chromium_parms_extended --load-extension=/chrome-extensions/chrome-virtual-keyboard-master"
-        shift
-        ;;
+      # Load the virtual keyboard
+      chromium_parms_extended="$chromium_parms_extended --load-extension=/chrome-extensions/chrome-virtual-keyboard-master"
+      shift
+      ;;
     --disable-gpu-compositing)
-        # Disable GPU Compositing only
-        chromium_parms_extended="$chromium_parms_extended --disable-gpu-compositing"
-        shift
-        ;;
-    esac
+      # Disable GPU Compositing only
+      chromium_parms_extended="$chromium_parms_extended --disable-gpu-compositing"
+      shift
+      ;;
+  esac
 done
 
 # Setup GPU flags
@@ -50,7 +49,7 @@ chromium_parms_extended="$chromium_parms_extended --enable-features=UseOzonePlat
 chromium_parms_extended="$chromium_parms_extended --in-process-gpu"
 
 if [ -n "$1" ]; then
-    URL=$1
+  URL=$1
 fi
 
 exec chromium "$chromium_parms_base" "$chromium_parms_extended" "$chromium_parms""$URL"

@@ -18,28 +18,28 @@
 
 HOSTNAME=$(hostname)
 
-check_module () {
-	MODULE=${HOSTNAME%-*}
-	echo "${MODULE}"
+check_module() {
+  MODULE=${HOSTNAME%-*}
+  echo "${MODULE}"
 }
 
-set_dri_device () {
-        DRI_DEVICE=$(find /run/udev/tags/seat/ -name '+drm*' -type f | sort -r | head -n1 | grep -o card.)
-        echo "${DRI_DEVICE}"
+set_dri_device() {
+  DRI_DEVICE=$(find /run/udev/tags/seat/ -name '+drm*' -type f | sort -r | head -n1 | grep -o card.)
+  echo "${DRI_DEVICE}"
 }
 
-create_kms_conf () {
-        MODULE=$(check_module)
+create_kms_conf() {
+  MODULE=$(check_module)
 
-	if [ -z ${QT_FORCE_DRI_DEVICE+x} ]; then
-		DRI_DEVICE=$(set_dri_device)
-	else
-		DRI_DEVICE=${QT_FORCE_DRI_DEVICE}
-	fi
+  if [ -z ${QT_FORCE_DRI_DEVICE+x} ]; then
+    DRI_DEVICE=$(set_dri_device)
+  else
+    DRI_DEVICE=${QT_FORCE_DRI_DEVICE}
+  fi
 
-        echo "Creating /etc/kms.conf with following contents:"
-        printf "{\n  \"device\": \"/dev/dri/%s\",\n  \"hwcursor\": false\n}\n" "$DRI_DEVICE" | tee /etc/kms.conf
-	echo "Qt will use DRI device \"${DRI_DEVICE}\" for module \"${MODULE}\"."
+  echo "Creating /etc/kms.conf with following contents:"
+  printf "{\n  \"device\": \"/dev/dri/%s\",\n  \"hwcursor\": false\n}\n" "$DRI_DEVICE" | tee /etc/kms.conf
+  echo "Qt will use DRI device \"${DRI_DEVICE}\" for module \"${MODULE}\"."
 }
 
 create_kms_conf

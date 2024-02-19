@@ -13,7 +13,7 @@ WHEREAMI=$(realpath "$WHEREAMI")
 
 IMX_BASE_INC=$(mktemp)
 cleanup() {
-    rm -f "$IMX_BASE_INC"
+  rm -f "$IMX_BASE_INC"
 }
 trap cleanup EXIT
 
@@ -25,17 +25,17 @@ rm -rf "$MAP_DIR"
 mkdir "$MAP_DIR"
 
 map_feature() {
-    FEATURE=$1
-    MAP_FILE=$MAP_DIR/${FEATURE}.socs
-    echo "$WHOAMI: SoCs flagged with '$FEATURE':" >&2
-    sed -r \
-        -e '/^MACHINEOVERRIDES_EXTENDER_mx[^[:blank:]]+ *=/!d' \
-        -e '/\<'"$FEATURE"'\>/!d' \
-        -e 's/ *=.*//' \
-        -e 's/.*_//' \
-        -e 'y/abcdefghijklmnopqrstuxwxyz/ABCDEFGHIJKLMNOPQRSTUXWXYZ/' \
-        -e 's/^/^i\\./' \
-        <"$IMX_BASE_INC" | \
+  FEATURE=$1
+  MAP_FILE=$MAP_DIR/${FEATURE}.socs
+  echo "$WHOAMI: SoCs flagged with '$FEATURE':" >&2
+  sed -r \
+    -e '/^MACHINEOVERRIDES_EXTENDER_mx[^[:blank:]]+ *=/!d' \
+    -e '/\<'"$FEATURE"'\>/!d' \
+    -e 's/ *=.*//' \
+    -e 's/.*_//' \
+    -e 'y/abcdefghijklmnopqrstuxwxyz/ABCDEFGHIJKLMNOPQRSTUXWXYZ/' \
+    -e 's/^/^i\\./' \
+    <"$IMX_BASE_INC" |
     tee "$MAP_FILE" >&2
 }
 
