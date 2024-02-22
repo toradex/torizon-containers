@@ -16,9 +16,7 @@ ADD chrome-virtual-keyboard.tar.gz /chrome-extensions
 
 COPY start-chromium.sh /usr/bin/start-browser
 
-# FIXME: running with root user isn't the best.
-# [7:7:0929/164631.238808:ERROR:wayland_connection.cc(198)] Failed to connect to Wayland display: Permission denied (13)
-# USER torizon
+USER torizon
 
 ENTRYPOINT ["/usr/bin/start-browser"]
 
