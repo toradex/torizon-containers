@@ -17,6 +17,7 @@ OPTIONS=developer,no-change-tty,tty:
 
 WAYLAND_USER=${WAYLAND_USER:-torizon}
 WESTON_ARGS=${WESTON_ARGS:--Bdrm-backend.so --current-mode -S${WAYLAND_DISPLAY}}
+ENABLE_VNC=${ENABLE_VNC:-0}
 ENABLE_RDP=${ENABLE_RDP:-0}
 IGNORE_X_LOCKS=${IGNORE_X_LOCKS:-0}
 IGNORE_VT_SWITCH_BACK=${IGNORE_VT_SWITCH_BACK:-0}
@@ -144,6 +145,13 @@ RDP_BACKEND="command=/usr/bin/weston --backend=rdp-backend.so --shell=fullscreen
 START_ON_STARTUP_CONFIG="start-on-startup=true"
 CONFIGURATION_FILE=/etc/xdg/weston/weston.ini
 CONFIGURATION_FILE_DEV=/etc/xdg/weston-dev/weston.ini
+
+if [ "$ENABLE_VNC" = "1" ]; then
+  # Weston 10 doesn't have a VNC backend, this has been introduced in Weston 12
+  MSG="VNC is not supported on AM62, please use RDP instead."
+  echo -e "$MSG"
+  exit 1
+fi
 
 if [ "$ENABLE_RDP" = "1" ]; then
   mkdir -p /var/volatile
