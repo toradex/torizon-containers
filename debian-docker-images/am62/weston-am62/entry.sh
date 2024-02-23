@@ -17,6 +17,7 @@ OPTIONS=developer,no-change-tty,tty:
 
 WAYLAND_USER=${WAYLAND_USER:-torizon}
 WESTON_ARGS=${WESTON_ARGS:--Bdrm-backend.so --current-mode -S${WAYLAND_DISPLAY}}
+ENABLE_RDP=${ENABLE_RDP:-0}
 IGNORE_X_LOCKS=${IGNORE_X_LOCKS:-0}
 IGNORE_VT_SWITCH_BACK=${IGNORE_VT_SWITCH_BACK:-0}
 
@@ -138,6 +139,39 @@ function init() {
   fi
 }
 
+REMOTE_UI="[screen-share]"
+RDP_BACKEND="command=/usr/bin/weston --backend=rdp-backend.so --shell=fullscreen-shell.so --no-clients-resize  --rdp-tls-key=/var/volatile/tls.key --rdp-tls-cert=/var/volatile/tls.crt --force-no-compression"
+START_ON_STARTUP_CONFIG="start-on-startup=true"
+CONFIGURATION_FILE=/etc/xdg/weston/weston.ini
+CONFIGURATION_FILE_DEV=/etc/xdg/weston-dev/weston.ini
+
+if [ "$ENABLE_RDP" = "1" ]; then
+  mkdir -p /var/volatile
+  {
+    MSG=$REMOTE_UI"\n$RDP_BACKEND\n"$START_ON_STARTUP_CONFIG
+    echo -e "$MSG" | tee -a $CONFIGURATION_FILE $CONFIGURATION_FILE_DEV 1>/dev/null
+
+    if [ ! -f /var/volatile/tls.crt ] || [ ! -f /var/volatile/tls.key ]; then
+      echo "Certificates for RDP not found in /var/volatile"
+      cd /var/volatile || exit
+      openssl genrsa -out tls.key 2048 &&
+        openssl req -new -key tls.key -out tls.csr \
+          -subj "/C=CH/ST=Luzern/L=Luzern/O=Toradex/CN=www.toradex.com" &&
+        openssl x509 -req -days 365 -signkey tls.key \
+          -in tls.csr -out tls.crt
+      chmod 0644 tls.key tls.crt
+      if [ -f "tls.crt" ]; then
+        echo "Certificate for RDP successfully generated"
+      else
+        echo "Error generating certificate for RDP"
+      fi
+      cd || exit
+    else
+      echo "Certificates for RDP found in /var/volatile. Skipping generation."
+    fi
+  } 2>&1 | tee -a /var/volatile/weston.log
+fi
+
 if [ "$IGNORE_X_LOCKS" != "1" ]; then
   echo "Removing previously created '.X*-lock' entries under /tmp before starting Weston. Pass 'IGNORE_X_LOCKS=1' environment variable to Weston container to disable this behavior."
   rm -rf /tmp/.X*-lock
@@ -153,6 +187,9 @@ function cleanup() {
 }
 
 trap cleanup EXIT
+
+dos2unix $CONFIGURATION_FILE
+dos2unix $CONFIGURATION_FILE_DEV
 
 # for every argument after "--", append that argument to WESTON_ARGS
 for i in "${!WESTON_EXTRA_ARGS[@]}"; do
