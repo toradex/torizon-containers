@@ -13,7 +13,11 @@ FROM $DOCKER_REGISTRY/torizon/$BASE_NAME:$IMAGE_TAG AS base
 # libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 \
 # libxfixes3 libxrandr2 libgbm1 libasound2
 
+USER root
+
 RUN apt-get update && apt-get install -y nodejs npm
+
+USER torizon
 
 WORKDIR /usr/src/app
 
