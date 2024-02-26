@@ -1433,14 +1433,13 @@ check-line-breaks:
 
 shell-errors:
   extends: .shellcheck-git
-# Let's incrementally fix the errors and then disable the allow_failure property for this job.
-  allow_failure: true
+  allow_failure: false
   variables:
     SHELLCHECK_SEVERITY: 'error'
 
 shell-warnings:
   extends: .shellcheck-git
-  allow_failure: true
+  allow_failure: false
   variables:
     SHELLCHECK_SEVERITY: 'warning'
 
@@ -1450,8 +1449,7 @@ shell-format:
   before_script:
     - apk update
     - apk add git
-# Let's incrementally fix the errors and then disable the allow_failure property for this job.
-  allow_failure: true
+  allow_failure: false
   script:
     - git ls-files --exclude='*.sh' --ignored -c -z | xargs -0r shfmt -i 2 -ci -d
 
