@@ -1410,6 +1410,15 @@ docker-build-stress-tests:
     DOCKER_NO_CACHE: ${DOCKER_NO_CACHE_FEEDS}
   stage: build-base
 
+check-line-breaks:
+  stage: lint
+  image: alpine:latest
+  before_script:
+    - apk update
+    - apk add file
+  script: 
+    ./scripts/lint-line-break.sh
+
 .shellcheck:
   stage: lint
   image: koalaman/shellcheck-alpine:latest
