@@ -45,7 +45,7 @@ FROM base as add_toradex-repository-0
 FROM base as add_toradex-repository-1
 ARG TORADEX_SNAPSHOT
 ARG USE_TORADEX_SNAPSHOT
-ARG TORADEX_FEED_BASE_URL="https://feeds.toradex.com/debian-am62"
+ARG TORADEX_FEED_BASE_URL="https://feeds1.toradex.com/debian-am62"
 
 # Add toradex key and package feed
 RUN wget -O- ${TORADEX_FEED_BASE_URL}/toradex-debian-repo-19092023.gpg \
@@ -58,11 +58,11 @@ RUN if [ "${USE_TORADEX_SNAPSHOT}" = 1 ]; then \
            TORADEX_FEED_URL="${TORADEX_FEED_BASE_URL}"; \
        fi \
     && echo "Types: deb\n\
-URIs: https://feeds.toradex.com/debian-am62/snapshots/$TORADEX_SNAPSHOT\n\
+URIs: https://feeds1.toradex.com/debian-am62/snapshots/$TORADEX_SNAPSHOT\n\
 Suites: testing\n\
 Components: main non-free\n\
 Signed-By: /usr/share/keyrings/toradex-debian-repo.gpg" > /etc/apt/sources.list.d/toradex.sources \
-    && echo "Package: *\nPin: origin feeds.toradex.com\nPin-Priority: 900" > /etc/apt/preferences.d/toradex-feeds
+    && echo "Package: *\nPin: origin feeds1.toradex.com\nPin-Priority: 900" > /etc/apt/preferences.d/toradex-feeds
 
 FROM add_toradex-repository-${ADD_TORADEX_REPOSITORY}
 

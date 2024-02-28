@@ -373,9 +373,9 @@ stages:
 
   - |
     if [[ "${IMAGE_NAME}" == *imx8 ]]; then
-      export TORADEX_SNAPSHOT=$(curl https://feeds.toradex.com/debian/snapshots/latest-snapshot)
+      export TORADEX_SNAPSHOT=$(curl https://feeds1.toradex.com/debian/snapshots/latest-snapshot)
     elif [[ "${IMAGE_NAME}" == *am62 ]]; then
-      export TORADEX_SNAPSHOT=$(curl https://feeds.toradex.com/debian-am62/snapshots/latest-snapshot)
+      export TORADEX_SNAPSHOT=$(curl https://feeds1.toradex.com/debian-am62/snapshots/latest-snapshot)
     else
       echo "Assuming upstream image."
     fi
