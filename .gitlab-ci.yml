@@ -1451,56 +1451,6 @@ shell-format:
   script:
     - git ls-files --exclude='*.sh' --ignored -c -z | xargs -0r shfmt -i 2 -ci -d
 
-# Make sure to create access token in "Settings/Access Tokens" section with "write_repository" scope selected.
-# Then in "Settings/CI/CD/" section add a variable with key "GIT_TOKEN" and a value of the access token. Also mask the variable.
-tag:
-  stage: chores before building
-  before_script:
-    - if [ -z ${GIT_TOKEN} ]; then echo "Missing variable GIT_TOKEN." && exit 1; fi
-    - TAGS="debian-${DEBIAN_MAJOR}.${DEBIAN_MINOR}.${DEBIAN_PATCH}
-            wayland-base-${WAYLAND_BASE_MAJOR}.${WAYLAND_BASE_MINOR}.${WAYLAND_BASE_PATCH}
-            weston-${WESTON_MAJOR}.${WESTON_MINOR}.${WESTON_PATCH}
-            qt5-wayland-${QT5_WAYLAND_MAJOR}.${QT5_WAYLAND_MINOR}.${QT5_WAYLAND_PATCH}
-            qt5-wayland-examples-${QT5_WAYLAND_EXAMPLES_MAJOR}.${QT5_WAYLAND_EXAMPLES_MINOR}.${QT5_WAYLAND_EXAMPLES_PATCH}
-            weston-touch-calibrator-${WESTON_TOUCH_CALIBRATOR_MAJOR}.${WESTON_TOUCH_CALIBRATOR_MINOR}.${WESTON_TOUCH_CALIBRATOR_PATCH}
-            graphics-tests-${GRAPHICS_TESTS_MAJOR}.${GRAPHICS_TESTS_MINOR}.${GRAPHICS_TESTS_PATCH}
-            debian-imx8-${DEBIAN_MAJOR}.${DEBIAN_MINOR}.${DEBIAN_PATCH}
-            wayland-base-imx8-${WAYLAND_BASE_IMX8_MAJOR}.${WAYLAND_BASE_IMX8_MINOR}.${WAYLAND_BASE_IMX8_PATCH}
-            weston-imx8-${WESTON_IMX8_MAJOR}.${WESTON_IMX8_MINOR}.${WESTON_IMX8_PATCH}
-            qt5-wayland-imx8-${QT5_WAYLAND_IMX8_MAJOR}.${QT5_WAYLAND_IMX8_MINOR}.${QT5_WAYLAND_IMX8_PATCH}
-            qt5-wayland-examples-imx8-${QT5_WAYLAND_EXAMPLES_IMX8_MAJOR}.${QT5_WAYLAND_EXAMPLES_IMX8_MINOR}.${QT5_WAYLAND_EXAMPLES_IMX8_PATCH}
-            graphics-tests-imx8-${GRAPHICS_TESTS_IMX8_MAJOR}.${GRAPHICS_TESTS_IMX8_MINOR}.${GRAPHICS_TESTS_IMX8_PATCH}
-            debian-cross-toolchains-${DEBIAN_CROSS_TOOLCHAINS_MAJOR}.${DEBIAN_CROSS_TOOLCHAINS_MINOR}.${DEBIAN_CROSS_TOOLCHAINS_PATCH}
-            debian-cross-toolchains-ssh-${DEBIAN_CROSS_TOOLCHAINS_SSH_MAJOR}.${DEBIAN_CROSS_TOOLCHAINS_SSH_MINOR}.${DEBIAN_CROSS_TOOLCHAINS_SSH_PATCH}
-            dotnet-6-${DOTNET_6_MAJOR}.${DOTNET_6_MINOR}.${DOTNET_6_PATCH}
-            dotnet-6-${DOTNET_6_DEBUG_MAJOR}.${DOTNET_6_DEBUG_MINOR}.${DOTNET_6_DEBUG_PATCH}
-            dotnet-6-${ASPDOTNET_6_MAJOR}.${ASPDOTNET_6_MINOR}.${ASPDOTNET_6_PATCH}
-            dotnet-6-${ASPDOTNET_6_DEBUG_MAJOR}.${ASPDOTNET_6_DEBUG_MINOR}.${ASPDOTNET_6_DEBUG_PATCH}
-            dotnet-6-${DOTNET_6_UNO_MAJOR}.${DOTNET_6_UNO_MINOR}.${DOTNET_6_UNO_PATCH}
-            dotnet-6-${DOTNET_6_UNO_DEBUG_MAJOR}.${DOTNET_6_UNO_DEBUG_MINOR}.${DOTNET_6_UNO_DEBUG_PATCH}
-            dotnet-8-${DOTNET_8_MAJOR}.${DOTNET_8_MINOR}.${DOTNET_8_PATCH}
-            dotnet-8-${DOTNET_8_DEBUG_MAJOR}.${DOTNET_8_DEBUG_MINOR}.${DOTNET_8_DEBUG_PATCH}
-            dotnet-8-${ASPDOTNET_8_MAJOR}.${ASPDOTNET_8_MINOR}.${ASPDOTNET_8_PATCH}
-            dotnet-8-${ASPDOTNET_8_DEBUG_MAJOR}.${ASPDOTNET_8_DEBUG_MINOR}.${ASPDOTNET_8_DEBUG_PATCH}
-            dotnet-8-${DOTNET_8_UNO_MAJOR}.${DOTNET_8_UNO_MINOR}.${DOTNET_8_UNO_PATCH}
-            dotnet-8-${DOTNET_8_UNO_DEBUG_MAJOR}.${DOTNET_8_UNO_DEBUG_MINOR}.${DOTNET_8_UNO_DEBUG_PATCH}
-            rt-tests-${RT_TESTS_MAJOR}.${RT_TESTS_MINOR}.${RT_TESTS_PATCH}
-            rt-tests-${STRESS_TESTS_MAJOR}.${STRESS_TESTS_MINOR}.${STRESS_TESTS_PATCH}"
-  script:
-  - apk update && apk add git
-  - git remote set-url origin https://gitlab-ci-token:${GIT_TOKEN}@${CI_REPOSITORY_URL#*@}
-  - for TAG in ${TAGS};
-      do
-        if git ls-remote --tags origin  | grep ${TAG} > /dev/null; then
-          echo "${TAG} tag already exists.";
-        else
-          echo "Tagging repository with ${TAG} tag.";
-          git tag --delete ${TAG} > /dev/null 2>&1 || true;
-          git tag ${TAG};
-          git push -o ci.skip origin ${TAG};
-        fi
-      done
-
 dotnet-8-tests:
   image: ${TORADEX_INTERNAL_DOCKERHUB_CACHE}/torizon/dotnet:${DOTNET_8_MAJOR}-${DOTNET_8_RELEASE}
   stage: test
