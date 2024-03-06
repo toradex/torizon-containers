@@ -610,9 +610,9 @@ docker-build-base-imx8:
   before_script:
     - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
     - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
+    - export MAJOR="${DEBIAN_IMX8_MAJOR}"
+    - export MINOR="${DEBIAN_IMX8_MINOR}"
+    - export PATCH="${DEBIAN_IMX8_PATCH}"
   variables:
     BUILD_FOR_ARM_V8: "true"
     IMAGE_NAME: debian-imx8
@@ -678,9 +678,9 @@ docker-build-weston-touch-calibrator-imx8:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${WESTON_IMX8_MAJOR}"
-    - export MAJOR="${WESTON_TOUCH_CALIBRATOR_MAJOR}"
-    - export MINOR="${WESTON_TOUCH_CALIBRATOR_MINOR}"
-    - export PATCH="${WESTON_TOUCH_CALIBRATOR_PATCH}"
+    - export MAJOR="${WESTON_TOUCH_CALIBRATOR_IMX8_MAJOR}"
+    - export MINOR="${WESTON_TOUCH_CALIBRATOR_IMX8_MINOR}"
+    - export PATCH="${WESTON_TOUCH_CALIBRATOR_IMX8_PATCH}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     BUILD_FOR_ARM_V8: "true"
@@ -907,9 +907,9 @@ docker-build-base-am62:
   extends: .docker-build
   before_script:
     - export DEBIAN_BASE_IMAGE="trixie-slim"
-    - export MAJOR="${DEBIAN_MAJOR}"
-    - export MINOR="${DEBIAN_MINOR}"
-    - export PATCH="${DEBIAN_PATCH}"
+    - export MAJOR="${DEBIAN_AM62_MAJOR}"
+    - export MINOR="${DEBIAN_AM62_MINOR}"
+    - export PATCH="${DEBIAN_AM62_PATCH}"
   variables:
     BUILD_FOR_ARM_V8: "true"
     IMAGE_NAME: debian-am62
@@ -974,9 +974,9 @@ docker-build-weston-touch-calibrator-am62:
   extends: .docker-build
   before_script:
     - export DOCKER_BASE_TAG="${WESTON_AM62_MAJOR}"
-    - export MAJOR="${WESTON_TOUCH_CALIBRATOR_MAJOR}"
-    - export MINOR="${WESTON_TOUCH_CALIBRATOR_MINOR}"
-    - export PATCH="${WESTON_TOUCH_CALIBRATOR_PATCH}"
+    - export MAJOR="${WESTON_TOUCH_CALIBRATOR_AM62_MAJOR}"
+    - export MINOR="${WESTON_TOUCH_CALIBRATOR_AM62_MINOR}"
+    - export PATCH="${WESTON_TOUCH_CALIBRATOR_AM62_PATCH}"
     - export DOCKER_NO_CACHE="${DOCKER_NO_CACHE}"
   variables:
     BUILD_FOR_ARM_V8: "true"
