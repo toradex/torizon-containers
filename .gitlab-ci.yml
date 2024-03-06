@@ -400,7 +400,6 @@ stages:
                   --build-arg TORADEX_SNAPSHOT=${TORADEX_SNAPSHOT}
                   --build-arg BASE_NAME_DEBUG=${BASE_NAME_DEBUG}
                   --build-arg DOTNET_BASE_IMAGE_TAG=${DEBIAN_MAJOR}${RELEASE_APPEND}
-                  --build-arg DEBIAN_BASE_IMAGE_TAG=${DEBIAN_BASE_IMAGE}
                   --build-arg DOTNET_RUNTIME=${DOTNET_RUNTIME}
                   --build-arg DOTNET_VERSION=${DOTNET_VERSION}
                   --build-arg DOTNET_DEBUGGER_RELEASE=${DOTNET_DEBUGGER_RELEASE}
@@ -907,8 +906,7 @@ docker-build-base-am62:
   retry: 2
   extends: .docker-build
   before_script:
-    - export RELEASE_APPEND="-${DEBIAN_RELEASE}"
-    - export DOCKER_BASE_TAG="${DEBIAN_BASE_IMAGE}"
+    - export DEBIAN_BASE_IMAGE="trixie-slim"
     - export MAJOR="${DEBIAN_MAJOR}"
     - export MINOR="${DEBIAN_MINOR}"
     - export PATCH="${DEBIAN_PATCH}"
