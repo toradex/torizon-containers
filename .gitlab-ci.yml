@@ -920,7 +920,7 @@ docker-build-wayland-base-am62:
   retry: 2
   extends: .docker-build
   before_script:
-    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}-${DEBIAN_RELEASE}"
+    - export DOCKER_BASE_TAG="${DEBIAN_MAJOR}"
     - export MAJOR="${WAYLAND_BASE_AM62_MAJOR}"
     - export MINOR="${WAYLAND_BASE_AM62_MINOR}"
     - export PATCH="${WAYLAND_BASE_AM62_PATCH}"
