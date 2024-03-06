@@ -30,13 +30,7 @@ RUN apt-get -y update && apt-get install -y \
     mesa-utils-extra \
     mesa-common-dev \
     mesa-opencl-icd \
-    mesa-va-drivers \
-    mesa-vdpau-drivers \
-    mesa-vulkan-drivers \
     mesa-utils-extra \
-    ti-img-rogue-driver-am62-dkms \
-    ti-img-rogue-firmware-am62 \
-    ti-img-rogue-tools-am62 \
     ti-img-rogue-umlibs-am62 \
     && apt-get clean && apt-get autoremove && rm -rf /var/lib/apt/lists/*
 
